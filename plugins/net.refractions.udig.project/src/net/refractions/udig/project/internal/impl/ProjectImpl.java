@@ -417,6 +417,7 @@ public class ProjectImpl extends EObjectImpl implements Project {
         resourceName = resourceName.replaceAll("[/\\\\]", ""); //$NON-NLS-1$ //$NON-NLS-2$
         resourceName = resourceName.replaceAll("\\s", "_"); //$NON-NLS-1$ //$NON-NLS-2$
         resourceName = resourceName.replaceAll("_+", "_"); //$NON-NLS-1$ //$NON-NLS-2$
+        resourceName = resourceName.replaceAll(":", "_"); //$NON-NLS-1$ //$NON-NLS-2$
         String extension = projectElement.getFileExtension();
         if( !extension.startsWith(".") ) //$NON-NLS-1$
             extension="."+extension; //$NON-NLS-1$
