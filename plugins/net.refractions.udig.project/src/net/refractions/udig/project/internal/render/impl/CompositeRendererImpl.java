@@ -142,7 +142,6 @@ public class CompositeRendererImpl extends RendererImpl implements MultiLayerRen
     /**
      * @param renderer
      */
-    @SuppressWarnings("unchecked")
     protected RenderExecutor createRenderExecutor( Renderer renderer ) {
          final RenderExecutor executor = RenderFactory.eINSTANCE.createRenderExecutor(renderer);
         executor.eAdapters().add(new RenderListenerAdapter(){
