@@ -276,7 +276,7 @@ public class ViewportModelImpl extends EObjectImpl implements ViewportModel {
      * 
      * @generated NOT
      */
-    public ReferencedEnvelope getBounds() {
+    public synchronized ReferencedEnvelope getBounds() {
         if( bounds == null ){
             return getMapInternal().getBounds(ProgressManager.instance().get());
         }
@@ -321,7 +321,7 @@ public class ViewportModelImpl extends EObjectImpl implements ViewportModel {
                 return;
             }
         }
-        bounds = new ReferencedEnvelope(newBounds,bounds.getCoordinateReferenceSystem());
+        bounds = new ReferencedEnvelope(newBounds,getCRS());
         fireNotification(oldBounds);
     }
 
