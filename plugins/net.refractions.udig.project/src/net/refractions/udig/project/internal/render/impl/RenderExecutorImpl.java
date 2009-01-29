@@ -117,7 +117,9 @@ public class RenderExecutorImpl extends RendererImpl implements RenderExecutor {
             if (executor.getState() == IRenderer.RENDERING)
                 return;
             if (executor.getState() != IRenderer.DONE || executor.dirty) {
-                executor.getRenderer().setState(RENDER_REQUEST);
+                RenderManager renderManager = (RenderManager) layer.getMapInternal().getRenderManager();
+                renderManager.refresh(layer, null); //ensures the entire layer and all tiles/selection layers are refreshed
+                //executor.getRenderer().setState(RENDER_REQUEST);
             } else{
                 RenderManager renderManager = (RenderManager) layer.getMapInternal().getRenderManager();
                 if(renderManager != null){
@@ -549,6 +551,14 @@ public class RenderExecutorImpl extends RendererImpl implements RenderExecutor {
      * @see net.refractions.udig.project.internal.render.Renderer#render(com.vividsolutions.jts.geom.Envelope)
      */
     public synchronized void render( ) {
+        if (getState() == DISPOSED || !getRenderer().getContext().isVisible()){
+            dirty = true;
+            getContext().getLayer().setStatus(ILayer.DONE);
+            if( getRenderer().getState()!=IRenderer.DONE)
+                getRenderer().setState(IRenderer.DONE);
+            return;
+        }
+        
         dirty = false;
         if( getRenderer().getState()!=STARTING){
             getRenderer().setState(IRenderer.STARTING);
