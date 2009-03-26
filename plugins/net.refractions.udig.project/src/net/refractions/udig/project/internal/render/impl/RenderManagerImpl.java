@@ -415,7 +415,7 @@ public class RenderManagerImpl extends EObjectImpl implements RenderManager {
 
     /**
      * @throws IOException
-     * @see net.refractions.udig.project.internal.render.RenderManager#getInfo(java.awt.Point)
+     * @see net.refractions.udig.project.internal.render.RenderManager#createInfo(java.awt.Point)
      *      public List getInfo(Point screenLocation) throws IOException { return
      *      getRenderExecutor().getInfo(screenLocation); }
      * @uml.property name="renderExecutor"
