@@ -33,7 +33,7 @@ public class MySqlDialect extends DatabaseServiceDialect {
 
     public MySqlDialect(  ) {
         // TODO customize localization if it needs it
-        super(SCHEMA, DATABASE, HOST, PORT, USER, PASSWD, DBTYPE,
+        super(null, DATABASE, HOST, PORT, USER, PASSWD, DBTYPE,
                 "jdbc.mysql", new DatabaseWizardLocalization()); //$NON-NLS-1$
     }
 

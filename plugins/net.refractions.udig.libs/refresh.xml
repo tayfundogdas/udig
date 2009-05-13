@@ -8,7 +8,8 @@
 	<dirname file="${ant.file.refresh_libs}" property="refresh_libs_basedir"/>
 	<property file="${refresh_libs_basedir}/copy.properties"/>
 
-	<artifact:remoteRepository id="udig.repository" url="${updateURL}" />
+	<artifact:remoteRepository id="udig.snapshot.repository" url="${updateSnapshotURL}" />
+	<artifact:remoteRepository id="udig.stable.repository" url="${updateStableURL}" />
 	<artifact:remoteRepository id="remote.repository" url="${mirror1}" />
 
 	<target name="clean">
@@ -19,9 +20,13 @@
 	<target name="load_m2_deps">
 		<!-- we can probably replace this with a reference to a pom.xml file -->
 		<!-- Use http://mvnrepository.com/ to look stuff up                  -->
-		<artifact:dependencies filesetId="dependency.fileset" sourcesFilesetId="sources.dependency.fileset" versionsId="dependency.versions" useScope="runtime">
+		<artifact:dependencies
+			filesetId="dependency.fileset"
+			sourcesFilesetId="sources.dependency.fileset"
+			versionsId="dependency.versions" useScope="runtime">
 
-			<remoteRepository refid="udig.repository" />
+			<remoteRepository refid="udig.stable.repository" />
+			<remoteRepository refid="udig.snapshot.repository"  />
 			<remoteRepository refid="remote.repository" />
 
 			<!-- uDig Specific Extras -->
@@ -50,7 +55,6 @@
 			<dependency groupId="org.geotools" artifactId="gt-epsg-hsql" version="${geotools.version}" />
 			<dependency groupId="org.geotools" artifactId="gt-geotiff" version="${geotools.version}" />
 			<dependency groupId="org.geotools" artifactId="gt-gml" version="${geotools.version}" />
-			<dependency groupId="org.geotools" artifactId="gt-h2" version="${geotools.version}" />
 			<dependency groupId="org.geotools" artifactId="gt-image" version="${geotools.version}" />
 			<dependency groupId="org.geotools" artifactId="gt-imagemosaic" version="${geotools.version}" />
 			<dependency groupId="org.geotools" artifactId="gt-imageio-ext-gdal" version="${geotools.version}" />
