@@ -35,8 +35,8 @@ import net.refractions.udig.render.gridcoverage.basic.internal.Messages;
 import net.refractions.udig.ui.graphics.SLDs;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.geotools.coverage.grid.GeneralGridRange;
 import org.geotools.coverage.grid.GridCoverage2D;
+import org.geotools.coverage.grid.GridEnvelope2D;
 import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
@@ -52,7 +52,7 @@ import org.geotools.styling.Style;
 import org.geotools.styling.StyleFactory;
 import org.opengis.coverage.grid.GridCoverage;
 import org.opengis.coverage.grid.GridCoverageReader;
-import org.opengis.coverage.grid.GridRange;
+import org.opengis.coverage.grid.GridEnvelope;
 import org.opengis.filter.expression.Expression;
 import org.opengis.parameter.ParameterNotFoundException;
 import org.opengis.parameter.ParameterValue;
@@ -121,9 +121,7 @@ public class BasicGridCoverageRenderer extends RendererImpl {
 				}
         	}
         	ParameterValue param = group.parameter(AbstractGridFormat.READ_GRIDGEOMETRY2D.getName().toString());
-        	int[] min=new int[]{0, 0};
-        	int[] max=new int[]{mapDisplay.getWidth(), mapDisplay.getHeight()};
-			GridRange range=new GeneralGridRange(min, max);
+        	GridEnvelope range=new GridEnvelope2D(0,0, mapDisplay.getWidth(), mapDisplay.getHeight() );
 			
 			
 			MathTransform displayToLayer=currentContext.worldToScreenMathTransform().inverse();

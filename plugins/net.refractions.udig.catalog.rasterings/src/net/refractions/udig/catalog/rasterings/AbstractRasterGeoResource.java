@@ -34,7 +34,7 @@ import net.refractions.udig.ui.UDIGDisplaySafeLock;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.geotools.coverage.grid.GeneralGridRange;
+import org.geotools.coverage.grid.GridEnvelope2D;
 import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
@@ -233,7 +233,7 @@ public abstract class AbstractRasterGeoResource extends IGeoResource {
 	 */
 	protected DefaultParameterDescriptor<GridGeometry> getWorldGridGeomDescriptor() {
 		// this is a little dumb
-		GridRange gridRange = new GeneralGridRange(new Rectangle(0,0,100,100));
+	    GridEnvelope2D gridRange = new GridEnvelope2D(new Rectangle(0,0,100,100));
 		ReferencedEnvelope env = new ReferencedEnvelope(-180.0, 180.0,-90.0, 90.0, DefaultGeographicCRS.WGS84);
 		GridGeometry2D world = new GridGeometry2D(gridRange, env);
 	
