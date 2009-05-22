@@ -9,6 +9,7 @@
 package net.refractions.udig.tools.internal;
 
 import java.awt.Point;
+import java.text.NumberFormat;
 
 import net.refractions.udig.project.command.Command;
 import net.refractions.udig.project.command.factory.NavigationCommandFactory;
@@ -107,6 +108,11 @@ public class CursorPosition extends AbstractTool {
 		mouseMoved(e);
 	}
 
+    static NumberFormat format = NumberFormat.getNumberInstance();
+    static {
+        format.setMaximumFractionDigits(64);
+    }
+    
 	private class LineItem extends ContributionItem implements KeyListener,
 			FocusListener {
 		private static final double ACCURACY = 0.0000001;
@@ -125,7 +131,6 @@ public class CursorPosition extends AbstractTool {
 		public boolean isDynamic() {
 			return true;
 		}
-		
 		public void setPosition(Coordinate coord){
 			if( position!=null && Math.abs(position.x-coord.x)<ACCURACY 
               && Math.abs(position.y-coord.y)<ACCURACY){
@@ -142,34 +147,33 @@ public class CursorPosition extends AbstractTool {
 			String value=getString(coord.x)+", "+getString(coord.y); //$NON-NLS-1$
 			return value;
 		}
-
-		private String getString(double value) {
-            if (Double.isNaN(value) ){
+		private String getString( double value ) {
+            if (Double.isNaN(value)) {
                 return Messages.CursorPosition_not_a_number;
             }
-            
-            if( Double.isInfinite(value) ){
+
+            if (Double.isInfinite(value)) {
                 return Messages.CursorPosition_infinity;
-            }
-            
-			String string = String.valueOf(value);
-			string+="00"; //$NON-NLS-1$
-            
-//          calculate number of digits to display based on zoom level
+            }            
+            String string = format.format(value);
+            string += "00"; //$NON-NLS-1$
+
+            // calculate number of digits to display based on zoom level
             Coordinate coordFactor = getContext().getPixelSize();
-            double inverse = (double)1 / coordFactor.x;
-            String strFactor = String.valueOf(inverse);
+            double inverse = (double) 1 / coordFactor.x;
+            
+            String strFactor = format.format(inverse);
             int factor = strFactor.lastIndexOf('.');
 
-            int end=Math.max(1, Math.min(string.lastIndexOf('.') + factor, string.length() - 1));
-            string = string.substring(0, end); 
-            
-            if( string.endsWith(".") ){ //$NON-NLS-1$
-                string=string.substring(0,string.length()-1);
+            int end = Math.max(1, Math.min(string.lastIndexOf('.') + factor, string.length() - 1)); 
+            string = string.substring(0, end);
+
+            if (string.endsWith(".")) { //$NON-NLS-1$
+                string = string.substring(0, string.length() - 1);
             }
-            
-			return string;
-		}
+
+            return string;
+        }
 
 		@Override
 		public void fill(Composite parent) {

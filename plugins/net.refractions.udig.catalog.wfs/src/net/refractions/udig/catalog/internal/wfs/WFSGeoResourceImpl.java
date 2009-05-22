@@ -21,13 +21,19 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Arrays;
+import java.util.Set;
+import java.util.TreeSet;
 
+import net.refractions.udig.catalog.CatalogPlugin;
 import net.refractions.udig.catalog.IGeoResource;
 import net.refractions.udig.catalog.IGeoResourceInfo;
 import net.refractions.udig.catalog.IService;
 import net.refractions.udig.ui.graphics.Glyph;
 
+import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.FeatureStore;
 import org.geotools.data.ResourceInfo;
@@ -145,27 +151,43 @@ public class WFSGeoResourceImpl extends IGeoResource {
             WFSDataStore ds = parent.getDS(null);
             FeatureSource<SimpleFeatureType, SimpleFeature> featureSource = ds.getFeatureSource(typename);
             ResourceInfo resourceInfo = featureSource.getInfo();
-			SimpleFeatureType ft = ds.getSchema(typename);
+            SimpleFeatureType ft = null;
+            try {
+                ft = ds.getSchema(typename);
+            }
+            catch( Exception crippled ){
+                // unable to handle the describe feature type response for this
+                // typeName
+                if( WfsPlugin.getDefault().isDebugging() ){
+                    crippled.printStackTrace();
+                }
+            }
             bounds = resourceInfo.getBounds();
             description = resourceInfo.getDescription();
             title = resourceInfo.getTitle();
 
-            GeometryDescriptor defaultGeom=ft.getGeometryDescriptor();
-            crs = ft.getCoordinateReferenceSystem();
-            
+            crs = resourceInfo.getCRS();
+            if( crs == null && ft != null ){
+                crs = ft.getCoordinateReferenceSystem();
+            }
             name = typename;
-            try {
-				schema = new URI( ft.getName().getNamespaceURI());
-			} catch (URISyntaxException e) {
-				schema = null;
-			}
-              
-            keywords = new String[]{
-                "wfs", //$NON-NLS-1$
-                typename,
-                ft.getName().getNamespaceURI()
-            };
-
+            schema = resourceInfo.getSchema();
+            if( schema == null ){
+                try {
+                    if( ft != null ){
+                        schema = new URI( ft.getName().getNamespaceURI());
+                    }
+                    else {
+                        schema = parent.getID().toURI();
+                    }
+    			} catch (URISyntaxException e) {
+    				schema = null;
+    			} 
+            }
+			Set<String> tags  = new TreeSet<String>();
+			tags.addAll( resourceInfo.getKeywords() );
+			tags.addAll( Arrays.asList( new String[]{ "wfs", typename } ) ); //$NON-NLS-1$
+            keywords = tags.toArray(new String[0]);
             icon=Glyph.icon(ft);
         }
         

@@ -1159,7 +1159,13 @@ public class MapEditor extends EditorPart implements IDropTargetProvider, IAdapt
      */
     public Map getMap() {
         //return viewer.getMap();        
-        return (Map) ((UDIGEditorInput) getEditorInput()).getProjectElement();
+        UDIGEditorInput editorInput = (UDIGEditorInput) getEditorInput();
+        if( editorInput != null ){
+            return (Map) editorInput.getProjectElement();
+        }
+        else {
+            return null;
+        }
     }
 
     /**

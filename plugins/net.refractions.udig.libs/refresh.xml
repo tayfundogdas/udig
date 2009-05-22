@@ -68,25 +68,24 @@
 			<dependency groupId="org.geotools" artifactId="gt-mif" version="${geotools.version}" />
 			
 			
-			<!-- imageio-ext plug-ins -->
-			<dependency groupId="it.geosolutions.imageio-ext" artifactId="imageio-ext-arcgrid" version="1.0.1" />
-			<dependency groupId="it.geosolutions.imageio-ext" artifactId="imageio-ext-customstreams" version="1.0.1" />
-			<dependency groupId="it.geosolutions.imageio-ext" artifactId="imageio-ext-gdal" version="1.0.1" />
-			<dependency groupId="it.geosolutions.imageio-ext" artifactId="imageio-ext-gdaldted" version="1.0.1" />
-			<dependency groupId="it.geosolutions.imageio-ext" artifactId="imageio-ext-gdalecw" version="1.0.1" />
-			<dependency groupId="it.geosolutions.imageio-ext" artifactId="imageio-ext-gdalecwjp2" version="1.0.1" />
-			<dependency groupId="it.geosolutions.imageio-ext" artifactId="imageio-ext-gdalehdr" version="1.0.1" />
-			<dependency groupId="it.geosolutions.imageio-ext" artifactId="imageio-ext-gdalerdasimg" version="1.0.1" />
-			<dependency groupId="it.geosolutions.imageio-ext" artifactId="imageio-ext-gdalframework" version="1.0.1" />
-			<dependency groupId="it.geosolutions.imageio-ext" artifactId="imageio-ext-gdalkakadujp2" version="1.0.1" />
-			<dependency groupId="it.geosolutions.imageio-ext" artifactId="imageio-ext-gdalmrsid" version="1.0.1" />
-			<dependency groupId="it.geosolutions.imageio-ext" artifactId="imageio-ext-gdalmrsidjp2" version="1.0.1" />
-			<dependency groupId="it.geosolutions.imageio-ext" artifactId="imageio-ext-gdalnitf" version="1.0.1" />
-			<dependency groupId="it.geosolutions.imageio-ext" artifactId="imageio-ext-geocore" version="1.0.1" />
-			<dependency groupId="it.geosolutions.imageio-ext" artifactId="imageio-ext-imagereadmt" version="1.0.1" />
-			<dependency groupId="it.geosolutions.imageio-ext" artifactId="imageio-ext-utilities" version="1.0.1" />
-
-
+			<!-- imageio-ext plug-ins 
+			<dependency groupId="it.geosolutions.imageio-ext" artifactId="imageio-ext-arcgrid" version="1.0.2" />
+			<dependency groupId="it.geosolutions.imageio-ext" artifactId="imageio-ext-customstreams" version="1.0.2" />
+			<dependency groupId="it.geosolutions.imageio-ext" artifactId="imageio-ext-gdaldted" version="1.0.2" />
+			<dependency groupId="it.geosolutions.imageio-ext" artifactId="imageio-ext-gdalecw" version="1.0.2" />
+			<dependency groupId="it.geosolutions.imageio-ext" artifactId="imageio-ext-gdalecwjp2" version="1.0.2" />
+			<dependency groupId="it.geosolutions.imageio-ext" artifactId="imageio-ext-gdalehdr" version="1.0.2" />
+			<dependency groupId="it.geosolutions.imageio-ext" artifactId="imageio-ext-gdalerdasimg" version="1.0.2" />
+			<dependency groupId="it.geosolutions.imageio-ext" artifactId="imageio-ext-gdalframework" version="1.0.2" />
+			<dependency groupId="it.geosolutions.imageio-ext" artifactId="imageio-ext-gdalkakadujp2" version="1.0.2" />
+			<dependency groupId="it.geosolutions.imageio-ext" artifactId="imageio-ext-gdalmrsid" version="1.0.2" />
+			<dependency groupId="it.geosolutions.imageio-ext" artifactId="imageio-ext-gdalmrsidjp2" version="1.0.2" />
+			<dependency groupId="it.geosolutions.imageio-ext" artifactId="imageio-ext-gdalnitf" version="1.0.2" />
+			<dependency groupId="it.geosolutions.imageio-ext" artifactId="imageio-ext-geocore" version="1.0.2" />
+			<dependency groupId="it.geosolutions.imageio-ext" artifactId="imageio-ext-imagereadmt" version="1.0.2" />
+			<dependency groupId="it.geosolutions.imageio-ext" artifactId="imageio-ext-utilities" version="1.0.2" />
+			-->
+			
 			<!-- batik jars - used by geotools renderer -->
 		    <dependency groupId="batik" artifactId="batik-dom" version="1.6" />
 			<dependency groupId="batik" artifactId="batik-svg-dom" version="1.6" />
@@ -155,8 +154,8 @@
 	</target>
 
 	<target name="fix">
-		<move file="${lib}/geoapi-2.3-SNAPSHOT.jar" tofile="${lib}/geoapi-2.3-PREVIOUS.jar" verbose="true" failonerror="no" />
-		<move file="${lib}/geoapi-pending-2.3-SNAPSHOT.jar" tofile="${lib}/geoapi-pending-2.3-PREVIOUS.jar" verbose="true" failonerror="no" />
+		<move file="${lib}/geoapi-${geoapi.version}.jar" tofile="${lib}/geoapi-2.3-PREVIOUS.jar" verbose="true" failonerror="no" />
+		<move file="${lib}/geoapi-pending-${geoapi.version}.jar" tofile="${lib}/geoapi-pending-2.3-PREVIOUS.jar" verbose="true" failonerror="no" />
 		<move todir="${lib}" verbose="true" failonerror="no">
 			<fileset dir="${lib}">
 				<include name="geoapi-2.3-*.jar" />

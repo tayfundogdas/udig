@@ -49,6 +49,8 @@ public class Activator implements BundleActivator {
 		    }
 		    catch (Throwable t){
 		        // we should not die if JAI is missing; we have a warning for that...
+		        System.out.println("Difficulty turnning windows native PNG support (which will result in scrambled images from WMS servers)");
+		        t.printStackTrace();
 		    }
         }
 	    

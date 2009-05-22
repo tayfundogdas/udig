@@ -41,6 +41,7 @@ import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
+import javax.imageio.spi.ImageReaderSpi;
 import javax.naming.OperationNotSupportedException;
 
 import net.refractions.udig.catalog.util.CRSUtil;
@@ -85,6 +86,7 @@ import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.renderer.lite.gridcoverage2d.GridCoverageRenderer;
 import org.geotools.renderer.shape.ShapefileRenderer;
+import org.geotools.resources.image.ImageUtilities;
 import org.geotools.styling.RasterSymbolizer;
 import org.geotools.styling.Rule;
 import org.geotools.styling.Style;

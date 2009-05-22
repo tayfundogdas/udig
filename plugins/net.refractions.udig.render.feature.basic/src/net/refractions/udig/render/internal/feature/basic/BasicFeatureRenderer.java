@@ -499,12 +499,18 @@ public class BasicFeatureRenderer extends RendererImpl {
 		}
 	}
     
+    @SuppressWarnings("nls")
     public void refreshImage(){
         try{
             render(ProgressManager.instance().get());
         }catch( RenderException e ){
             getContext().setStatus(ILayer.ERROR);
-            getContext().setStatusMessage(e.getLocalizedMessage());
+            if( e.getCause() != null ){
+                getContext().setStatusMessage(e.getLocalizedMessage()+" - "+e.getLocalizedMessage() );     //$NON-NLS-1$
+            }
+            else {
+                getContext().setStatusMessage(e.getLocalizedMessage());
+            }
         }
     }
 }
