@@ -185,7 +185,13 @@ public class WFSGeoResourceImpl extends IGeoResource {
     			} 
             }
 			Set<String> tags  = new TreeSet<String>();
-			tags.addAll( resourceInfo.getKeywords() );
+			try {
+			    tags.addAll( resourceInfo.getKeywords() );
+			}
+			catch( Throwable t ){
+			    WfsPlugin.trace("Could not retrieve keywords", t ); //$NON-NLS-1$
+			    // no keywords for you
+			}
 			tags.addAll( Arrays.asList( new String[]{ "wfs", typename } ) ); //$NON-NLS-1$
             keywords = tags.toArray(new String[0]);
             icon=Glyph.icon(ft);

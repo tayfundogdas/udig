@@ -18,7 +18,7 @@
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts -Djava.awt.headless=true</vmArgsMac>
    </launcherArgs>
 
-   <windowImages i16="/net.refractions.udig/icons/icon16.gif" i32="/net.refractions.udig/icons/icon32.gif" i64="/net.refractions.udig/icons/icon64.gif" i128="/net.refractions.udig/icons/icon128.gif"/>
+   <windowImages i16="/net.refractions.udig/icons/icon16.gif" i32="/net.refractions.udig/icons/icon32.gif" i48="/net.refractions.udig/icons/icon48.gif" i64="/net.refractions.udig/icons/icon64.gif" i128="/net.refractions.udig/icons/icon128.gif"/>
 
    <splash
       location="net.refractions.udig"
@@ -35,6 +35,7 @@
       </win>
    </launcher>
 
+   <intro introId="net.refractions.udig.ui.intro"/>
 
    <vm>
    </vm>

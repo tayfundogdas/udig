@@ -107,7 +107,7 @@ public class WMSTileSet implements TileSet {
         try {
             this.crs = CRS.decode(epsg);
         } catch (Exception ex) {
-            WmsPlugin.log("Cannot decode tile epsg code: " + epsg, ex); //$NON-NLS-1$
+            WmsPlugin.trace("Cannot decode tile epsg code: " + epsg, ex); //$NON-NLS-1$
         }
         updateID();
     }

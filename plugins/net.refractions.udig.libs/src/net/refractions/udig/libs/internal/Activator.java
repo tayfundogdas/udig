@@ -49,7 +49,7 @@ public class Activator implements BundleActivator {
 		    }
 		    catch (Throwable t){
 		        // we should not die if JAI is missing; we have a warning for that...
-		        System.out.println("Difficulty turnning windows native PNG support (which will result in scrambled images from WMS servers)");
+		        System.out.println("Difficulty turnning windows native PNG support (which will result in scrambled images from WMS servers)"); //$NON-NLS-1$
 		        t.printStackTrace();
 		    }
         }
@@ -60,7 +60,7 @@ public class Activator implements BundleActivator {
 		//           that is not also a OperationAuthorityFactory (I think)
         CoordinateReferenceSystem wgs84 = CRS.decode("EPSG:4326"); // prime the pump - ensure EPSG factory is found //$NON-NLS-1$
         if( wgs84 == null){
-        	String msg = "Unable to locate EPSG authority for EPSG:4326; consider removing temporary geotools/epsg directory and trying again.";
+        	String msg = "Unable to locate EPSG authority for EPSG:4326; consider removing temporary geotools/epsg directory and trying again."; //$NON-NLS-1$
         	System.out.println( msg );
         	//throw new FactoryException(msg);
         }
@@ -104,7 +104,7 @@ public class Activator implements BundleActivator {
 //        }
         double delta = Math.abs(check.getOrdinate(0) - there.getOrdinate(0))+Math.abs(check.getOrdinate(1) - there.getOrdinate(1));
 		if( delta > 0.0001){
-			String msg = "Referencing failed to transformation with expected accuracy: Off by "+delta + "\n"+check+"\n"+there;  //$NON-NLS-2$//$NON-NLS-3$
+			String msg = "Referencing failed to transformation with expected accuracy: Off by "+delta + "\n"+check+"\n"+there;   //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
 			System.out.println( msg );
         	//throw new FactoryException(msg);
         }	
@@ -126,7 +126,7 @@ public class Activator implements BundleActivator {
         
         ReferencedEnvelope latLong = pixelBounds.transform( WGS84, false );
         if( latLong == null){
-        	String msg = "Unable to transform EPSG:4326 to DefaultGeographicCRS.WGS84";
+        	String msg = "Unable to transform EPSG:4326 to DefaultGeographicCRS.WGS84"; //$NON-NLS-1$
         	System.out.println( msg );        		
         	//throw new FactoryException(msg);
         }
