@@ -152,7 +152,7 @@ public final class ProjectPlugin extends EMFPlugin {
                             try {
                                 resource.save(saveOptions);
                             } catch (Exception e) {
-                                ProjectPlugin.log("Error saving", e); //$NON-NLS-1$
+                                ProjectPlugin.log("Error saving "+resource.getURI(), e); //$NON-NLS-1$
                             }
                         }
                         monitor.worked(1);

@@ -60,13 +60,6 @@ public class ExportProjectWizard extends Wizard implements IExportWizard, IRunna
         if(!selectionPage.isPageComplete()){
             canFinish = false;
         } 
-        for( Iterator iterator = selection.iterator(); iterator.hasNext(); ) {
-            Object object = iterator.next();
-            if (!(object instanceof Project)) {
-                canFinish = false;
-                break;
-            }
-        }
         return canFinish;
     }
 
@@ -88,15 +81,16 @@ public class ExportProjectWizard extends Wizard implements IExportWizard, IRunna
 
     public void run( IProgressMonitor monitor ) throws InvocationTargetException,
     InterruptedException {
-        monitor.beginTask("Exporting projects", selection.size());
-        for( Iterator curSelection = selection.iterator(); curSelection.hasNext(); ) {
-            Project project = (Project) curSelection.next();
+        Project project = selectionPage.getProject();
+        monitor.beginTask("Exporting project "+project.getName(), 1 );
+//        for( Iterator curSelection = selection.iterator(); curSelection.hasNext(); ) {
+//            Project project = (Project) curSelection.next();
             Resource resource = project.eResource();
             String destination = generateDestinationProjectFilePath(resource);
             Resource copy = collectAllResources(resource, destination);
             saveResource(copy);
             monitor.worked(1);
-        }
+        //}
     }
 
     private String generateDestinationProjectFilePath( Resource resource ) {
