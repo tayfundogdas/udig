@@ -265,7 +265,8 @@ public interface WMSCComplexTypes {
                 }
             }
             if( tileset.getCoordinateReferenceSystem() == null ){
-                // we are unable to use this one
+                // we are unable to use this one; we do not support
+                //this projection
                 return null;
             }
             return tileset;

@@ -146,7 +146,7 @@ public class TiledWebMapServer {
                 throw (IOException) couldNotConnect;
             }
             else {
-                throw new IOException("Could not connect to "+internalServiceURL(), couldNotConnect);
+                throw new IOException("Could not connect to " + internalServiceURL(), couldNotConnect); //$NON-NLS-1$
             }
         }
         return capabilities;
@@ -319,7 +319,7 @@ public class TiledWebMapServer {
      * @return
      */
     public String buildBaseTileRequestURL() {
-        return service.getProtocol() + "://" + service.getHost() + ":" + service.getPort() + service.getPath() + "?"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        return internalServiceURL() + "?"; //$NON-NLS-1$
     } 
     
     public URL getService() {
