@@ -403,12 +403,15 @@ public abstract class IService implements IResolve {
 
     public void dispose( IProgressMonitor monitor ) {
         monitor.beginTask(Messages.IService_dispose, 100);
-        List< ? extends IResolve> members;
+        List< ? extends IResolve> members = Collections.emptyList();
         try {
-            members = members(new SubProgressMonitor(monitor, 1));
+            if( getStatus() == Status.CONNECTED ){
+                // only ask for members if we are connected (if not we just get an error trying to connect again)
+                members = members(new SubProgressMonitor(monitor, 1));
+            }
         } catch (Throwable e) {
             ErrorManager.get().displayException(e,
-                    "Error disposing members of service: " + getIdentifier(), CatalogPlugin.ID); //$NON-NLS-1$
+                    "Cleaning up memebers of service: " + getIdentifier(), CatalogPlugin.ID); //$NON-NLS-1$
             return;
         }
         int steps = (int) ((double) 99 / (double) members.size());
@@ -419,7 +422,7 @@ public abstract class IService implements IResolve {
                 subProgressMonitor.done();
             } catch (Throwable e) {
                 ErrorManager.get().displayException(e,
-                        "Error disposing members of service: " + getIdentifier(), CatalogPlugin.ID); //$NON-NLS-1$
+                        "Error disposing member of service: " + resolve.getIdentifier(), CatalogPlugin.ID); //$NON-NLS-1$
             }
         }
     }

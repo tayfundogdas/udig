@@ -174,6 +174,9 @@ public class WMSCServiceImpl extends IService {
         if (wmsc == null) {
             dsLock.lock();
             try {
+                if( msg != null ){
+                    throw (IOException) msg;
+                }
                 if (wmsc == null) {
                 	Serializable serializable = getPersistentProperties().get(CAPABILITIES_KEY);
                     if( serializable != null){
@@ -186,6 +189,7 @@ public class WMSCServiceImpl extends IService {
                             wmsc = new TiledWebMapServer(this.url, xml, true );    
                         } catch (Exception e) {                            
                             WmsPlugin.log("Restore from cached capabilities failed", e); //$NON-NLS-1$
+                            // we are going to continue by trying to connect to the real thing
                         }
                     }
                     if( wmsc == null){
@@ -197,7 +201,10 @@ public class WMSCServiceImpl extends IService {
                         String xml = wmsc.getCapabilitiesXml(); 
                         getPersistentProperties().put( CAPABILITIES_KEY, xml );
                     }
+                    msg = null; // we connected just fine this time
                 }
+            } catch (IOException couldNotConnext) {
+                msg = couldNotConnext;                
             } finally {
                 dsLock.unlock();
             }

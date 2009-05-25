@@ -17,8 +17,11 @@
 package net.refractions.udig.catalog.ui;
 
 import java.io.IOException;
+import java.io.Serializable;
+import java.util.Map;
 
 import net.refractions.udig.catalog.CatalogPlugin;
+import net.refractions.udig.catalog.ID;
 import net.refractions.udig.catalog.IGeoResource;
 import net.refractions.udig.catalog.IProcess;
 import net.refractions.udig.catalog.IResolve;
@@ -84,7 +87,14 @@ public class ResolveLabelProviderSimple extends LabelProvider implements IResolv
         		IGeoResource resource = (IGeoResource) element;
         		String title = resource.getInfo(new NullProgressMonitor()).getTitle();
         		IService service = resource.service(new NullProgressMonitor());
-        		service.getPersistentProperties().put(resource.getID() + "_title", title);
+        		if( service != null ){
+            		Map<String, Serializable> properties = service.getPersistentProperties();
+                    ID id = resource.getID();
+                    properties.put(id + "_title", title);
+        		}
+        		else {
+        		    // probably a layerreosurce (ie a wrapper)
+        		}
         		return title;
         	} else if(element instanceof IService) {
         		IService service = (IService) element;

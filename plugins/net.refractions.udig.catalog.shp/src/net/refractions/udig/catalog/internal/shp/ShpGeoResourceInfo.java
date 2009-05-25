@@ -60,6 +60,10 @@ class ShpGeoResourceInfo extends IGeoResourceInfo {
                 featureType.getName().getLocalPart(),
                 featureType.getName().getNamespaceURI()
             };
+            
+            title = featureType.getName().getLocalPart();
+            title = title.replace('_', ' ');
+            title = title.trim();
     }
         
     public CoordinateReferenceSystem getCRS() {
@@ -79,7 +83,7 @@ class ShpGeoResourceInfo extends IGeoResourceInfo {
     }
 
     public String getTitle() {
-        return featureType.getName().getLocalPart();
+        return title;
     }
     
     /**

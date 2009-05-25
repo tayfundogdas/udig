@@ -264,7 +264,10 @@ public interface WMSCComplexTypes {
                     tileset.setStyles(styles);
                 }
             }
-
+            if( tileset.getCoordinateReferenceSystem() == null ){
+                // we are unable to use this one
+                return null;
+            }
             return tileset;
         }
 
@@ -358,10 +361,11 @@ public interface WMSCComplexTypes {
             for( int i = 0; i < value.length; i++ ) {
                 if (sameName(elems[0], value[i])) {
                     WMSTileSet tile = (WMSTileSet) value[i].getValue();
-                    capabilities.addTile(tile);
+                    if( tile != null ){
+                        capabilities.addTile(tile);
+                    }
                 }
             }
-
             return capabilities;
         }
 

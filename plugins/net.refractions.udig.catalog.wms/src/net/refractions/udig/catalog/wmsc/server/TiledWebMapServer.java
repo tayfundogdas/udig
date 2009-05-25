@@ -47,6 +47,10 @@ public class TiledWebMapServer {
 
     /** Capabilities document */
     private WMSCCapabilities capabilities = null;
+    
+    /** Error connecting */
+    private Exception couldNotConnect;
+    
     private String getCaps_xml;
 
     /** URL of WMSC Service */
@@ -127,14 +131,22 @@ public class TiledWebMapServer {
      * exception during creation).
      * 
      * @return a WMSCCapabilities object, representing the Capabilities of the server
+     * @throws IOException if we could not connect
      */
-    public WMSCCapabilities getCapabilities() {
-        if (capabilities == null) {
+    public WMSCCapabilities getCapabilities() throws IOException {
+        if (capabilities == null && couldNotConnect == null) {
             try {
                 capabilities = readCapabilities();
             } catch (Exception ex) {
-                // TODO: Do something with this error
-                ex.printStackTrace();
+                couldNotConnect = ex;
+            }
+        }
+        if( couldNotConnect != null ){
+            if( couldNotConnect instanceof IOException){
+                throw (IOException) couldNotConnect;
+            }
+            else {
+                throw new IOException("Could not connect to "+internalServiceURL(), couldNotConnect);
             }
         }
         return capabilities;
@@ -148,9 +160,8 @@ public class TiledWebMapServer {
      * @throws ServiceException
      * @throws IOException
      */
-    private WMSCCapabilities readCapabilities() throws ServiceException, IOException {
-        String me = service.getProtocol() + "://" + service.getHost() + ":" + service.getPort() //$NON-NLS-1$ //$NON-NLS-2$
-                + "" + service.getPath(); //$NON-NLS-1$
+    private WMSCCapabilities readCapabilities() throws Exception {
+        String me = internalServiceURL();
 
         URL serverURL = new URL(me);
         
@@ -159,19 +170,37 @@ public class TiledWebMapServer {
         WmsPlugin.log("WMSC GetCapabilities: " + r.getFinalURL(), null);  //$NON-NLS-1$
         //issue the request
         WMSCCapabilitiesResponse cr;
-        try {
-            cr = (WMSCCapabilitiesResponse) issueRequest(r);
-            // store the getcaps response xml
-            if (cr != null) {
-            	getCaps_xml = cr.getCapabilitiesXml();
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            return null;
-        }        
+        cr = (WMSCCapabilitiesResponse) issueRequest(r);
+        
+        // store the getcaps response xml
+        if (cr != null) {
+            getCaps_xml = cr.getCapabilitiesXml();
+        }
 
         //return the parsed document
         return (WMSCCapabilities) cr.getCapabilities();
+    }
+    
+    /**
+     * Produce an initial "internal" URL out of the service information.
+     *
+     * @return
+     */
+    private String internalServiceURL() {
+        //String me = service.getProtocol() + "://" + service.getHost() + ":" + service.getPort() //$NON-NLS-1$ //$NON-NLS-2$
+        //    + "" + service.getPath(); //$NON-NLS-1$
+        
+        StringBuffer me = new StringBuffer();
+        me.append( service.getProtocol() );
+        me.append( "://" ); //$NON-NLS-1$
+        me.append( service.getHost() );
+        if( service.getPort() != -1 ){
+            me.append( ":" );  //$NON-NLS-1$
+            me.append( service.getPort() ); 
+        }
+        me.append( service.getPath() );
+        
+        return me.toString();
     }   
     
     /**
@@ -181,7 +210,7 @@ public class TiledWebMapServer {
      * 
      * @return a String of xml, representing the Capabilities of the server
      */
-    public String getCapabilitiesXml() {
+    public String getCapabilitiesXml() throws IOException {
         if (getCaps_xml == null) {
             getCapabilities();
         }
