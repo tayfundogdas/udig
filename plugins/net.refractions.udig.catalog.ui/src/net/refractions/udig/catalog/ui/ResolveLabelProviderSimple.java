@@ -23,6 +23,7 @@ import java.util.Map;
 import net.refractions.udig.catalog.CatalogPlugin;
 import net.refractions.udig.catalog.ID;
 import net.refractions.udig.catalog.IGeoResource;
+import net.refractions.udig.catalog.IGeoResourceInfo;
 import net.refractions.udig.catalog.IProcess;
 import net.refractions.udig.catalog.IResolve;
 import net.refractions.udig.catalog.IResolveChangeEvent;
@@ -91,10 +92,11 @@ public class ResolveLabelProviderSimple extends LabelProvider implements IResolv
             		Map<String, Serializable> properties = service.getPersistentProperties();
                     ID id = resource.getID();
                     properties.put(id + "_title", title);
-        		}
-        		else {
-        		    // probably a layerreosurce (ie a wrapper)
-        		}
+        		} else if(title == null) {
+        			String name = resource.getID().toFile().getName();
+        			name = name.substring(0,name.lastIndexOf("."));
+					return name;
+				}
         		return title;
         	} else if(element instanceof IService) {
         		IService service = (IService) element;
