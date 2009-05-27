@@ -1,4 +1,4 @@
-package net.refractions.udig.project.ui.internal;
+package net.refractions.udig.project.ui.controls;
 
 import java.text.NumberFormat;
 
@@ -7,6 +7,9 @@ import net.refractions.udig.project.render.IViewportModel;
 import net.refractions.udig.project.render.IViewportModelListener;
 import net.refractions.udig.project.render.ViewportModelEvent;
 import net.refractions.udig.project.render.ViewportModelEvent.EventType;
+import net.refractions.udig.project.ui.internal.MapEditor;
+import net.refractions.udig.project.ui.internal.MapEditorPart;
+import net.refractions.udig.project.ui.internal.Messages;
 import net.refractions.udig.ui.ZoomingDialog;
 
 import org.eclipse.jface.action.ContributionItem;
@@ -25,7 +28,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.PlatformUI;
 
 /**
- * Displays the current scale ratio on the status bar
+ * Displays the current scale ratio on the status bar.
  * 
  * @author Andrea Aime
  */
