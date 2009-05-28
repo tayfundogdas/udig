@@ -73,9 +73,6 @@ public class ShpGeoResourceImpl extends IGeoResource {
         try {
             identifier= new URL(parent.getIdentifier().toString()+"#"+typename); //$NON-NLS-1$
             id = new ID( parent.getID(), typename );
-            if( !identifier.equals( id.toURL() )){
-                System.out.println( id + "!= "+identifier );
-            }
         } catch (MalformedURLException e) {
             identifier= parent.getIdentifier();
         }
