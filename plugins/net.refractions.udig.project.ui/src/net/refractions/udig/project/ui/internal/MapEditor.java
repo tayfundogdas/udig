@@ -142,14 +142,6 @@ public class MapEditor extends EditorPart implements IDropTargetProvider, IAdapt
     private static final String LAYER_DIRTY_KEY = "DIRTY"; //$NON-NLS-1$
     /** The id of the MapViewport View */
     public final static String ID = "net.refractions.udig.project.ui.mapEditor"; //$NON-NLS-1$
-    final static int STATUS_LINE_HEIGHT;
-    static {
-        if (Platform.getWS().equals(Platform.WS_WIN32)) {
-            STATUS_LINE_HEIGHT = 24;
-        } else {
-            STATUS_LINE_HEIGHT = 32;
-        }
-    }
     final MapEditor editor = this;
     final StatusLineManager statusLineManager=new StatusLineManager();
     private MapEditorSite mapEditorSite;
@@ -492,7 +484,7 @@ public class MapEditor extends EditorPart implements IDropTargetProvider, IAdapt
             StatusLineLayoutData data = new StatusLineLayoutData();
             separator.setLayoutData(data);
             data.widthHint = 1;
-            data.heightHint = STATUS_LINE_HEIGHT;
+            data.heightHint = ScaleRatioLabel.STATUS_LINE_HEIGHT;
             button = new Button(c, SWT.PUSH|SWT.FLAT);
             setFont(button);
             data = new StatusLineLayoutData();
@@ -511,7 +503,7 @@ public class MapEditor extends EditorPart implements IDropTargetProvider, IAdapt
                 }
             });
             data.widthHint = 132; 
-            data.heightHint = STATUS_LINE_HEIGHT;
+            data.heightHint = ScaleRatioLabel.STATUS_LINE_HEIGHT;
         }
         Label textLabel;
         Shell popup;
@@ -548,7 +540,7 @@ public class MapEditor extends EditorPart implements IDropTargetProvider, IAdapt
 
             }
             Point location = statusLineManager.getControl().toDisplay(button.getLocation());
-            location.y = location.y - STATUS_LINE_HEIGHT;
+            location.y = location.y - ScaleRatioLabel.STATUS_LINE_HEIGHT;
             popup.setLocation(location);
             textLabel.setText(full);
             popup.setVisible(true);
@@ -931,7 +923,7 @@ public class MapEditor extends EditorPart implements IDropTargetProvider, IAdapt
         
         FormData formdata=new FormData();
         formdata.top=new FormAttachment(0);
-        formdata.bottom=new FormAttachment(100,-STATUS_LINE_HEIGHT);
+        formdata.bottom=new FormAttachment(100,-ScaleRatioLabel.STATUS_LINE_HEIGHT);
         formdata.left=new FormAttachment(0);
         formdata.right=new FormAttachment(100);
         viewer.getViewport().getControl().setLayoutData(formdata);

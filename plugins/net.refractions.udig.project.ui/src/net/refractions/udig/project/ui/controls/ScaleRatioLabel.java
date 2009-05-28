@@ -12,6 +12,7 @@ import net.refractions.udig.project.ui.internal.MapEditorPart;
 import net.refractions.udig.project.ui.internal.Messages;
 import net.refractions.udig.ui.ZoomingDialog;
 
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.action.ContributionItem;
 import org.eclipse.jface.action.StatusLineLayoutData;
 import org.eclipse.swt.SWT;
@@ -32,10 +33,18 @@ import org.eclipse.ui.PlatformUI;
  * 
  * @author Andrea Aime
  */
-class ScaleRatioLabel extends ContributionItem implements KeyListener, FocusListener {
+public class ScaleRatioLabel extends ContributionItem implements KeyListener, FocusListener {
+    public final static int STATUS_LINE_HEIGHT;
+    static {
+        if (Platform.getWS().equals(Platform.WS_WIN32)) {
+            STATUS_LINE_HEIGHT = 24;
+        } else {
+            STATUS_LINE_HEIGHT = 32;
+        }
+    }
     /** ScaleRatioLabel editor field */
     private final MapEditorPart mapPart;
-    static final String SCALE_ITEM_ID = "Current scale"; //$NON-NLS-1$
+    public static final String SCALE_ITEM_ID = "Current scale"; //$NON-NLS-1$
     NumberFormat nf = NumberFormat.getIntegerInstance();
     Text label;
     IViewportModel viewportModel;
@@ -112,7 +121,7 @@ class ScaleRatioLabel extends ContributionItem implements KeyListener, FocusList
         StatusLineLayoutData data = new StatusLineLayoutData();
         separator.setLayoutData(data);
         data.widthHint = 1;
-        data.heightHint = MapEditor.STATUS_LINE_HEIGHT;
+        data.heightHint = STATUS_LINE_HEIGHT;
         label = new Text(c, SWT.BORDER|SWT.CENTER);
         label.addKeyListener(this);
         label.addFocusListener(this);
@@ -126,7 +135,7 @@ class ScaleRatioLabel extends ContributionItem implements KeyListener, FocusList
         label.setLayoutData(data);
         updateScale();
         data.widthHint = 80;
-        data.heightHint = MapEditor.STATUS_LINE_HEIGHT;
+        data.heightHint = STATUS_LINE_HEIGHT;
         this.mapPart.setFont(label);
     }
 
