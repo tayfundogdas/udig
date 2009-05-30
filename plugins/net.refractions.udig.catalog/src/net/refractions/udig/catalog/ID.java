@@ -119,6 +119,31 @@ public class ID implements Serializable {
     public File toFile(){
         return file;
     }
+    
+    public String toBaseFile(){
+        String name;
+        try {
+            name = uri.toURL().getFile();
+        } catch (MalformedURLException e) {
+            name = url.getFile();
+        }
+        int slash = name.lastIndexOf('/');
+        int dot = name.lastIndexOf('.');
+        int beginIndex = (slash == -1 && slash < name.length() - 1 ? 0 : slash) + 1;
+        int endIndex = dot == -1 ? name.length() : dot;
+        return name.substring(beginIndex,endIndex);
+        /*
+        String name = file.getName();
+        int split = name.lastIndexOf('.');
+        if( split == -1 ){
+            return name;
+        }
+        else {
+            return name.substring(0,split);
+        }
+        */
+    }
+    
     public URL toURL(){
         return url;
     }

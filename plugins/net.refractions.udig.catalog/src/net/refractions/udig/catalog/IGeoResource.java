@@ -114,7 +114,7 @@ public abstract class IGeoResource implements IResolve {
                 monitor.beginTask("service info", 100); //$NON-NLS-1$
                 IService service = service( new SubProgressMonitor(monitor,40));
                 if( service != null ){
-                    IServiceInfo info = service.createInfo( new SubProgressMonitor(monitor,60) );
+                    IServiceInfo info = service.getInfo( new SubProgressMonitor(monitor,60) );
                     return adaptee.cast( info );
                 }                
             }
@@ -358,8 +358,8 @@ public abstract class IGeoResource implements IResolve {
 	        // let us grab the title from the cache
             Serializable s = service.getPersistentProperties().get(getID().toString() + "_title"); //$NON-NLS-1$
             title = (s != null ? s.toString() : null);
-        }        
-        return title;
+        }
+	    return title;
     }
 	
 	public IService service(IProgressMonitor monitor) throws IOException {

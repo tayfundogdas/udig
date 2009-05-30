@@ -31,6 +31,7 @@ import net.refractions.udig.catalog.IResolveChangeListener;
 import net.refractions.udig.catalog.IResolveFolder;
 import net.refractions.udig.catalog.ISearch;
 import net.refractions.udig.catalog.IService;
+import net.refractions.udig.catalog.IServiceInfo;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jface.viewers.LabelProvider;
@@ -86,22 +87,33 @@ public class ResolveLabelProviderSimple extends LabelProvider implements IResolv
         	try {
         	if(element instanceof IGeoResource) {
         		IGeoResource resource = (IGeoResource) element;
-        		String title = resource.getInfo(new NullProgressMonitor()).getTitle();
-        		IService service = resource.service(new NullProgressMonitor());
-        		if( service != null ){
-            		Map<String, Serializable> properties = service.getPersistentProperties();
-                    ID id = resource.getID();
-                    properties.put(id + "_title", title);
-        		} else if(title == null) {
+        		String title = resource.getTitle();
+        		if( title == null ){
+                    title = resource.getInfo(new NullProgressMonitor()).getTitle();
+        		}
+        		if( title == null ){
+        		    // we are going to fake something here
         			String name = resource.getID().toFile().getName();
-        			name = name.substring(0,name.lastIndexOf("."));
+        			name = name.substring(0,name.lastIndexOf(".")); //$NON-NLS-1$
+        			name = name.replace('_', ' ');
 					return name;
 				}
         		return title;
         	} else if(element instanceof IService) {
         		IService service = (IService) element;
-        		String title = service.getInfo(new NullProgressMonitor()).getTitle();
-        		service.getPersistentProperties().put("title", title);
+        		
+        		String title = service.getTitle();
+        		if( title == null ){
+        		    IServiceInfo info = service.getInfo( new NullProgressMonitor() );
+        		    title = info.getTitle();    
+        		}
+        		if( title == null ){
+        		    // we are going to fake something here
+                    String name = service.getID().toString();
+                    name = name.replace('_', ' ');
+                    name = name.replace("%20"," "); //$NON-NLS-1$ //$NON-NLS-2$
+                    return name;
+        		}
         		return title;
         	} else if(element instanceof IProcess) {
         		IProcess proc = (IProcess) element;

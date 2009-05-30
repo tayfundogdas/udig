@@ -76,24 +76,6 @@ public class ShpGeoResourceImpl extends IGeoResource {
         } catch (MalformedURLException e) {
             identifier= parent.getIdentifier();
         }
-        try {
-            final  FeatureSource<SimpleFeatureType, SimpleFeature> featureSource = featureSource(new NullProgressMonitor());
-            info = new GeotoolsResourceInfoAdapter(featureSource.getInfo()){
-                @Override
-                public ImageDescriptor getImageDescriptor() {
-                    return icon=Glyph.icon(featureSource.getSchema());
-                }
-                
-                @Override
-                public Icon getIcon() {
-                    return AWTSWTImageUtils.imageDescriptor2awtIcon(getImageDescriptor());
-                }
-            };
-        } catch (IOException e) {
-            // shouldn't happen if it does... well fine lets blow up.
-            throw (RuntimeException) new RuntimeException( ).initCause( e );
-        }
-
     }
     
     public URL getIdentifier() {
@@ -233,6 +215,6 @@ public class ShpGeoResourceImpl extends IGeoResource {
                 super.canResolve(adaptee);
     }
     protected IGeoResourceInfo createInfo(IProgressMonitor monitor) throws IOException{
-        return info;
+        return new ShpGeoResourceInfo(this);
     }
 }

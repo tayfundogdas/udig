@@ -144,6 +144,11 @@ public class ResolveTitlesDecorator implements ILabelDecorator, IColorDecorator,
 
     private boolean decorateImages;
 
+    /**
+     * Wrap around the ResolveLabelProviderSimple and add some state markup.
+     * 
+     * @param resolveLabelProviderSimple
+     */
     public ResolveTitlesDecorator( ResolveLabelProviderSimple resolveLabelProviderSimple ) {
         this( resolveLabelProviderSimple, false);
     }
@@ -323,6 +328,12 @@ public class ResolveTitlesDecorator implements ILabelDecorator, IColorDecorator,
         instanceListeners.add(listener);
     }
 
+    /**
+     * This Job executes in the background and tries to update the labels.
+     * <p>
+     * It can actually get "stuck" on any bad label or icon (such as a WMS that takes a while); so
+     * it is important to have default titles that work okay.
+     */
     private class UpdateLabel extends Job {
 
         DisplayUpdater updater;
@@ -355,8 +366,9 @@ public class ResolveTitlesDecorator implements ILabelDecorator, IColorDecorator,
                     URL identifier = element.getIdentifier();
                     monitor.beginTask(Messages.ResolveTitlesDecorator_0 + identifier.getFile(),
                             IProgressMonitor.UNKNOWN);
-                    if( monitor.isCanceled() )
+                    if( monitor.isCanceled() ){
                         return Status.OK_STATUS;
+                    }
                     LabelData data = new LabelData();
                     try {
                         if(text){
