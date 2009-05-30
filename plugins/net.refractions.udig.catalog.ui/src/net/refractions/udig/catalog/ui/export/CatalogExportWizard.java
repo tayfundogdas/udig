@@ -59,10 +59,8 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
-import org.geotools.data.DefaultTransaction;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.FeatureStore;
-import org.geotools.data.FeatureWriter;
 import org.geotools.data.shapefile.ShapefileDataStore;
 import org.geotools.data.shapefile.indexed.IndexedShapefileDataStore;
 import org.geotools.factory.CommonFactoryFinder;
@@ -73,10 +71,6 @@ import org.geotools.filter.IllegalFilterException;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.operation.transform.IdentityTransform;
 import org.geotools.referencing.wkt.UnformattableObjectException;
-import org.geotools.util.NullProgressListener;
-import org.opengis.feature.Feature;
-import org.opengis.feature.FeatureVisitor;
-import org.opengis.feature.Property;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;
@@ -118,7 +112,6 @@ public class CatalogExportWizard extends WorkflowWizard implements IExportWizard
     	return CatalogUIPlugin.getDefault().getDialogSettings();
     }
     
-    @SuppressWarnings("unchecked")
     @Override
     protected boolean performFinish(IProgressMonitor monitor) {
         ExportResourceSelectionState layerSelectState = getWorkflow().getState(ExportResourceSelectionState.class);
@@ -158,6 +151,7 @@ public class CatalogExportWizard extends WorkflowWizard implements IExportWizard
      * @param data
      * @return success
      */
+    @SuppressWarnings("unchecked")
     private boolean exportResource(Data data, IProgressMonitor monitor ) {
         if( monitor == null ) monitor = new NullProgressMonitor();
         
@@ -535,7 +529,7 @@ public class CatalogExportWizard extends WorkflowWizard implements IExportWizard
         // add the service to the catalog
         IServiceFactory sFactory = CatalogPlugin.getDefault().getServiceFactory();
         ICatalog catalog = CatalogPlugin.getDefault().getLocalCatalog();
-        List<IService> services = sFactory.createService(file.toURL());
+        List<IService> services = sFactory.createService( URLUtils.fileToURL(file));
 
         for( IService service : services ) {
             catalog.add(service);
@@ -543,7 +537,7 @@ public class CatalogExportWizard extends WorkflowWizard implements IExportWizard
         }
     }
 
-    @SuppressWarnings("unchecked") //$NON-NLS-1$
+    @SuppressWarnings("unchecked")
     /**
      * Returns true if a generic Geometry class; so we cannot tell if it is point / line / polygon.
      */
@@ -583,11 +577,11 @@ public class CatalogExportWizard extends WorkflowWizard implements IExportWizard
         ShapefileDataStore ds = new IndexedShapefileDataStore(shpFileURL);
         ds.createSchema(type);
         
-        DefaultTransaction t = new DefaultTransaction("export"); //$NON-NLS-1$
-        final FeatureWriter<SimpleFeatureType, SimpleFeature> writer = ds.getFeatureWriterAppend(t);
         final int count[] = new int[1];
         /*
-         try {
+        DefaultTransaction t = new DefaultTransaction("export"); //$NON-NLS-1$
+        final FeatureWriter<SimpleFeatureType, SimpleFeature> writer = ds.getFeatureWriterAppend(t);
+        try {
             fc.accepts(new FeatureVisitor(){
                 public void visit( Feature feature ) {
                     SimpleFeature simpleFeature = (SimpleFeature) feature;
