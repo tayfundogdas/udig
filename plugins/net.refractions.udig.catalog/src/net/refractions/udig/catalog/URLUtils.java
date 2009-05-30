@@ -19,8 +19,11 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLDecoder;
+
+import org.eclipse.core.runtime.Platform;
 
 import net.refractions.udig.core.internal.CorePlugin;
 
@@ -193,7 +196,45 @@ public class URLUtils {
             return destination;
         }
     }
-
+    
+    public static String getPrefix( File file ) {
+        if( !file.isAbsolute() ){
+            // only if C:\ or D:\ or / is in the  path
+            return null;
+        }
+        // this is the "correct" way that may be very slow
+        File compare;
+        try {
+            compare = file.getCanonicalFile();
+        } catch (IOException e) {
+            compare = file.getAbsoluteFile();
+        }
+        while( compare.getParent() != null ){
+            compare = compare.getParentFile();
+        }
+        String root = compare.getPath();
+        String platform = System.getProperty("os.name");
+        if( platform.toUpperCase().indexOf("WINDOWS") != -1 ){
+            if( root.length()>2 && root.charAt(1) == ':'){
+                // Example: C:\ or C:
+                return root.substring(0,2);
+            }
+            if( root.startsWith("\\\\")){
+                // Example: \\machine\share
+                return root;
+            }
+        }
+        else if (platform.toUpperCase().indexOf("MAC") != -1) {
+            return null;
+        }
+        else {
+            if( root.startsWith("/")){
+                return "/";
+            }
+        }
+        return null;        
+    }
+    
     /**
      * Creates a URL from the string. If the String is a relative URL (and is a file) the returned
      * URL will be resolved to the Absolute path with respect to the reference parameter.
