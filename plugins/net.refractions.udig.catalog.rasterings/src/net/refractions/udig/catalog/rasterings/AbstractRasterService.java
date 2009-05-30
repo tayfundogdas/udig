@@ -147,12 +147,8 @@ public abstract class AbstractRasterService extends IService {
         return getIdentifier().toString();
     }
 
-    /**
-     * Retrieves a relatively human readable title for this service.
-     * 
-     * @return Title of this service
-     */
-    public String getTitle() {
+    /** Retrieves a relatively human readable title for this service. */     
+    public String getHandle(){
         return getIdentifier().getFile();
     }
 

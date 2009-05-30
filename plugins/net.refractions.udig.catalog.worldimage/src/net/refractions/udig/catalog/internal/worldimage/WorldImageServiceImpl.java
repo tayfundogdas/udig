@@ -67,7 +67,7 @@ public class WorldImageServiceImpl extends AbstractRasterService {
 			}
             }
             
-            resource = new WorldImageGeoResourceImpl( this, getTitle(), prjURL);            
+            resource = new WorldImageGeoResourceImpl( this, getHandle(), prjURL);            
         }
         return resource;
     }
@@ -100,18 +100,12 @@ public class WorldImageServiceImpl extends AbstractRasterService {
     
     private class WorldImageServiceInfo extends IServiceInfo {
         WorldImageServiceInfo() {
-            super();
             this.keywords = new String[] {
                     "WorldImage", "world image", ".gif", ".jpg", ".jpeg",   //$NON-NLS-1$ //$NON-NLS-2$//$NON-NLS-3$//$NON-NLS-4$ //$NON-NLS-5$
                     ".tif", ".tiff", ".png"};   //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
-        }
-        
-        public String getTitle() {
-            return getIdentifier().getFile();
-        }
-        
-        public String getDescription() {
-            return getIdentifier().toString();
+            title = getIdentifier().getFile();
+            title = title.replace("%20"," "); //$NON-NLS-1$ //$NON-NLS-2$
+            description = getIdentifier().toString();
         }
     }
 }

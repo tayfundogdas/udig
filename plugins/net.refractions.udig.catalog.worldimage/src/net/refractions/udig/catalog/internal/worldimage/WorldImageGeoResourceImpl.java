@@ -219,13 +219,12 @@ public class WorldImageGeoResourceImpl extends AbstractRasterGeoResource {
 		IGeoResourceWorldImageInfo() {
             this.keywords = new String[]{"WorldImage", "world image", ".gif", ".jpg", ".jpeg", //$NON-NLS-1$ //$NON-NLS-2$//$NON-NLS-3$//$NON-NLS-4$ //$NON-NLS-5$
                     ".tif", ".tiff", ".png"}; //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
-            this.title = getIdentifier().getFile();
-            int indexOf = title.lastIndexOf('/');
-            if (indexOf > -1 && indexOf < title.length()) {
-                title = title.substring(indexOf + 1);
+            this.name = getIdentifier().getFile();
+            int indexOf = name.lastIndexOf('/');
+            if (indexOf > -1 && indexOf < name.length()) {
+                name = name.substring(indexOf + 1);
             }
-
-            this.name = this.title;
+            this.title = name.replace('_', ' ');
             this.description = getIdentifier().toString();
             this.bounds = getBounds();
         }

@@ -51,7 +51,7 @@ public class ArcGridServiceImplementation extends AbstractRasterService {
 			monitor.worked(3);
 		}
 		
-		ArcGridGeoResourceImplementation res = new ArcGridGeoResourceImplementation(this, getTitle());
+		ArcGridGeoResourceImplementation res = new ArcGridGeoResourceImplementation(this, getHandle());
 
 		List<AbstractRasterGeoResource> list = new ArrayList<AbstractRasterGeoResource>();
 		list.add(res);

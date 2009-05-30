@@ -65,7 +65,7 @@ public class GeoTiffServiceImpl extends AbstractRasterService {
             monitor.worked(3);
         
         GeoTiffGeoResourceImpl res = new GeoTiffGeoResourceImpl(
-                this, getTitle());
+                this, getHandle());
         List<AbstractRasterGeoResource> list = 
             new ArrayList<AbstractRasterGeoResource>();
         list.add(res);

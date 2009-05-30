@@ -59,7 +59,7 @@ public class ImageServiceImpl extends AbstractRasterService {
      */
     public synchronized AbstractRasterGeoResource getGeoResource( IProgressMonitor monitor ) {
         if (resource == null) {
-            resource = new ImageGeoResourceImpl(this, getTitle());
+            resource = new ImageGeoResourceImpl(this, getHandle());
         }
         return resource;
     }
