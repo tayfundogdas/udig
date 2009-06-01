@@ -36,7 +36,6 @@ import org.geotools.data.FeatureStore;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 
-
 /**
  * Provides ...TODO summary sentence
  * <p>
@@ -55,8 +54,8 @@ public class ArcGeoResource extends IGeoResource {
      * @param parent
      * @param typename
      */
-    public ArcGeoResource( ArcServiceImpl service, String typename ) {
-        this.service = service ;
+    public ArcGeoResource(ArcServiceImpl service, String typename) {
+        this.service = service;
         this.typename = typename;
     }
 
@@ -86,9 +85,9 @@ public class ArcGeoResource extends IGeoResource {
      * Required adaptions: <ul> <li>IGeoResourceInfo.class <li>IService.class </ul>
      * 
      * @see net.refractions.udig.catalog.IResolve#resolve(java.lang.Class,
-     *      org.eclipse.core.runtime.IProgressMonitor)
+     * org.eclipse.core.runtime.IProgressMonitor)
      */
-    public <T> T resolve( Class<T> adaptee, IProgressMonitor monitor ) throws IOException {
+    public <T> T resolve(Class<T> adaptee, IProgressMonitor monitor) throws IOException {
         if (adaptee == null)
             return null;
         if (adaptee.isAssignableFrom(IService.class))
@@ -98,18 +97,20 @@ public class ArcGeoResource extends IGeoResource {
         if (adaptee.isAssignableFrom(IGeoResourceInfo.class))
             return adaptee.cast(createInfo(monitor));
         if (adaptee.isAssignableFrom(FeatureStore.class)) {
-            FeatureSource<SimpleFeatureType, SimpleFeature> fs = service(monitor).getDS(monitor).getFeatureSource(typename);
+            FeatureSource<SimpleFeatureType, SimpleFeature> fs = service(monitor).getDS(monitor)
+                    .getFeatureSource(typename);
             if (fs instanceof FeatureStore)
                 return adaptee.cast(fs);
             if (adaptee.isAssignableFrom(FeatureSource.class))
                 return adaptee.cast(service(monitor).getDS(null).getFeatureSource(typename));
         }
-        return super.resolve( adaptee, monitor);
+        return super.resolve(adaptee, monitor);
     }
+
     /*
      * @see net.refractions.udig.catalog.IResolve#canResolve(java.lang.Class)
      */
-    public <T> boolean canResolve( Class<T> adaptee ) {
+    public <T> boolean canResolve(Class<T> adaptee) {
         if (adaptee == null)
             return false;
         return (adaptee.isAssignableFrom(IGeoResourceInfo.class)
@@ -117,7 +118,8 @@ public class ArcGeoResource extends IGeoResource {
                 || adaptee.isAssignableFrom(FeatureSource.class) || adaptee
                 .isAssignableFrom(IService.class));
     }
-    protected IGeoResourceInfo createInfo( IProgressMonitor monitor ) throws IOException {
+
+    protected IGeoResourceInfo createInfo(IProgressMonitor monitor) throws IOException {
         if (info == null && getStatus() != Status.BROKEN) {
             synchronized (service(monitor).getDS(monitor)) {
                 if (info == null) {
@@ -130,8 +132,8 @@ public class ArcGeoResource extends IGeoResource {
         }
         return info;
     }
-    
-    public ArcServiceImpl service( IProgressMonitor monitor ) throws IOException {
-    	return (ArcServiceImpl) super.service(monitor);
+
+    public ArcServiceImpl service(IProgressMonitor monitor) throws IOException {
+        return (ArcServiceImpl) super.service(monitor);
     }
 }

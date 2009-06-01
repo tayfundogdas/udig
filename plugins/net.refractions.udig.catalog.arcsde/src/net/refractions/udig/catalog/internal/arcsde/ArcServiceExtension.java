@@ -16,6 +16,13 @@
  */
 package net.refractions.udig.catalog.internal.arcsde;
 
+import static org.geotools.arcsde.pool.ArcSDEConnectionConfig.DBTYPE_PARAM;
+import static org.geotools.arcsde.pool.ArcSDEConnectionConfig.INSTANCE_NAME_PARAM;
+import static org.geotools.arcsde.pool.ArcSDEConnectionConfig.PASSWORD_PARAM;
+import static org.geotools.arcsde.pool.ArcSDEConnectionConfig.PORT_NUMBER_PARAM;
+import static org.geotools.arcsde.pool.ArcSDEConnectionConfig.SERVER_NAME_PARAM;
+import static org.geotools.arcsde.pool.ArcSDEConnectionConfig.USER_NAME_PARAM;
+
 import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -29,6 +36,7 @@ import net.refractions.udig.catalog.arcsde.internal.Messages;
 
 import org.geotools.arcsde.ArcSDEDataStoreFactory;
 import org.geotools.data.DataStoreFactorySpi;
+import org.geotools.data.DataAccessFactory.Param;
 
 /**
  * Arc SDE Service Extension Implementation.
@@ -36,25 +44,30 @@ import org.geotools.data.DataStoreFactorySpi;
  * @author David Zwiers, Refractions Research
  * @since 0.6
  */
-public class ArcServiceExtension extends AbstractDataStoreServiceExtension implements ServiceExtension {
+public class ArcServiceExtension extends AbstractDataStoreServiceExtension implements
+        ServiceExtension {
 
-    public IService createService( URL id, Map<String, Serializable> params ) {
-        if (params != null && params.containsKey(getFactory().getParametersInfo()[3].key)
-                && params.get(getFactory().getParametersInfo()[3].key) instanceof String) {
-            String val = (String) params.get(getFactory().getParametersInfo()[3].key);
-            params.remove(val);
-            params.put(getFactory().getParametersInfo()[3].key, new Integer(val));
+    public IService createService(URL id, Map<String, Serializable> params) {
+        final ArcSDEDataStoreFactory factory = getFactory();
+
+        if (params != null && params.containsKey(PORT_NUMBER_PARAM)
+                && params.get(PORT_NUMBER_PARAM) instanceof String) {
+            String val = (String) params.get(PORT_NUMBER_PARAM);
+            params.put(PORT_NUMBER_PARAM, new Integer(val));
         }
 
-        if (!getFactory().canProcess(params))
+        if (!factory.canProcess(params))
             return null;
         if (id == null) {
-            String host = (String) params.get(getFactory().getParametersInfo()[2].key);
-            String port = params.get(getFactory().getParametersInfo()[3].key).toString();
-            String db = (String) params.get(getFactory().getParametersInfo()[4].key);
+            String host = (String) params.get(SERVER_NAME_PARAM);
+            String port = params.get(PORT_NUMBER_PARAM).toString();
+            String db = (String) params.get(INSTANCE_NAME_PARAM);
+            if (null == db) {
+                db = "";
+            }
             try {
-                return new ArcServiceImpl(new URL(
-                        "http://" + host + ".arcsde.jdbc:" + (port) + "/" + db), params); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                URL serviceId = new URL("http://" + host + ":" + (port) + "/arcsde/" + db);
+                return new ArcServiceImpl(serviceId, params); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
             } catch (MalformedURLException e) {
                 // log this?
                 e.printStackTrace();
@@ -64,30 +77,30 @@ public class ArcServiceExtension extends AbstractDataStoreServiceExtension imple
         return new ArcServiceImpl(id, params);
     }
 
-    public Map<String, Serializable> createParams( URL url ) {
-        
-        if( !isArcSDE(url))
+    public Map<String, Serializable> createParams(URL url) {
+
+        if (!isArcSDE(url))
             return null;
-        
+
         ParamInfo info = parseParamInfo(url);
-        
+
         Map<String, Serializable> params = new HashMap<String, Serializable>();
-        params.put(getFactory().getParametersInfo()[1].key, "arcsde"); // dbtype //$NON-NLS-1$
-        params.put(getFactory().getParametersInfo()[2].key, info.host); // host
-        params.put(getFactory().getParametersInfo()[3].key, info.the_port); // port
-        params.put(getFactory().getParametersInfo()[4].key, info.the_database); // database
-        params.put(getFactory().getParametersInfo()[5].key, info.username); // user
-        params.put(getFactory().getParametersInfo()[6].key, info.password); // pass
+        params.put(DBTYPE_PARAM, "arcsde"); // dbtype //$NON-NLS-1$
+        params.put(SERVER_NAME_PARAM, info.host); // host
+        params.put(PORT_NUMBER_PARAM, info.the_port); // port
+        params.put(INSTANCE_NAME_PARAM, info.the_database); // database
+        params.put(USER_NAME_PARAM, info.username); // user
+        params.put(PASSWORD_PARAM, info.password); // pass
 
         if (getFactory().canProcess(params)) {
             return params;
         }
         return null;
     }
-    
+
     /** A couple quick checks on the url */
-    public static final boolean isArcSDE( URL url ) {
-        if( url==null )
+    public static final boolean isArcSDE(URL url) {
+        if (url == null)
             return false;
         return url.getProtocol().toLowerCase().equals("arcsde"); //$NON-NLS-1$
     }
@@ -96,7 +109,7 @@ public class ArcServiceExtension extends AbstractDataStoreServiceExtension imple
 
     /**
      * Factory describing ArcSDE connection parameters
-     *
+     * 
      * @return factory describing ArcSDE connection parameters
      */
     protected static ArcSDEDataStoreFactory getFactory() {
@@ -107,7 +120,7 @@ public class ArcServiceExtension extends AbstractDataStoreServiceExtension imple
     }
 
     @Override
-    protected String doOtherChecks( Map<String, Serializable> params ) {
+    protected String doOtherChecks(Map<String, Serializable> params) {
         return null;
     }
 
@@ -116,10 +129,10 @@ public class ArcServiceExtension extends AbstractDataStoreServiceExtension imple
         return getFactory();
     }
 
-    public String reasonForFailure( URL url ) {
-        if( url==null )
+    public String reasonForFailure(URL url) {
+        if (url == null)
             return Messages.ArcServiceExtension_urlNull;
-        if( !isArcSDE(url) )
+        if (!isArcSDE(url))
             return Messages.ArcServiceExtension_notSDEURL;
         return reasonForFailure(createParams(url));
     }
