@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLDecoder;
 
@@ -155,14 +156,25 @@ public class URLUtils {
         String from = urlToString(referenceURL, false).substring(5);
         String to = urlToString(destination, false).substring(5);
 
-        if (from.equals(to)){
+        // check if the path is the same
+        if (from.equals(to)) {
             try {
                 return new URL("file:/./"); //$NON-NLS-1$
             } catch (MalformedURLException e1) {
                 throw new RuntimeException(e1);
             }
         }
-            
+        /*
+         * check if the root drives are different, in which case it is not possible
+         * to create relative paths (and the destination is returned for now in that 
+         * case). 
+         */
+        char referenceRoot = reference.getAbsolutePath().charAt(0);
+        char destinationRoot = urlToFile(destination).getAbsolutePath().charAt(0);
+        if (referenceRoot != destinationRoot) {
+            return destination;
+        }
+
         int endOfMatch = 0;
         int lastSlash = 0;
         for( int i = 0; i < from.length(); i++ ) {
@@ -178,7 +190,7 @@ public class URLUtils {
 
         }
 
-        if (endOfMatch == 0){
+        if (endOfMatch == 0) {
             return destination;
         }
         String substring = from.substring(lastSlash + 1);
@@ -196,10 +208,10 @@ public class URLUtils {
             return destination;
         }
     }
-    
+
     public static String getPrefix( File file ) {
-        if( !file.isAbsolute() ){
-            // only if C:\ or D:\ or / is in the  path
+        if (!file.isAbsolute()) {
+            // only if C:\ or D:\ or / is in the path
             return null;
         }
         // this is the "correct" way that may be very slow
@@ -209,32 +221,30 @@ public class URLUtils {
         } catch (IOException e) {
             compare = file.getAbsoluteFile();
         }
-        while( compare.getParent() != null ){
+        while( compare.getParent() != null ) {
             compare = compare.getParentFile();
         }
         String root = compare.getPath();
         String platform = System.getProperty("os.name");
-        if( platform.toUpperCase().indexOf("WINDOWS") != -1 ){
-            if( root.length()>2 && root.charAt(1) == ':'){
+        if (platform.toUpperCase().indexOf("WINDOWS") != -1) {
+            if (root.length() > 2 && root.charAt(1) == ':') {
                 // Example: C:\ or C:
-                return root.substring(0,2);
+                return root.substring(0, 2);
             }
-            if( root.startsWith("\\\\")){
+            if (root.startsWith("\\\\")) {
                 // Example: \\machine\share
                 return root;
             }
-        }
-        else if (platform.toUpperCase().indexOf("MAC") != -1) {
+        } else if (platform.toUpperCase().indexOf("MAC") != -1) {
             return null;
-        }
-        else {
-            if( root.startsWith("/")){
+        } else {
+            if (root.startsWith("/")) {
                 return "/";
             }
         }
-        return null;        
+        return null;
     }
-    
+
     /**
      * Creates a URL from the string. If the String is a relative URL (and is a file) the returned
      * URL will be resolved to the Absolute path with respect to the reference parameter.
@@ -280,7 +290,7 @@ public class URLUtils {
         try {
             // check if it is a relative path
             File tmp = new File(base.getParentFile(), file.getPath());
-            //File tmp = new File(base.getParentFile(), substring);
+            // File tmp = new File(base.getParentFile(), substring);
             if (tmp.exists()) {
                 File absoluteFile = tmp.getCanonicalFile();
                 URL url2 = absoluteFile.toURI().toURL();
@@ -299,7 +309,7 @@ public class URLUtils {
 
             File canonicalFile = file.getCanonicalFile();
             return canonicalFile.toURI().toURL();
-            //return new URL("file:" + canonicalFile);
+            // return new URL("file:" + canonicalFile);
         } catch (IOException e) {
             return url;
         }
@@ -336,7 +346,7 @@ public class URLUtils {
             path2 = string.substring(standardPrefix.length());
             path3 = path2.replace("%20", " "); //$NON-NLS-1$ //$NON-NLS-2$
         } else if (string.startsWith(simplePrefix)) {
-            path2 = string.substring(simplePrefix.length() - 1 );
+            path2 = string.substring(simplePrefix.length() - 1);
             path3 = path2.replace("%20", " "); //$NON-NLS-1$ //$NON-NLS-2$
         } else {
             String auth = url.getAuthority();
@@ -349,8 +359,8 @@ public class URLUtils {
         }
         return new File(path3);
     }
-    
-    public static URL fileToURL(File file){
+
+    public static URL fileToURL( File file ) {
         try {
             return file.toURI().toURL();
         } catch (MalformedURLException e) {
@@ -358,12 +368,12 @@ public class URLUtils {
                 return file.toURI().toURL();
             } catch (MalformedURLException e1) {
                 try {
-                    return new URL( "file:/"+file.getCanonicalPath().replace('\\', '/')); //$NON-NLS-1$
+                    return new URL("file:/" + file.getCanonicalPath().replace('\\', '/')); //$NON-NLS-1$
                 } catch (MalformedURLException e2) {
                     return null;
                 } catch (IOException e2) {
                     return null;
-                }                
+                }
             }
         }
     }

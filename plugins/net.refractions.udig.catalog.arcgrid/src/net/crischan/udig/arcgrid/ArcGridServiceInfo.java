@@ -14,7 +14,11 @@
  */
 package net.crischan.udig.arcgrid;
 
+import java.io.File;
+import java.net.URL;
+
 import net.refractions.udig.catalog.IServiceInfo;
+import net.refractions.udig.catalog.URLUtils;
 
 public class ArcGridServiceInfo extends IServiceInfo {
 	/** ArcGridServiceInfo service field */
@@ -30,7 +34,9 @@ public class ArcGridServiceInfo extends IServiceInfo {
 	}
 	
 	public String getTitle() {
-		return service.getIdentifier().getFile();
+		URL identifier = service.getIdentifier();
+		File file = URLUtils.urlToFile(identifier);
+        return file.getAbsolutePath();
 	}
 	
 	public String getDescription() {

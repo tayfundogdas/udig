@@ -1,9 +1,11 @@
 package net.refractions.udig.catalog.imageio;
 
 import java.io.File;
+import java.net.URL;
 
 import net.refractions.udig.catalog.CatalogPlugin;
 import net.refractions.udig.catalog.IGeoResourceInfo;
+import net.refractions.udig.catalog.URLUtils;
 import net.refractions.udig.catalog.rasterings.AbstractRasterService;
 
 import org.eclipse.core.runtime.IStatus;
@@ -31,7 +33,8 @@ public class ImageGeoResourceInfo extends IGeoResourceInfo {
 	ImageGeoResourceInfo(ImageGeoResourceImpl imageGeoResourceImpl) {
 		resource = imageGeoResourceImpl;
 		this.keywords = new String[] { "MrSID","ECW" }; //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
-		final File file = new File(resource.getIdentifier().getFile());
+		URL url = resource.getIdentifier();
+		File file = URLUtils.urlToFile(url);
 		this.name = file.getName();
 		this.title = name;
 		this.description = resource.getIdentifier().toString();

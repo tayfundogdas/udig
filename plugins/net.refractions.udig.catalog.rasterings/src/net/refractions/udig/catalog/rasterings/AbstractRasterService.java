@@ -25,6 +25,7 @@ import java.util.List;
 import net.refractions.udig.catalog.ID;
 import net.refractions.udig.catalog.IService;
 import net.refractions.udig.catalog.IServiceInfo;
+import net.refractions.udig.catalog.URLUtils;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -149,7 +150,8 @@ public abstract class AbstractRasterService extends IService {
 
     /** Retrieves a relatively human readable title for this service. */     
     public String getHandle(){
-        return getIdentifier().getFile();
+        File file = URLUtils.urlToFile(getIdentifier());
+        return file.getAbsolutePath();
     }
 
     @Override

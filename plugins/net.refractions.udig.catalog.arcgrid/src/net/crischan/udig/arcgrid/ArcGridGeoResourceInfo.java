@@ -14,10 +14,13 @@
  */
 package net.crischan.udig.arcgrid;
 
+import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 
 import net.refractions.udig.catalog.CatalogPlugin;
 import net.refractions.udig.catalog.IGeoResourceInfo;
+import net.refractions.udig.catalog.URLUtils;
 
 import org.eclipse.core.runtime.IStatus;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -38,7 +41,9 @@ public class ArcGridGeoResourceInfo extends IGeoResourceInfo {
 				".asc", //$NON-NLS-1$
 				".grd" //$NON-NLS-1$
 			};
-			this.title = resource.getIdentifier().getFile();
+			URL identifier = resource.getIdentifier();
+			File file = URLUtils.urlToFile(identifier);
+            this.title = file.getAbsolutePath();
 			this.description = resource.getIdentifier().toString();
 			this.bounds = getBounds();
 		}

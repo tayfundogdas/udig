@@ -28,6 +28,7 @@ import net.refractions.udig.catalog.ID;
 import net.refractions.udig.catalog.IGeoResource;
 import net.refractions.udig.catalog.IGeoResourceInfo;
 import net.refractions.udig.catalog.IService;
+import net.refractions.udig.catalog.URLUtils;
 import net.refractions.udig.catalog.util.GeotoolsResourceInfoAdapter;
 import net.refractions.udig.ui.graphics.AWTSWTImageUtils;
 import net.refractions.udig.ui.graphics.Glyph;
@@ -148,7 +149,8 @@ public class ShpGeoResourceImpl extends IGeoResource {
 
     public Style style( IProgressMonitor monitor ) {
         URL url = parent.getIdentifier();
-        String shp = url.getFile();
+        File file = URLUtils.urlToFile(url);
+        String shp = file.getAbsolutePath();
 
         StyleFactory styleFactory = CommonFactoryFinder.getStyleFactory(GeoTools.getDefaultHints());
 

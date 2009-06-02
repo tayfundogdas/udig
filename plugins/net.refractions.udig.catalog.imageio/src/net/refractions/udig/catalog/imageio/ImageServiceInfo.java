@@ -3,7 +3,11 @@
  */
 package net.refractions.udig.catalog.imageio;
 
+import java.io.File;
+import java.net.URL;
+
 import net.refractions.udig.catalog.IServiceInfo;
+import net.refractions.udig.catalog.URLUtils;
 
 /**
  * Provides metadata information about a service handling MrSID format.
@@ -24,7 +28,9 @@ class ImageServiceInfo extends IServiceInfo {
 	}
 
 	public String getTitle() {
-		return service.getIdentifier().getFile();
+		URL url = service.getIdentifier();
+		File file = URLUtils.urlToFile(url);
+        return file.getAbsolutePath();
 	}
 
 	public String getDescription() {

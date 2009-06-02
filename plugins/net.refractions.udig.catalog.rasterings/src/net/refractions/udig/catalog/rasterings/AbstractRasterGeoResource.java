@@ -17,6 +17,7 @@
 package net.refractions.udig.catalog.rasterings;
 
 import java.awt.Rectangle;
+import java.io.File;
 import java.io.IOException;
 import java.lang.ref.SoftReference;
 import java.net.MalformedURLException;
@@ -28,6 +29,7 @@ import java.util.concurrent.locks.Lock;
 import net.refractions.udig.catalog.IGeoResource;
 import net.refractions.udig.catalog.IGeoResourceInfo;
 import net.refractions.udig.catalog.IService;
+import net.refractions.udig.catalog.URLUtils;
 import net.refractions.udig.catalog.rasterings.internal.Messages;
 import net.refractions.udig.ui.ProgressManager;
 import net.refractions.udig.ui.UDIGDisplaySafeLock;
@@ -82,7 +84,9 @@ public abstract class AbstractRasterGeoResource extends IGeoResource {
 	public AbstractRasterGeoResource(AbstractRasterService service, String name) {
 	    this.service = service;
 		if (name == null) {
-			name = service.getIdentifier().getFile();
+			URL url = service.getIdentifier();
+			File file = URLUtils.urlToFile(url);
+            name = file.getAbsolutePath();
 			int slash = name.lastIndexOf('/');
 			name = name.substring((slash == -1 && slash < name.length() - 1 ? 0
 					: name.lastIndexOf('/')) + 1,

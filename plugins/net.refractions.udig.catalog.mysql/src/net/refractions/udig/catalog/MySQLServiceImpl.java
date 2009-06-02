@@ -16,6 +16,7 @@
  */
 package net.refractions.udig.catalog;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.URI;
@@ -258,7 +259,7 @@ public class MySQLServiceImpl extends IService {
         }
 
         public String getTitle() {
-            return "MySQL " + getIdentifier().getHost() + getIdentifier().getFile(); //$NON-NLS-1$
+            return "MySQL " + getIdentifier().getHost() + URLUtils.urlToFile(getIdentifier()).getAbsolutePath(); //$NON-NLS-1$
         }
 
     }

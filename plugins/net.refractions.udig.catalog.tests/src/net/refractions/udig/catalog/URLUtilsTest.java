@@ -25,17 +25,17 @@ public class URLUtilsTest extends TestCase {
     }
     
 	public void testToRelativePath() throws Exception {
-		URL url=new File("C:\\foo\\bar").toURL(); //$NON-NLS-1$
+		URL url=new File("C:\\foo\\bar").toURI().toURL(); //$NON-NLS-1$
 		File reference = new File( "C:/foo/bork/dooda" ); //$NON-NLS-1$
 		
 		URL result = URLUtils.toRelativePath(reference, url);
 		assertEquals( "file:/../bar", result.toString()); //$NON-NLS-1$
 		
-		url=new File( "C:/foo/bork/dooda" ).toURL(); //$NON-NLS-1$
+		url=new File( "C:/foo/bork/dooda" ).toURI().toURL(); //$NON-NLS-1$
 		result = URLUtils.toRelativePath(reference, url);
 		assertEquals( "file:/./", result.toString()); //$NON-NLS-1$
 
-		url=new File( "C:/foo/bork/BLEEP" ).toURL(); //$NON-NLS-1$
+		url=new File( "C:/foo/bork/BLEEP" ).toURI().toURL(); //$NON-NLS-1$
 		result = URLUtils.toRelativePath(reference, url);
 		assertEquals( "file:/BLEEP", result.toString()); //$NON-NLS-1$
 		
@@ -48,23 +48,12 @@ public class URLUtilsTest extends TestCase {
 		result = URLUtils.toRelativePath(reference, url);
 		assertSame(url, result);
 		
-		url = new URL("file:C:/Users/Jody/Desktop/raster/norway/trond50geor.jpg");
+		url = new URL("file:/C:/Users/Jody/Desktop/raster/norway/trond50geor.jpg");
 		reference = new File("C:\\java\\udig\\runtime-udig.product\\.localCatalog");
-		
 		result = URLUtils.toRelativePath( reference, url);
-		assertEquals( url, result );		
+		assertEquals( new URL("file:/../../../Users/Jody/Desktop/raster/norway/trond50geor.jpg"), result );		
 		
-//		url = new URL("file:/home/moovida/data/NORVEGIA/trond50geor.jpg");
-//		reference = new File("/home/moovida/rcpdevelopment/WORKSPACES/runtime-jgrass_trunk/.localCatalog");
-//		result = URLUtils.toRelativePath( reference, url);
-//		assertEquals( url, result );        
-		
-		url = new URL("file:C:/Users/Jody/Desktop/raster/norway/trond50geor.jpg");
-        reference = new File("C:\\java\\udig\\runtime-udig.product\\.localCatalog");
-        result = URLUtils.toRelativePath( reference, url);
-        assertEquals( url, result );
-        
-        url = new URL("file:D:/Users/Jody/Desktop/raster/norway/trond50geor.jpg");
+        url = new URL("file:/D:/Users/Jody/Desktop/raster/norway/trond50geor.jpg");
         reference = new File("C:\\java\\udig\\runtime-udig.product\\.localCatalog");
         result = URLUtils.toRelativePath( reference, url);
         assertEquals( url, result );

@@ -3,10 +3,13 @@
  */
 package net.refractions.udig.catalog.mif.internal;
 
+import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 
 import net.refractions.udig.catalog.IServiceInfo;
+import net.refractions.udig.catalog.URLUtils;
 
 class MifServiceInfo extends IServiceInfo {
 
@@ -39,6 +42,8 @@ class MifServiceInfo extends IServiceInfo {
 	}
 
 	public String getTitle() {
-		return service.getIdentifier().getFile();
+		URL url = service.getIdentifier();
+		File file = URLUtils.urlToFile(url);
+        return file.getAbsolutePath();
 	}
 }

@@ -294,7 +294,8 @@ public class ServiceParameterPersister {
                 
                 String id;
 				try {
-                    id = URLEncoder.encode(service.getIdentifier().toExternalForm(), ENCODING);
+				    // TODO check here
+                    id = URLEncoder.encode(service.getID().toFile().getAbsolutePath(), ENCODING);
                 } catch (UnsupportedEncodingException e1) {
                     // should never happen
                     CatalogPlugin.log(null, e1);
@@ -312,8 +313,7 @@ public class ServiceParameterPersister {
                     	url = (URL) object;
                     }else if( object instanceof File ){
                         File file = (File) object;
-                        
-                        URL old=file.toURL();
+                        URL old=file.toURI().toURL();
                     	url=file.toURI().toURL();
                     	if( !old.equals(url)){
                     	    CatalogPlugin.trace("old url:"+old,null); //$NON-NLS-1$
@@ -325,7 +325,7 @@ public class ServiceParameterPersister {
                     // if reference is null then we can only encode the absolute path
                     if( reference!=null && url !=null ){
                     	URL relativeURL = URLUtils.toRelativePath(this.reference, url);
-                    	value = relativeURL.toExternalForm();
+                    	value = URLUtils.urlToString(relativeURL, true);
                     }else{
                     	value = object == null ? null : object.toString();
                     }

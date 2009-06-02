@@ -16,6 +16,7 @@
  */
 package net.refractions.udig.catalog.internal.gml;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.URI;
@@ -32,6 +33,7 @@ import net.refractions.udig.catalog.IResolveChangeEvent;
 import net.refractions.udig.catalog.IResolveDelta;
 import net.refractions.udig.catalog.IService;
 import net.refractions.udig.catalog.IServiceInfo;
+import net.refractions.udig.catalog.URLUtils;
 import net.refractions.udig.catalog.internal.CatalogImpl;
 import net.refractions.udig.catalog.internal.ResolveChangeEvent;
 import net.refractions.udig.catalog.internal.ResolveDelta;
@@ -233,7 +235,7 @@ public class GMLServiceImpl extends IService {
         }
 
         public String getTitle() {
-            return getIdentifier().getFile();
+            return URLUtils.urlToFile(getIdentifier()).getAbsolutePath();
         }
     }
 }

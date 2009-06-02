@@ -16,11 +16,13 @@
  */
 package net.refractions.udig.catalog.internal.geotiff;
 
+import java.io.File;
 import java.io.IOException;
 
 import net.refractions.udig.catalog.CatalogPlugin;
 import net.refractions.udig.catalog.IGeoResourceInfo;
 import net.refractions.udig.catalog.IService;
+import net.refractions.udig.catalog.URLUtils;
 import net.refractions.udig.catalog.geotiff.internal.Messages;
 import net.refractions.udig.catalog.rasterings.AbstractRasterGeoResource;
 import net.refractions.udig.catalog.rasterings.AbstractRasterService;
@@ -77,7 +79,8 @@ public class GeoTiffGeoResourceImpl extends AbstractRasterGeoResource {
         GeoTiffGeoResourceInfo() {
             this.keywords = new String[] {
                     "GeoTiff", ".tif", ".tiff"};   //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$
-            this.title = getIdentifier().getFile();
+            File file = URLUtils.urlToFile(getIdentifier());
+            this.title = file.getAbsolutePath();  //$NON-NLS-1$//$NON-NLS-2$
             int indexOf = title.lastIndexOf('/');
             if( indexOf>-1 && indexOf<title.length() ){
                 title=title.substring(indexOf+1);
