@@ -41,18 +41,18 @@
 
   ;Name and file
   ;:TODO: Change this with each release of uDIG!
-  Name "uDig 1.0.RC1"
-  OutFile "udig1.0.RC1.exe"
+  Name "uDig VersionXXXX"
+  OutFile "udig-VersionXXXX.exe"
   ;:TODO: End of changes required when upgrading installer to new version of uDIG.
 
 
   ;Default installation folder
-  InstallDir "$PROGRAMFILES\uDig"
+  InstallDir "$PROGRAMFILES\uDig\VersionXXXX"
   
   ;Get installation folder from registry if available - This will check the registry to see if an install directory
   ;is present, and if so, replace the value in InstallDir with it.  If there is no value, the installer will fall
   ;back on InstallDir as the default install directory.
-  InstallDirRegKey HKCU "Software\uDig" ""
+  InstallDirRegKey HKCU "Software\uDigVersionXXXX" ""
 
 ;--------------------------------
 ;Variables
@@ -115,14 +115,18 @@
   ;A text file for the license here would be better.  And it probably should
   ;be your license text, as aren't you doing lgpl instead of the eclipse one?
   ;You should explain something here, have the license as users install it. -ch
-  !insertmacro MUI_PAGE_LICENSE "LGPL.txt"
+  !insertmacro MUI_PAGE_LICENSE "LICENSE.txt"
+  
+  ;Add a license for ECW?
+  ;!insertmacro MUI_PAGE_LICENSE "LICENSE.txt"
+  
   !insertmacro MUI_PAGE_DIRECTORY
 
   ;Not sure about this stuff, some registery storing of preferences as to where
   ;you like the uDig start menu
   ;Start Menu Folder Page Configuration
   !define MUI_STARTMENUPAGE_REGISTRY_ROOT "HKCU" 
-  !define MUI_STARTMENUPAGE_REGISTRY_KEY "Software\uDig" 
+  !define MUI_STARTMENUPAGE_REGISTRY_KEY "Software\uDigVersionXXXX" 
   !define MUI_STARTMENUPAGE_REGISTRY_VALUENAME "Start Menu Folder"
   
   !insertmacro MUI_PAGE_STARTMENU Application $STARTMENU_FOLDER
@@ -141,10 +145,13 @@
  
   !insertmacro MUI_LANGUAGE "English"
 
+  RequestExecutionLevel admin
+            
 ;--------------------------------
 ;Installer Sections
 
 Section "uDig Section" SecuDig
+
 
   SetOutPath "$INSTDIR"
   
@@ -157,7 +164,7 @@ Section "uDig Section" SecuDig
   File /r eclipse
     
   ;Store installation folderh
-  WriteRegStr HKCU "Software\uDig" "" $INSTDIR
+  WriteRegStr HKCU "Software\uDigVersionXXXX" "" $INSTDIR
   
   ;Create uninstaller
   WriteUninstaller "$INSTDIR\Uninstall.exe"
@@ -180,7 +187,7 @@ Section "uDig Section" SecuDig
     ;Link for documentation
     !insertmacro CreateInternetShortcut \
         "$SMPROGRAMS\$STARTMENU_FOLDER\uDig Documentation" \
-        "http://udig.refractions.net/confluence/display/UDIGGuide/Home" \
+        "http://udig.refractions.net/users" \
         "$INSTDIR\eclipse\icons\32-uDigIcon.ico" 0
 
     ;Set specific out page for uDig
@@ -190,17 +197,34 @@ Section "uDig Section" SecuDig
     ;Start-up, using the udig.exe file
     ;For some reason, uDig will NOT start if it doesn't have a parameter following -data.
     ;-noop does nothing and seems to be okay.
+
+    Call GetWindowsVersion
+    Pop $R0
+    
+
+	; I don't know the syntax well enough to
+	; do if (!Vista && $DOCUMENTS/uDig/.metadata/.log exists) then 
+	; rename $DOCUMENTS/uDig/ to %HOMEDRIVE%%HOMEPATH%/uDig/
+	;
+	; instead I'm doing a ifs inside of ifs.
+    StrCmp $R0 "Vista" DONE OTHER
+      OTHER:
+        IfFileExists $DOCUMENTS\uDig\.metadata\.log OLD_WS DONE
+    
+        OLD_WS:
+          IfFileExists %HOMEDRIVE%%HOMEPATH%\uDig\.metadata\.log DONE MOVE
+            MOVE:
+	      Rename "$DOCUMENTS\uDig" "%HOMEDRIVE%%HOMEPATH%\uDig"
+
+
+     DONE:
     CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\uDig.lnk" \
-                   "$INSTDIR\eclipse\udig.exe" "-data $\"$APPDATA\uDig\$\" -noop" \
+                   "$INSTDIR\eclipse\udig.exe" "-data $\"%HOMEDRIVE%%HOMEPATH%\uDig\$\" -configuration $\"%APPDATA%\udig\VersionXXXX\$\" -vm $\"$INSTDIR\eclipse\jre\bin\javaw.exe$\"" \
                    "$INSTDIR\eclipse\icons\32-uDigIcon.ico" 0 SW_SHOWNORMAL
 
     ;Set path back to normal
     SetOutPath "$INSTDIR"
     ;Commented out the stop, but it shows how you call with java.
-    ;CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Stop uDig.lnk" \
-    ;               "$2\bin\java.exe" '-jar stop.jar'\
-    ;               "$INSTDIR\server\uDig\images\gs.ico" 0 SW_SHOWMINIMIZED
-    ;link to unintall, you guys should come up with a better icon...
 
     CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Uninstall.lnk" \
                    "$INSTDIR\Uninstall.exe" "" \
@@ -234,46 +258,147 @@ FunctionEnd
 
 Section "Uninstall"
 
-  ;ADD YOUR OWN FILES HERE...
   
-  Delete "$INSTDIR\Uninstall.exe"
-  ;RMDIR /r "$INSTDIR\bin"
-  RMDIR /r "$INSTDIR\eclipse"
+  ;REMOVE APPLICATION IN A FEW STEPS TO SHOW PROGRESS
+  
+  RMDIR /r "$INSTDIR\eclipse\features"
+  RMDIR /r "$INSTDIR\eclipse\jre"
+  RMDIR /r "$INSTDIR\eclipse\plugins"
 
-  RMDir "$INSTDIR"
-  RMDir "$APPDATA\uDig"
+  RMDIR /r "$INSTDIR"
+  ;TRY TO REMOVE THE Program Files\uDig Directory... 
+  ;IF THERE ARE OTHER UDIG VERSION THEN THIS WILL FILE SILENTLY
+  RMDIR "$INSTDIR\.."
+
+  ;REMOVE THE CONFIGURATION DATA 
+  RMDIR /r "$APPDATA\uDig\uDigVersionXXXX"
+  ;WILL REMOVE IF THERE ARE NO MORE UDIG INSTALLS
+  RMDIR "$APPDATA\uDig"
   
-  IfFileExists "$INSTDIR" 0 Removed
+; FOR XP THE WORKSPACE IS UP ONE DIRECTORY FROM APPDATA
+; CHECK IF IT EXISTS.  IF IT DOES QUERY USER TO DELETE IT
+  IfFileExists "$APPDATA\..\uDig" 0 Removed
      MessageBox MB_YESNO|MB_ICONQUESTION \
-          "Remove all files in your uDig directory, including workspace? (If you have anything you created that you want to keep, click No)" IDNO Removed
-     Delete "$INSTDIR\*.*" ;
-     RMDIR /r "$INSTDIR"
+          "Delete all files in your workspace? (If you have anything you created that you want to keep, click No)" /SD IDYES IDNO Removed
+     RMDIR /r "$APPDATA\..\uDig"
      Sleep 500
-     IfFileExists "$INSTDIR" 0 Removed
+     IfFileExists "$APPDATA\..\uDig" 0 Removed
         MessageBox MB_OK|MB_ICONEXCLAMATION \
-            "Note: $INSTDIR could not be removed."
+            "Note: Workspace could not be removed." /SD IDOK
+
+; FOR VISTA THE WORKSPACE IS UP TWO DIRECTORIES FROM APPDATA
+; CHECK IF IT EXISTS.  IF IT DOES QUERY USER TO DELETE IT
+  IfFileExists "$APPDATA\..\..\uDig" 0 Removed
+     MessageBox MB_YESNO|MB_ICONQUESTION \
+          "Delete all files in your workspace? (If you have anything you created that you want to keep, click No)" /SD IDYES IDNO Removed
+     RMDIR /r "$APPDATA\..\..\uDig"
+     Sleep 500
+     IfFileExists "$APPDATA\..\..\uDig" 0 Removed
+        MessageBox MB_OK|MB_ICONEXCLAMATION \
+            "Note: Workspace could not be removed." /SD IDOK
 
 
   Removed:
 
   !insertmacro MUI_STARTMENU_GETFOLDER Application $MUI_TEMP
     
-  Delete "$SMPROGRAMS\$MUI_TEMP\uDig.lnk"
-  Delete "$SMPROGRAMS\$MUI_TEMP\Uninstall.lnk"
-  Delete "$SMPROGRAMS\$MUI_TEMP\uDig Documentation.url"
-  
-  ;Delete empty start menu parent diretories
-  StrCpy $MUI_TEMP "$SMPROGRAMS\$MUI_TEMP"
- 
-  startMenuDeleteLoop:
-    RMDir $MUI_TEMP
-    GetFullPathName $MUI_TEMP "$MUI_TEMP\.."
-    
-    IfErrors startMenuDeleteLoopDone
-  
-    StrCmp $MUI_TEMP $SMPROGRAMS startMenuDeleteLoopDone startMenuDeleteLoop
-  startMenuDeleteLoopDone:
+  RMDIR /r "$SMPROGRAMS\$MUI_TEMP"
 
-  DeleteRegKey /ifempty HKCU "Software\uDig"
+  DeleteRegKey /ifempty HKCU "Software\uDigVersionXXXX"
 
 SectionEnd
+
+; GetWindowsVersion
+ ;
+ ; Based on Yazno's function, http://yazno.tripod.com/powerpimpit/
+ ; Updated by Joost Verburg
+ ;
+ ; Returns on top of stack
+ ;
+ ; Windows Version (95, 98, ME, NT x.x, 2000, XP, 2003, Vista)
+ ; or
+ ; '' (Unknown Windows Version)
+ ;
+ ; Usage:
+ ;   Call GetWindowsVersion
+ ;   Pop $R0
+ ;   ; at this point $R0 is "NT 4.0" or whatnot
+
+ Function GetWindowsVersion
+
+   Push $R0
+   Push $R1
+
+   ClearErrors
+
+   ReadRegStr $R0 HKLM \
+   "SOFTWARE\Microsoft\Windows NT\CurrentVersion" CurrentVersion
+
+   IfErrors 0 lbl_winnt
+
+   ; we are not NT
+   ReadRegStr $R0 HKLM \
+   "SOFTWARE\Microsoft\Windows\CurrentVersion" VersionNumber
+
+   StrCpy $R1 $R0 1
+   StrCmp $R1 '4' 0 lbl_error
+
+   StrCpy $R1 $R0 3
+
+   StrCmp $R1 '4.0' lbl_win32_95
+   StrCmp $R1 '4.9' lbl_win32_ME lbl_win32_98
+
+   lbl_win32_95:
+     StrCpy $R0 '95'
+   Goto lbl_done
+
+   lbl_win32_98:
+     StrCpy $R0 '98'
+   Goto lbl_done
+
+   lbl_win32_ME:
+     StrCpy $R0 'ME'
+   Goto lbl_done
+
+   lbl_winnt:
+
+   StrCpy $R1 $R0 1
+
+   StrCmp $R1 '3' lbl_winnt_x
+   StrCmp $R1 '4' lbl_winnt_x
+
+   StrCpy $R1 $R0 3
+
+   StrCmp $R1 '5.0' lbl_winnt_2000
+   StrCmp $R1 '5.1' lbl_winnt_XP
+   StrCmp $R1 '5.2' lbl_winnt_2003
+   StrCmp $R1 '6.0' lbl_winnt_vista lbl_error
+
+   lbl_winnt_x:
+     StrCpy $R0 "NT $R0" 6
+   Goto lbl_done
+
+   lbl_winnt_2000:
+     Strcpy $R0 '2000'
+   Goto lbl_done
+
+   lbl_winnt_XP:
+     Strcpy $R0 'XP'
+   Goto lbl_done
+
+   lbl_winnt_2003:
+     Strcpy $R0 '2003'
+   Goto lbl_done
+
+   lbl_winnt_vista:
+     Strcpy $R0 'Vista'
+   Goto lbl_done
+
+   lbl_error:
+     Strcpy $R0 ''
+   lbl_done:
+
+   Pop $R1
+   Exch $R0
+
+ FunctionEnd
