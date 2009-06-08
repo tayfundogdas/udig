@@ -295,7 +295,12 @@ public class ServiceParameterPersister {
                 String id;
 				try {
 				    // TODO check here
-                    id = URLEncoder.encode(service.getID().toFile().getAbsolutePath(), ENCODING);
+				    if( service.getID().isFile() ){
+				        id = URLEncoder.encode(service.getID().toFile().getAbsolutePath(), ENCODING);
+				    }
+				    else {
+				        id = URLEncoder.encode( service.getID().toString(), ENCODING);
+				    }
                 } catch (UnsupportedEncodingException e1) {
                     // should never happen
                     CatalogPlugin.log(null, e1);
