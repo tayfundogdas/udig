@@ -66,6 +66,7 @@
 			<dependency groupId="org.geotools" artifactId="gt-process" version="${geotools.version}" />
 			<dependency groupId="org.geotools" artifactId="gt-wps" version="${geotools.version}" />
 			<dependency groupId="org.geotools" artifactId="gt-mif" version="${geotools.version}" />
+			<dependency groupId="org.geotools" artifactId="gt-charts" version="${geotools.version}" />
 			
 			
 			<!-- imageio-ext plug-ins 
