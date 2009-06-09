@@ -128,7 +128,8 @@ public abstract class AbstractUDIGImportPage extends WorkflowWizardPage implemen
         final Collection<IService> services = new HashSet<IService>();
         IRunnableWithProgress runnable = new IRunnableWithProgress(){
             public void run(IProgressMonitor monitor) {
-                services.addAll(EndConnectionState.constructServices(monitor, params, new HashSet<URL>()));
+                Collection<IService> newServices = EndConnectionState.constructServices(monitor, params, new HashSet<URL>());
+                services.addAll(newServices);
             }
         };
         try {

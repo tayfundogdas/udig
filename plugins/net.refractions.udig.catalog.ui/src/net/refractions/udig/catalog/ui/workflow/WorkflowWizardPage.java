@@ -3,6 +3,13 @@ package net.refractions.udig.catalog.ui.workflow;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.wizard.WizardPage;
 
+/**
+ * Wizard page that delegates to an internal State.
+ * <p>
+ * We have the ability to just process the State objects during a DnD; allowing
+ * us to work through the wizard pages without annoying users - unless some
+ * input is needed - at that point we can pop open the correct wizard page.
+ */
 public abstract class WorkflowWizardPage extends WizardPage {
 
 	State state;

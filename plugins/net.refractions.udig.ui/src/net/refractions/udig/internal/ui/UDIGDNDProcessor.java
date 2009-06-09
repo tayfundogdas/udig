@@ -255,7 +255,13 @@ public class UDIGDNDProcessor {
             data.removeAll(tmp);
             return tmp;
         }
-
+        /**
+         * Check out the provided configuration element (destination, possible targets) and
+         * figure out a target object.
+         *
+         * @param element
+         * @return
+         */
         private Object findTarget(IConfigurationElement element) {
             IConfigurationElement[] targets = element.getChildren("destination"); //$NON-NLS-1$
             Object concreteTarget = null; 

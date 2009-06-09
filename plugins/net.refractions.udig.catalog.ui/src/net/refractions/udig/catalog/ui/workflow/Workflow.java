@@ -561,7 +561,9 @@ public class Workflow {
             l.finished(last);
         }
     }
-
+    /**
+     * Listens to the workflow as it runs; will run each stage in turn.
+     */
     public static class WorkflowRunner implements Listener {
         Workflow pipe;
         boolean stopped;
@@ -570,6 +572,12 @@ public class Workflow {
             this.pipe = pipe;
         }
 
+        /**
+         * Will run the workflow; and return true if the workflow if completed
+         *
+         * @param monitor
+         * @return true if completed
+         */
         public boolean run( final IProgressMonitor monitor ) {
             final boolean[] result = new boolean[1];
 
@@ -582,6 +590,12 @@ public class Workflow {
             return result[0];
         }
 
+        /**
+         * Carefully runs the workflow step by step until finished or stoppped.
+         *
+         * @param monitor
+         * @return true if completed; false if stopped
+         */
         private boolean runInternal( IProgressMonitor monitor ) {
             try {
                 monitor.beginTask(Messages.Workflow_task_name, IProgressMonitor.UNKNOWN);
@@ -608,27 +622,44 @@ public class Workflow {
                 monitor.done();
             }
         }
-
+        /**
+         * We are not interesed in the workflow moving forward
+         */
         public void forward( State current, State prev ) {
             // do nothing
         }
 
+        /**
+         * We are not interested in the workflow moving backward
+         */
         public void backward( State current, State next ) {
             // do nothing
         }
 
+        /**
+         * We are not interested in a state validating
+         */
         public void statePassed( State state ) {
             // do nothing
         }
 
+        /**
+         * If the state has failed our workflow has stopped - and we need human intervention
+         */
         public void stateFailed( State state ) {
             stopped = true;
         }
 
+        /**
+         * We are not interested in starting
+         */
         public void started( State first ) {
             // do nothing
         }
 
+        /**
+         * We are not interested in the workflow finishing
+         */
         public void finished( State last ) {
             // do nothing
         }

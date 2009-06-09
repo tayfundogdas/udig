@@ -23,7 +23,7 @@ import org.geotools.data.wms.WebMapServer;
 public class WMSConnectionFactory extends UDIGConnectionFactory {
 
 	public boolean canProcess(Object context) {
-		 if( context instanceof IResolve ){
+		if( context instanceof IResolve ){
            IResolve resolve = (IResolve) context;
            return resolve.canResolve( WebMapServer.class );
        }
@@ -175,6 +175,10 @@ public class WMSConnectionFactory extends UDIGConnectionFactory {
     /** Check that any trailing #layer is removed from the url */
     static public URL checkedURL( URL url ){
         String check = url.toExternalForm();
+        int tiled = check.toUpperCase().indexOf("TILED=TRUE");
+        if( tiled != -1 ){
+            return null; // we do not support tiled WMS here
+        }
         int hash = check.indexOf('#');
         if ( hash == -1 ){
             return url;            

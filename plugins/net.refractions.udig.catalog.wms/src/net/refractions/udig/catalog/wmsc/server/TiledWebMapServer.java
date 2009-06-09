@@ -258,7 +258,10 @@ public class TiledWebMapServer {
      */
     public Response issueRequest( Request request ) throws IOException, ServiceException {
         URL finalURL = request.getFinalURL();
-
+        if( finalURL.getHost() == null ){
+            //System.out.prinln("Poor WMS-C configuration - no host provided by "+ finalURL );
+            throw new NullPointerException("No host provided by "+finalURL );
+        }
         HttpURLConnection connection = (HttpURLConnection) finalURL.openConnection();
 
         connection.addRequestProperty("Accept-Encoding", "gzip"); //$NON-NLS-1$ //$NON-NLS-2$
