@@ -1,26 +1,34 @@
 package net.refractions.udig.libs.internal;
 
+import java.io.File;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.imageio.spi.ImageReaderSpi;
 
+import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.osgi.service.datalocation.Location;
 import org.geotools.factory.GeoTools;
 import org.geotools.factory.Hints;
 import org.geotools.factory.Hints.Key;
 import org.geotools.geometry.DirectPosition2D;
 import org.geotools.geometry.GeneralDirectPosition;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.metadata.iso.citation.Citations;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.ReferencingFactoryFinder;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.geotools.referencing.factory.PropertyAuthorityFactory;
+import org.geotools.referencing.factory.ReferencingFactoryContainer;
 import org.geotools.resources.image.ImageUtilities;
 import org.opengis.geometry.DirectPosition;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.Constants;
 
 /**
  * The Activator for net.refractions.udig.libs provides global settings
@@ -40,6 +48,9 @@ import org.osgi.framework.BundleContext;
  */
 public class Activator implements BundleActivator {
 	public void start(BundleContext context) throws Exception {
+	    // System properites work for controlling referencing behavior
+	    // not so sure about the geotools global hints
+	    //
 	    System.setProperty("org.geotools.referencing.forceXY", "true"); //$NON-NLS-1$ //$NON-NLS-2$
 
 		if( Platform.getOS().equals(Platform.OS_WIN32) ){
@@ -58,23 +69,82 @@ public class Activator implements BundleActivator {
 		//           but they cause epsg-wkt not to work because the
 		//           various wrapper classes trip up over a CRSAuthorityFactory
 		//           that is not also a OperationAuthorityFactory (I think)
-        CoordinateReferenceSystem wgs84 = CRS.decode("EPSG:4326"); // prime the pump - ensure EPSG factory is found //$NON-NLS-1$
+		// prime the pump - ensure EPSG factory is found //$NON-NLS-1$
+        CoordinateReferenceSystem wgs84 = CRS.decode("EPSG:4326"); 
         if( wgs84 == null){
         	String msg = "Unable to locate EPSG authority for EPSG:4326; consider removing temporary geotools/epsg directory and trying again."; //$NON-NLS-1$
         	System.out.println( msg );
         	//throw new FactoryException(msg);
         }
 		Map<Key, Boolean> map = new HashMap<Key, Boolean> ();
+		// these commented out hints are covered by the forceXY system property
+		//
 		//map.put( Hints.FORCE_LONGITUDE_FIRST_AXIS_ORDER, true );
 	    //map.put( Hints.FORCE_STANDARD_AXIS_DIRECTIONS, true );
 		//map.put( Hints.FORCE_STANDARD_AXIS_UNITS, true );
 		map.put( Hints.LENIENT_DATUM_SHIFT, true );		
 		Hints global = new Hints(map);
 		GeoTools.init( global );
-		if( false ){ // how to do debug check with OSGi bundles?
-		    CRS.main(new String[]{"-dependencies"}); //$NON-NLS-1$
+		
+		URL epsg = null;
+		Location configLocaiton = Platform.getInstallLocation();
+		Location dataLocation = Platform.getInstanceLocation();
+		if( dataLocation != null ){
+		    try {
+        	    URL url = dataLocation.getURL();
+        	    URL proposed = new URL( url, "epsg.properties");
+        	    if( "file".equals(proposed.getProtocol())){
+        	        File file = new File( proposed.toURI() );
+        	        if( file.exists() ){
+        	            epsg = file.toURI().toURL();
+        	        }
+        	    }
+		    }
+		    catch (Throwable t ){
+		        t.printStackTrace();
+		    }
+		}
+		if( epsg == null && configLocaiton != null ){
+            try {
+                URL url = configLocaiton.getURL();
+                URL proposed = new URL( url, "epsg.properties");
+                if( "file".equals(proposed.getProtocol())){
+                    File file = new File( proposed.toURI() );
+                    if( file.exists() ){
+                        epsg = file.toURI().toURL();
+                    }
+                }
+            }
+            catch (Throwable t ){
+                t.printStackTrace();
+            }
+		}
+		if (epsg == null ){
+		    try {
+		        URL internal = context.getBundle().getEntry("epsg.properties");
+		        URL fileUrl = FileLocator.toFileURL( internal );
+		        epsg = fileUrl.toURI().toURL();
+		    }
+		    catch (Throwable t ){
+                t.printStackTrace();
+            }
+		}
+		
+		if( epsg != null ){
+		    Hints hints = new Hints(Hints.CRS_AUTHORITY_FACTORY, PropertyAuthorityFactory.class);
+		    ReferencingFactoryContainer referencingFactoryContainer = ReferencingFactoryContainer
+                .instance(hints);
+
+		    PropertyAuthorityFactory factory = new PropertyAuthorityFactory(
+                referencingFactoryContainer, Citations.fromName("EPSG"), epsg );
+
+		    ReferencingFactoryFinder.addAuthorityFactory(factory);
 		}
 		ReferencingFactoryFinder.scanForPlugins();
+		if( false ){ // how to do debug check with OSGi bundles?
+            CRS.main(new String[]{"-dependencies"}); //$NON-NLS-1$
+        }
+        
 		verifyReferencingEpsg();
 		verifyReferencingOperation();	
 		
