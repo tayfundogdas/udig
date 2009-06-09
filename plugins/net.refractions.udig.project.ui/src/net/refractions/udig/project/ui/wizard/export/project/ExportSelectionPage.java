@@ -29,6 +29,7 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
 
 public class ExportSelectionPage extends WizardPage {
@@ -45,9 +46,9 @@ public class ExportSelectionPage extends WizardPage {
     public void createControl( Composite parent ) {
         Composite fileSelectionArea = new Composite(parent, SWT.NONE);
         GridData fileSelectionData = new GridData(GridData.GRAB_HORIZONTAL
-                | GridData.FILL_HORIZONTAL);
+                | GridData.FILL_HORIZONTAL | GridData.FILL_VERTICAL);
         fileSelectionArea.setLayoutData(fileSelectionData);
-        fileSelectionArea.setLayout(new GridLayout(3, false));
+        fileSelectionArea.setLayout(new GridLayout(1, false));
         createProjectEditor( fileSelectionArea );
         createFileEditor(fileSelectionArea);
         fileSelectionArea.moveAbove(null);
@@ -74,9 +75,13 @@ public class ExportSelectionPage extends WizardPage {
                     this.getDialogSettings().put("projectSelect", selected );
                 }                        
             }
-        }        
-        project = new ComboFieldEditor("projectSelect", "Project:", projects, parent );
-        project.setPage( this );        
+        } 
+
+		Composite projectPanel = new Composite(parent, SWT.NONE);
+		projectPanel.setLayout(new GridLayout(1, false));
+		projectPanel.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+        project = new ComboFieldEditor("projectSelect", "Project:", projects, projectPanel );
+        project.setPage( this ); 
         project.setPropertyChangeListener( new IPropertyChangeListener(){
             public void propertyChange( PropertyChangeEvent event ) {
                 selectProject( (String) event.getNewValue() );
@@ -86,7 +91,10 @@ public class ExportSelectionPage extends WizardPage {
     }
     
     private void createFileEditor( Composite parent ) {
-        editor = new DirectoryFieldEditor("directorySelect", "Destination: ", parent){ //$NON-NLS-1$
+		Composite filePanel = new Composite(parent, SWT.NONE);
+		filePanel.setLayout(new GridLayout(1, false));
+		filePanel.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+        editor = new DirectoryFieldEditor("directorySelect", "Destination: ", filePanel){ //$NON-NLS-1$
             {
                 setValidateStrategy( VALIDATE_ON_KEY_STROKE );
                 setEmptyStringAllowed(false);                
@@ -104,7 +112,7 @@ public class ExportSelectionPage extends WizardPage {
             }
         };
         editor.setPage(this);
-        editor.getTextControl(parent).addModifyListener(new ModifyListener(){
+        editor.getTextControl(filePanel).addModifyListener(new ModifyListener(){
             public void modifyText( ModifyEvent e ) {
                 check();
             }

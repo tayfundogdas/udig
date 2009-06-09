@@ -86,17 +86,17 @@ public class ExportProjectWizard extends Wizard implements IExportWizard, IRunna
 //        for( Iterator curSelection = selection.iterator(); curSelection.hasNext(); ) {
 //            Project project = (Project) curSelection.next();
             Resource resource = project.eResource();
-            String destination = generateDestinationProjectFilePath(resource);
+            String destination = generateDestinationProjectFilePath(resource, project.getName());
             Resource copy = collectAllResources(resource, destination);
             saveResource(copy);
             monitor.worked(1);
         //}
     }
 
-    private String generateDestinationProjectFilePath( Resource resource ) {
+    private String generateDestinationProjectFilePath( Resource resource, String name ) {
         URI origURI = resource.getURI();
         File file = new File(origURI.toFileString());
-        return destinationDirectory +"/" + file.getParentFile().getName() + "/" + file.getName();
+        return destinationDirectory +"/" + name + ".udig/" + file.getName();
     }
 
     private void saveResource( Resource copy ) {
