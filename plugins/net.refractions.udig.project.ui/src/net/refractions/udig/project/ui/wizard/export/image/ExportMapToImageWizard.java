@@ -13,7 +13,14 @@ import java.net.MalformedURLException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
+
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.ImageTypeSpecifier;
+import javax.imageio.ImageWriteParam;
+import javax.imageio.ImageWriter;
 
 import net.refractions.udig.catalog.CatalogPlugin;
 import net.refractions.udig.catalog.ICatalog;
@@ -43,6 +50,8 @@ import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.ui.IExportWizard;
 import org.eclipse.ui.IWorkbench;
@@ -177,9 +186,11 @@ private void addPageChangeListener() {
 		int width = imageSettingsPage.getWidth(map.getViewportModel().getWidth(), map.getViewportModel().getHeight());
 		int height = imageSettingsPage.getHeight(map.getViewportModel().getWidth(), map.getViewportModel().getHeight());
 
-		
+		// gdavis - ARGB won't output proper background color for non-alpha supporting
+		// image types like jpg.  Since the resulting image contains no alpha, RGB works
+		// fine for all formats.
 		BufferedImage image = new BufferedImage(width, height,
-				BufferedImage.TYPE_INT_ARGB);
+				BufferedImage.TYPE_INT_RGB); //.TYPE_INT_ARGB);
 
 		Graphics2D g = image.createGraphics();
 		
