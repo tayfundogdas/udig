@@ -18,9 +18,9 @@ public class URLUtilsTest extends TestCase {
         String prefix = URLUtils.getPrefix( file );
         assertNull( "none", prefix );
         
-        //file = new File( "\\\\machine\\share\\foo.txt" );
-        //prefix = URLUtils.getPrefix( file );
-        //assertEquals( "\\\\machine\\share", prefix );
+        file = new File( "\\\\machine\\share\\foo.txt" );
+        prefix = URLUtils.getPrefix( file );
+        assertEquals( "\\\\machine\\share", prefix );
         
     }
     

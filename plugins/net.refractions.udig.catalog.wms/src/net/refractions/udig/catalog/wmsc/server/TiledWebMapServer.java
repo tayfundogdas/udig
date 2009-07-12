@@ -146,7 +146,8 @@ public class TiledWebMapServer {
                 throw (IOException) couldNotConnect;
             }
             else {
-                throw new IOException("Could not connect to " + internalServiceURL(), couldNotConnect); //$NON-NLS-1$
+                throw (IOException)
+                    new IOException("Could not connect to " + internalServiceURL()).initCause(couldNotConnect); //$NON-NLS-1$
             }
         }
         return capabilities;
