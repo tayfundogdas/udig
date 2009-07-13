@@ -35,6 +35,7 @@ import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.impl.EObjectImpl;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.swt.widgets.Display;
 import org.geotools.geometry.DirectPosition2D;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -900,26 +901,40 @@ public class ViewportModelImpl extends EObjectImpl implements ViewportModel {
     /**
      * @see net.refractions.udig.project.render.displayAdapter.IMapDisplayListener#sizeChanged(net.refractions.udig.project.render.displayAdapter.MapDisplayEvent)
      */
-    public void sizeChanged( MapDisplayEvent event ) {
+    public void sizeChanged( final MapDisplayEvent event ) {
         if (event.getSize().width < 1 || event.getSize().height < 1)
             return;
 
-        Envelope oldBounds = getBounds();
+        Runnable handler = new Runnable(){
 
-        if (newSizeIsSmaller(event)) {
-            calculateNewBounds(event, oldBounds);
-            return;
-        }
-
-        if (oldBounds.isNull()) {
-            zoomToExtent();
+			@Override
+			public void run() {
+		        Envelope oldBounds = getBounds();
+		    	
+		        if (newSizeIsSmaller(event)) {
+		            calculateNewBounds(event, oldBounds);
+		            return;
+		        }
+		
+		        if (oldBounds.isNull()) {
+		            zoomToExtent();
+		        } else {
+		            if (oldSizeIsValid(event)) {
+		                calculateNewBounds(event, oldBounds);
+		                fireNotification(oldBounds);
+		            } else {
+		                zoomToBox(getBounds());
+		            }
+		        }
+			}
+        };
+        
+        if( Display.getCurrent() != null ){
+	        Thread thread = new Thread(handler);
+	        thread.setDaemon(true);
+	        thread.start();
         } else {
-            if (oldSizeIsValid(event)) {
-                calculateNewBounds(event, oldBounds);
-                fireNotification(oldBounds);
-            } else {
-                zoomToBox(getBounds());
-            }
+        	handler.run();
         }
     }
 
