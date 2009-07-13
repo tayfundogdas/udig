@@ -46,11 +46,11 @@ public class CatalogImportDropAction extends IDropAction {
         if (data.getClass().isArray()) {
             Object[] objects = ((Object[]) data);
             for( Object object : objects ) {
-                if (!canAccept(object)) {
-                    return false;
+                if (canAccept(object)) {
+                    return true;
                 }
             }
-            return true;
+            return false;
         } else if (canAccept(data)) {
             return true;
         }
@@ -102,7 +102,9 @@ public class CatalogImportDropAction extends IDropAction {
         if (data.getClass().isArray()) {
         	Object[] array = (Object[]) data;
         	for (Object object : array) {
-            	doImportSingleItem(monitor, object);
+        		if( canAccept(object)){
+        			doImportSingleItem(monitor, object);
+        		}
 			}
         }else{
         	doImportSingleItem(monitor, data);
