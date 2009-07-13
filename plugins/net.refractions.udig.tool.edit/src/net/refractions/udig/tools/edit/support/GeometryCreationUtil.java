@@ -74,11 +74,12 @@ public class GeometryCreationUtil {
      * @param currentGeom the shape that will be created as a geomToCreate type.
      * @param geomToCreate the type of geometry that will be created for the currentShape in the handler.  Must be one of Point, LineString, LinearRing or Polygon.
      * @param geomAttribute The AttributeDescriptor of the geometry attribute that will be assist in determining the type of geometry created.
+     * @param showErrors TODO
      * @return a mapping between the FeatureID of a bag of geoms that map to that id.  This mapping
      * can be used to later create complex geometries such as multigeoms.
      */
     @SuppressWarnings("unchecked")
-    public static Map<String, GeometryCreationUtil.Bag> createAllGeoms( EditGeom currentGeom, Class geomToCreate, GeometryDescriptor geomAttribute) {
+    public static Map<String, GeometryCreationUtil.Bag> createAllGeoms( EditGeom currentGeom, Class geomToCreate, GeometryDescriptor geomAttribute, boolean showErrors) {
         EditBlackboard blackboard=currentGeom.getEditBlackboard();
          List<EditGeom> editGeoms = blackboard.getGeoms();
         Map<String, GeometryCreationUtil.Bag> idToGeom=new HashMap<String, GeometryCreationUtil.Bag>();
@@ -96,7 +97,7 @@ public class GeometryCreationUtil {
                 if( editGeom.getShell().getNumPoints()>0 ) {
 					Bag bag = idToGeom.get(editGeom.getFeatureIDRef().get());
 					Class geometryType = determineGeometryType(currentGeom, editGeom, geomToCreate, geomAttribute);
-					Geometry createGeom = createGeom(geometryType, editGeom.getShell(), true);
+					Geometry createGeom = createGeom(geometryType, editGeom.getShell(), showErrors);
 					bag.jts.add(createGeom);
 				}
             }
@@ -184,8 +185,8 @@ public class GeometryCreationUtil {
 						MessageDialog.openError(display.getActiveShell(), "Internal Error", "Apologies an internal error has occurred.  In order to preserve data integrity the last edit sequence is going to be discarded.  Please try again");
 					}
 				});
+	        	throw new IllegalStateException("Geometry constructed from EditGeom: "+shape.getEditGeom().getFeatureIDRef().get()+" resulted in an invalid geometry"); 
         	}
-        	throw new IllegalStateException("Geometry constructed from EditGeom: "+shape.getEditGeom().getFeatureIDRef().get()+" resulted in an invalid geometry"); 
         }
         return geomToCreate.cast(geom);
     }

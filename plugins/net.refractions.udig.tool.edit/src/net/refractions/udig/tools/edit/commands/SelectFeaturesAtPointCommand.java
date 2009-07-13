@@ -20,6 +20,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import net.refractions.udig.core.Option;
 import net.refractions.udig.core.Pair;
 import net.refractions.udig.project.ILayer;
 import net.refractions.udig.project.command.AbstractCommand;
@@ -83,17 +84,6 @@ public class SelectFeaturesAtPointCommand extends AbstractCommand implements Und
     // report
     boolean warned = false;
 
-    /**
-     * @deprecated Use {@link #SelectFeaturesAtPointCommand(SelectionParameter)} instead
-     */
-    public SelectFeaturesAtPointCommand( EditToolHandler handler, MapMouseEvent e,
-            Class< ? extends Geometry>[] acceptableClasses, Class<? extends Filter> filterType, boolean permitClear,
-            boolean onlyAdd ) {
-        this(
-                new SelectionParameter(handler, e, acceptableClasses, filterType, permitClear,
-                        onlyAdd));
-    }
-
     public SelectFeaturesAtPointCommand( SelectionParameter parameterObject ) {
         this.parameters = parameterObject;
         this.handler = parameterObject.handler;
@@ -115,12 +105,11 @@ public class SelectFeaturesAtPointCommand extends AbstractCommand implements Und
             editBlackboard.startBatchingEvents();
             BlockingSelectionAnim animation = new BlockingSelectionAnim(event.x, event.y);
             AnimationUpdater.runTimer(context.getMapDisplay(), animation);
-            Pair<FeatureIterator<SimpleFeature>, Boolean> state = getFeatureIterator();
+            Pair<Option<SimpleFeature>, FeatureIterator<SimpleFeature>> state = getFeatureIterator();
             try {
 
-                boolean hasFeature = state.getRight();
-                if (hasFeature) {
-                    runSelectionStrategies(monitor, state.getLeft());
+                if (state.left().isDefined()) {
+                    runSelectionStrategies(monitor, state);
                 } else {
                     runDeselectionStrategies(monitor);
                 }
@@ -128,7 +117,7 @@ public class SelectFeaturesAtPointCommand extends AbstractCommand implements Und
                 setAndRun(monitor, command);
             } finally {
                 if (state != null) {
-                    state.getLeft().close();
+                    state.right().close();
                 }
                 if (animation != null) {
                     animation.setValid(false);
@@ -139,22 +128,54 @@ public class SelectFeaturesAtPointCommand extends AbstractCommand implements Und
         }
     }
 
-    private Pair<FeatureIterator<SimpleFeature>, Boolean> getFeatureIterator() throws IOException {
+    /**
+     * Gets a feature iterator on the results of a BBox query.   BBox is used because intersects occasionally throws a 
+     * Side-conflict error so it is not a good query.  
+     * 
+     * However maybe a better way is to try intersects then if that fails do a bbox?
+     * For now we do bbox and test it with intersects
+     * 
+     * @return Pair of an option containing the first feature if it exists, and an iterator with the rest
+     */
+    private Pair<Option<SimpleFeature>, FeatureIterator<SimpleFeature>> getFeatureIterator() throws IOException {
         ILayer editLayer = parameters.handler.getEditLayer();
-        FeatureStore<SimpleFeatureType, SimpleFeature> store = editLayer.getResource(FeatureStore.class, null);
+        FeatureStore<SimpleFeatureType, SimpleFeature> store = getResource(editLayer);
         ReferencedEnvelope bbox = handler.getContext().getBoundingBox(event.getPoint(), SEARCH_SIZE);
         Filter createBBoxFilter = createBBoxFilter(bbox, editLayer, filterType);
         FeatureCollection<SimpleFeatureType, SimpleFeature> collection = store.getFeatures(createBBoxFilter);
         FeatureIterator<SimpleFeature> reader = collection.features();
-        boolean hasFeature = false;
+        
+        // don't transform until after query
         try {
-            hasFeature = reader.hasNext();
+            bbox = bbox.transform(parameters.handler.getEditLayer().getCRS(), true);
+        } catch (TransformException e) {
+            logTransformationWarning(e);
+        } catch (FactoryException e) {
+            logTransformationWarning(e);
+        }
+        
+        Option<SimpleFeature> feature = Option.none();
+        try {
+        	while( feature.isNone() && reader.hasNext()){
+        		SimpleFeature next = reader.next();
+        		
+        		if(intersects(bbox, next)){
+        			feature = Option.some(next);
+        		}
+        	} 
         } catch (Exception e) {
             EditPlugin.log("Failed to find selected features", e); //$NON-NLS-1$
         }
 
-        return new Pair<FeatureIterator<SimpleFeature>, Boolean>(reader, hasFeature);
+        return Pair.create(feature, reader);
     }
+
+	@SuppressWarnings("unchecked")
+	private FeatureStore<SimpleFeatureType, SimpleFeature> getResource(
+			ILayer editLayer) throws IOException {
+		FeatureStore<SimpleFeatureType, SimpleFeature> store = editLayer.getResource(FeatureStore.class, null);
+		return store;
+	}
 
     private void runDeselectionStrategies( IProgressMonitor monitor ) {
 
@@ -167,32 +188,25 @@ public class SelectFeaturesAtPointCommand extends AbstractCommand implements Und
 
     }
 
-    private void runSelectionStrategies( IProgressMonitor monitor, FeatureIterator<SimpleFeature> reader ) {
+    private void runSelectionStrategies( IProgressMonitor monitor, Pair<Option<SimpleFeature>, FeatureIterator<SimpleFeature>> state ) {
         List<SelectionStrategy> strategies = parameters.selectionStrategies;
         UndoableComposite compositeCommand = new UndoableComposite();
         compositeCommand.setName(Messages.SelectGeometryCommand_name);
-
-        boolean firstFeature = true;
-
-        ReferencedEnvelope bbox = handler.getContext().getBoundingBox(event.getPoint(), SEARCH_SIZE);
-        try {
-            bbox = bbox.transform(parameters.handler.getEditLayer().getCRS(), true);
-        } catch (TransformException e) {
-            logTransformationWarning(e);
-        } catch (FactoryException e) {
-            logTransformationWarning(e);
+        SimpleFeature feature = state.left().value();
+        FeatureIterator<SimpleFeature> reader = state.right();
+        
+        for( SelectionStrategy selectionStrategy : strategies ) {
+        	selectionStrategy.run(monitor, compositeCommand, parameters, feature,
+        			true);
         }
         
-        do {
-            SimpleFeature feature = reader.next();
-            if (bboxIntersects(bbox, feature)) {
-                for( SelectionStrategy selectionStrategy : strategies ) {
-                    selectionStrategy.run(monitor, compositeCommand, parameters, feature,
-                            firstFeature);
-                }
-                firstFeature = false;
+        while (reader.hasNext()){
+        	feature = reader.next();
+            for( SelectionStrategy selectionStrategy : strategies ) {
+            	selectionStrategy.run(monitor, compositeCommand, parameters, feature,
+            			false);
             }
-        } while (reader.hasNext());
+        }
 
         this.command = compositeCommand;
     }
@@ -203,7 +217,7 @@ public class SelectFeaturesAtPointCommand extends AbstractCommand implements Und
         }
     }
 
-    private boolean bboxIntersects( ReferencedEnvelope bbox, SimpleFeature feature ) {
+    private boolean intersects( ReferencedEnvelope bbox, SimpleFeature feature ) {
         GeometryDescriptor geomDescriptor = getGeometryAttDescriptor(feature.getFeatureType());
         
         Geometry bboxGeom = new GeometryFactory().toGeometry(bbox);
@@ -215,9 +229,8 @@ public class SelectFeaturesAtPointCommand extends AbstractCommand implements Und
         }catch (Exception e) {
             // ok so exception happened during intersection.  This usually means geometry is a little crazy
             // what to do?...
-            // for now I'm saying we can't use the geometry.
             EditPlugin.log("Can't do intersection so I'm assuming they intersect", e); //$NON-NLS-1$
-            return true;
+            return false;
         }
     }
 
