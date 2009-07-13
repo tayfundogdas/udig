@@ -69,7 +69,7 @@ public class ServiceParameterPersister {
 		try {
 			for (String id : node.childrenNames()) {
 				try {
-					URL url = toURL(id);
+					ID url = toId(id);
 					Preferences servicePref = node.node(id);
 					
 					// BACKWARDS COMPATIBILITY
@@ -106,15 +106,21 @@ public class ServiceParameterPersister {
 	 * @return URL based on provided id string
 	 * @throws MalformedURLException If the id could not be decoded into a valid URL
 	 */
-    private URL toURL( String id ) throws MalformedURLException {
-        URL url;
+	private ID toId( String encodedId )  {
+        ID id;
         try {
-        	url = new URL(null, URLDecoder.decode(id, ENCODING), CorePlugin.RELAXED_HANDLER);
+        	String decodeId = URLDecoder.decode(encodedId, ENCODING);
+        	try {
+        		URL url = new URL(null, decodeId, CorePlugin.RELAXED_HANDLER);
+        		id= new ID(url);
+        	} catch (MalformedURLException e) {
+        		id = new ID(new File(decodeId));
+        	}
         } catch (UnsupportedEncodingException e) {
         	CatalogPlugin.log("Could not code preferences URL", e); //$NON-NLS-1$
-        	throw new MalformedURLException(e.toString());
+        	throw new RuntimeException(e);
         }
-        return url;
+        return id;
     }
 
 	/**
@@ -149,7 +155,7 @@ public class ServiceParameterPersister {
 	 * @Param targetID In the event of a tie favour the provided targetID
 	 * @param connectionParameters Used to to ask the ServiceFactory for list of candidates 
 	 */
-	protected void locateService(URL targetID, Map<String, Serializable> connectionParameters,  Map<String,Serializable> properties) {
+	protected void locateService(ID targetID, Map<String, Serializable> connectionParameters,  Map<String,Serializable> properties) {
 		List<IService> newServices = serviceFactory.createService(connectionParameters);
 		if( !newServices.isEmpty() ){
 			for( IService service : newServices ) {
@@ -294,7 +300,6 @@ public class ServiceParameterPersister {
                 
                 String id;
 				try {
-				    // TODO check here
 				    if( service.getID().isFile() ){
 				        id = URLEncoder.encode(service.getID().toFile().getAbsolutePath(), ENCODING);
 				    }

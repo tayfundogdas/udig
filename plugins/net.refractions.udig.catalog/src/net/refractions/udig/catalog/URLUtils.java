@@ -103,7 +103,8 @@ public class URLUtils {
         // 5) file:/Jesse relative path
         // 6) file://Jesse relative? 90% of the time
         // 7) file:foo relative to base url
-        string = string.replaceAll("/+", "/"); //$NON-NLS-1$ //$NON-NLS-2$
+        if( string.startsWith("file:"))	
+        	string = string.replaceAll("/+", "/"); //$NON-NLS-1$ //$NON-NLS-2$
 
         return string;
     }
