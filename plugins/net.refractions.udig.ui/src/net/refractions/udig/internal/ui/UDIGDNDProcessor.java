@@ -157,7 +157,7 @@ public class UDIGDNDProcessor {
                 addAction(element, concreteTarget, concreteData);
                 return;
             }
-            // if there is a set size the make a bunch of actions with that many items.
+            // if there is a set size then make a bunch of actions with that many items.
             if( !enablesFor.expandable ){
                 List<Object> data=new ArrayList<Object>();
                 for( Object object : concreteData ) {
@@ -165,7 +165,8 @@ public class UDIGDNDProcessor {
                         data.add(object);
                     }else{
                         addAction(element, concreteTarget, data);
-                        data.clear();
+                        // reset the list just in case the action stores a reference to the array
+                        data=new ArrayList<Object>();
                         data.add(object);
                     }
                 }

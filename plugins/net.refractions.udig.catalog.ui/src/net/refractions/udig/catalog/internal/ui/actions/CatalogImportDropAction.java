@@ -46,7 +46,7 @@ public class CatalogImportDropAction extends IDropAction {
         if (data.getClass().isArray()) {
             Object[] objects = ((Object[]) data);
             for( Object object : objects ) {
-                if (canAccept(object)) {
+                if (!canAccept(object)) {
                     return false;
                 }
             }
@@ -98,7 +98,19 @@ public class CatalogImportDropAction extends IDropAction {
     @Override
     public void perform( IProgressMonitor monitor ) {
         Object data = getData();
-        if (data instanceof String) {
+
+        if (data.getClass().isArray()) {
+        	Object[] array = (Object[]) data;
+        	for (Object object : array) {
+            	doImportSingleItem(monitor, object);
+			}
+        }else{
+        	doImportSingleItem(monitor, data);
+        }
+    }
+
+	private void doImportSingleItem(IProgressMonitor monitor, Object data) {
+		if (data instanceof String) {
             URL url = extractURL((String) data);
             if (url != null) {
                 data = url;
@@ -107,7 +119,7 @@ public class CatalogImportDropAction extends IDropAction {
 
         CatalogImport catalogImport = new CatalogImport();
         catalogImport.run(monitor, data);
-    }
+	}
     /**
      * Searches a String looking for URLs and returns the first one it can find.
      * 

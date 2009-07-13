@@ -326,8 +326,9 @@
   <extension
         point="net.refractions.udig.ui.dropAction">
         <action
-           class="net.refractions.udig.catalog.internal.ui.actions.CatalogImportDropAction"
-           name="%import.action.name">
+              class="net.refractions.udig.catalog.internal.ui.actions.CatalogImportDropAction"
+              enablesFor="+"
+              name="%import.action.name">
 	       <acceptedType class="java.net.URL"/>
 	       <acceptedType class="java.lang.String"/>
 	       <acceptedType class="java.io.File"/>
