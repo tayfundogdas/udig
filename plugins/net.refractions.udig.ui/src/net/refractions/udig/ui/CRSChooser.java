@@ -333,7 +333,10 @@ public class CRSChooser {
     }
 
     private boolean isInCodeMap( Identifier identifier, String item ) {
-        return crsCodeMap.get(identifier.getCode()).equals(item);
+    	
+        String name = crsCodeMap.get(identifier.getCode());
+        if(name==null ) return false;
+        else return name.equals(item);
     }
 
     private boolean sameEPSG( CoordinateReferenceSystem crs, Identifier identifier, String item ) {
