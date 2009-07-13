@@ -17,7 +17,7 @@
          </appinfo>
       </annotation>
       <complexType>
-         <sequence>
+         <sequence minOccurs="0" maxOccurs="unbounded">
             <element ref="styleConfigurator" minOccurs="1" maxOccurs="unbounded"/>
          </sequence>
          <attribute name="point" type="string" use="required">
@@ -44,8 +44,7 @@
 &lt;ul&gt;
 &lt;li&gt;Creating a ui to allow user configuration of a style object.
 &lt;li&gt;Placing style object information onto the style blackboard of a layer.
-&lt;li&gt;Determining if a style configurator can be used to configure the style
-of a particular layer.
+&lt;li&gt;Determining if a style configurator can be used to configure the style of a particular layer.
 &lt;/ul&gt;
          </documentation>
       </annotation>

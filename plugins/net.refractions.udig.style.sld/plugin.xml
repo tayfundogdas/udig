@@ -123,6 +123,13 @@
             id="xml"
             label="%xmlPage.label"
             requires="org.opengis.coverage.grid.GridCoverage"/>
+      <StyleEditorPage
+            class="net.refractions.udig.style.sld.editor.PointEditorPage"
+            contentType="net.refractions.udig.project.ILayer"
+            id="net.refractions.udig.style.sld.StyleEditorPage1"
+            label="Default Point"
+            requires="org.geotools.data.FeatureSource">
+      </StyleEditorPage>
    </extension>
    <extension
          point="org.eclipse.ui.viewActions">
