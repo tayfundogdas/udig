@@ -2003,7 +2003,7 @@ public class LayerImpl extends EObjectImpl implements Layer {
             }
             String geom = getSchema().getGeometryDescriptor().getName().getLocalPart();
             Object bboxGeom = new GeometryFactory().toGeometry(bbox);
-            bboxFilter = factory.intersects(factory.literal(bboxGeom), factory.property(geom));
+            bboxFilter = factory.intersects(factory.property(geom), factory.literal(bboxGeom));
 
         } catch (Exception e) {
             ProjectPlugin.getPlugin().log(e);
