@@ -109,14 +109,11 @@ public class BBoxSelection extends SimpleTool implements ModalTool {
 	protected void sendSelectionCommand(MapMouseEvent e, Envelope bounds) {
 		MapCommand command;
 		if( e.isModifierDown(MapMouseEvent.MOD2_DOWN_MASK) ) {
-            command = getContext().getSelectionFactory()
-                     .createBBoxSelectionCommand(bounds, BBoxSelectionCommand.ADD);
+            command = new BBoxSelectionCommand(bounds, BBoxSelectionCommand.ADD);
         }else if( e.isModifierDown(MapMouseEvent.MOD1_DOWN_MASK) ){
-            command = getContext().getSelectionFactory()
-            .createBBoxSelectionCommand(bounds, BBoxSelectionCommand.SUBTRACT);
+            command = new BBoxSelectionCommand(bounds, BBoxSelectionCommand.SUBTRACT);
         }else{
-        	command = getContext().getSelectionFactory()
-            .createBBoxSelectionCommand(bounds, BBoxSelectionCommand.NONE);
+        	command = new BBoxSelectionCommand(bounds, BBoxSelectionCommand.NONE);
         }
         	
         

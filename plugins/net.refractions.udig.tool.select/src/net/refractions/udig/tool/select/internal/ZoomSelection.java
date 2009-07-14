@@ -17,6 +17,7 @@ package net.refractions.udig.tool.select.internal;
 import java.io.IOException;
 
 import net.refractions.udig.project.ILayer;
+import net.refractions.udig.project.internal.command.navigation.SetViewportBBoxCommand;
 import net.refractions.udig.project.ui.tool.AbstractActionTool;
 import net.refractions.udig.tool.select.SelectPlugin;
 import net.refractions.udig.ui.ProgressManager;
@@ -47,14 +48,14 @@ public class ZoomSelection extends AbstractActionTool {
         ILayer layer = getContext().getSelectedLayer();
         if ( layer.hasResource(FeatureSource.class)){
             try {
-            	FeatureSource<SimpleFeatureType, SimpleFeature> resource = layer.getResource(FeatureSource.class, ProgressManager.instance().get());
-                Query query = new DefaultQuery( resource.getSchema().getName().getLocalPart(), layer.getFilter(), 
-                        new String[]{resource.getSchema().getGeometryDescriptor().getName().getLocalPart()});
+            	FeatureSource<SimpleFeatureType, SimpleFeature> resource = featureSource(layer);
+                Query query = new DefaultQuery( resource.getSchema().getTypeName(), layer.getFilter(), 
+                        new String[]{resource.getSchema().getGeometryDescriptor().getLocalName()});
                 Envelope bounds = resource.getBounds(query);
                 if( bounds==null ){
                     bounds=resource.getFeatures(query).getBounds();
                 }
-                getContext().sendASyncCommand(getContext().getNavigationFactory().createSetViewportBBoxCommand(bounds,
+                getContext().sendASyncCommand(new SetViewportBBoxCommand(bounds,
                         layer.getCRS()));
             } catch (IOException e) {
                 SelectPlugin.log("failed to obtain resource", e); //$NON-NLS-1$
@@ -62,6 +63,13 @@ public class ZoomSelection extends AbstractActionTool {
             
         }
     }
+
+	@SuppressWarnings("unchecked")
+	private FeatureSource<SimpleFeatureType, SimpleFeature> featureSource(
+			ILayer layer) throws IOException {
+		FeatureSource<SimpleFeatureType, SimpleFeature> resource = layer.getResource(FeatureSource.class, ProgressManager.instance().get());
+		return resource;
+	}
 
     public void dispose() {
     }
