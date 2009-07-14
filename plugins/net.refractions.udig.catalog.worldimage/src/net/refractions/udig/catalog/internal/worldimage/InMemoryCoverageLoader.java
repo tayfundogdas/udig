@@ -14,14 +14,21 @@
  */
 package net.refractions.udig.catalog.internal.worldimage;
 
+import java.awt.image.BufferedImage;
+import java.awt.image.RenderedImage;
+import java.awt.image.WritableRaster;
 import java.io.IOException;
+import java.util.Hashtable;
 
 import net.refractions.udig.catalog.rasterings.AbstractRasterGeoResource;
 import net.refractions.udig.catalog.rasterings.GridCoverageLoader;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.geotools.coverage.grid.GeneralGridGeometry;
+import org.geotools.coverage.grid.GridCoverage2D;
+import org.geotools.coverage.grid.GridCoverageFactory;
 import org.geotools.coverage.grid.GridGeometry2D;
+import org.geotools.coverage.grid.ViewType;
 import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
 import org.geotools.geometry.GeneralEnvelope;
 import org.opengis.coverage.grid.GridCoverage;
@@ -34,14 +41,18 @@ import org.opengis.coverage.grid.GridEnvelope;
  * @author jeichar
  * @since 1.1.0
  */
+@SuppressWarnings("deprecation")
 public class InMemoryCoverageLoader extends GridCoverageLoader {
 
     private volatile GridCoverage coverage;
+    private String fileName;
 
     public InMemoryCoverageLoader( AbstractRasterGeoResource resource, String fileName ) throws IOException {
         super(resource);
+        this.fileName = fileName;
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public synchronized GridCoverage load( GeneralGridGeometry geom, IProgressMonitor monitor )
             throws IOException {
@@ -52,7 +63,12 @@ public class InMemoryCoverageLoader extends GridCoverageLoader {
             GridEnvelope range = reader.getOriginalGridRange();
             GeneralEnvelope env = reader.getOriginalEnvelope();
             GridGeometry2D all = new GridGeometry2D(range, env);
-            coverage = super.load(all, monitor);
+            GridCoverage2D coverage2d = (GridCoverage2D) super.load(all, monitor);
+            RenderedImage image = coverage2d.view(ViewType.RENDERED).getRenderedImage();
+            BufferedImage bi = new BufferedImage(image.getColorModel(), (WritableRaster)image.getData(), false, new Hashtable()); 
+            GridCoverageFactory fac = new GridCoverageFactory();
+            
+            coverage = fac.create(fileName, bi, env);
         }
         return coverage;
     }

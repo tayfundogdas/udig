@@ -301,13 +301,7 @@ public class BasicGridCoverageRenderer extends RendererImpl {
     }
 
     private State prepareRender( IProgressMonitor monitor ) throws IOException {
-        // GridCoverage coverage = getContext().getGeoResource().resolve(GridCoverage.class,
-        // monitor);
-        CoordinateReferenceSystem crs = getContext().getViewportModel().getCRS();
-        // if (renderer == null || !oldCoverage.equals(coverage)
-        // || !oldCrs.equals(crs)) {
-        // oldCoverage = coverage;
-        // oldCrs = crs;
+
         try {
             CoordinateReferenceSystem contextCRS = getContext().getCRS();
             Rectangle rectangle = new Rectangle(getContext().getMapDisplay().getDisplaySize());
