@@ -60,6 +60,7 @@ public class Messages extends NLS {
 	public static String MenuToolCategory_menu_manager_title;
 	public static String MultiTargetOp_resource_summary;
 	public static String NewLayerAction_duplicate_type_name;
+	public static String NewLayerAction_duplicateName;
     public static String NewProjectWizardPage_err_project_name;
 	public static String NewProjectWizardPage_label_projectDir;
 	public static String NewProjectWizardPage_err_project_exists;
