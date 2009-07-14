@@ -125,6 +125,10 @@ public class PointEditorPage extends StyleEditorPage {
     Combo opacityCombo;
     Combo sizeCombo;
     Combo rotationCombo;
+    Combo anchorXCombo;
+    Combo anchorYCombo;
+    Combo displacementXCombo;
+    Combo displacementYCombo;
     
     private void createGraphicContent(Composite parent) {
         graphicComposite = new Composite(parent, SWT.NONE);
@@ -135,7 +139,7 @@ public class PointEditorPage extends StyleEditorPage {
         label.setText(Messages.StylingConstants_label_opacity);
         label.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, false));
         label.setToolTipText(Messages.StylingConstants_tooltip_opacity);
-        opacityCombo = generateFancyCombo(graphicComposite, getOpacityList(), true, -1, SWT.DROP_DOWN);
+        opacityCombo = generateFancyCombo(graphicComposite, getOpacityList(), SWT.DROP_DOWN);
         opacityCombo.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
         opacityCombo.setToolTipText(Messages.StylingConstants_label_opacity);
         
@@ -152,6 +156,69 @@ public class PointEditorPage extends StyleEditorPage {
         label.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, false));
         label.setToolTipText(Messages.StylingConstants_tooltip_rotation);
         rotationCombo = generateFancyCombo(graphicComposite, getRotationList(), true, 7, SWT.DROP_DOWN);
+        rotationCombo.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+        rotationCombo.setToolTipText(Messages.StylingConstants_tooltip_rotation);
+        
+        label = new Label(graphicComposite, SWT.NONE);
+        label.setText(Messages.StylingConstants_label_anchor);
+        label.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, false));
+        label.setToolTipText(Messages.StylingConstants_tooltip_anchor);
+        Composite anchorComposite = new Composite(graphicComposite, SWT.NONE);
+        anchorComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+        anchorComposite.setLayout(new FormLayout());
+        anchorXCombo = generateFancyCombo(anchorComposite, getAnchorList(), SWT.DROP_DOWN);
+        FormData data = new FormData();
+        data.left = new FormAttachment(0, 0);
+        data.top = new FormAttachment(0, 0);
+        data.bottom = new FormAttachment(100, 0);
+        anchorXCombo.setLayoutData(data);
+        anchorXCombo.setToolTipText(Messages.StylingConstants_tooltip_anchor);
+        label = new Label(anchorComposite, SWT.NONE);
+        label.setText("X");
+        data = new FormData();
+        data.left = new FormAttachment(anchorXCombo, 4);
+        data.bottom = new FormAttachment(anchorXCombo, 0, SWT.BOTTOM) ;
+        label.setLayoutData(data);
+        label.setToolTipText(Messages.StylingConstants_tooltip_anchor);
+        anchorYCombo = generateFancyCombo(anchorComposite, getAnchorList(), SWT.DROP_DOWN);
+        data = new FormData();
+        data.left = new FormAttachment(label, 4);
+        data.top = new FormAttachment(anchorXCombo, 0, SWT.TOP);
+        data.bottom = new FormAttachment(anchorXCombo, 0, SWT.BOTTOM);
+        data.right = new FormAttachment(100, 0);
+        anchorYCombo.setLayoutData(data);
+        anchorYCombo.setToolTipText(Messages.StylingConstants_tooltip_anchor);
+        
+        label = new Label(graphicComposite, SWT.NONE);
+        label.setText(Messages.StylingConstants_label_displacement);
+        label.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, false));
+        label.setToolTipText(Messages.StylingConstants_tooltip_displacement);
+        Composite displacementComposite = new Composite(graphicComposite, SWT.NONE);
+        displacementComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+        displacementComposite.setLayout(new FormLayout());
+        displacementXCombo = generateFancyCombo(displacementComposite, getDisplacementList(), SWT.DROP_DOWN);
+        data = new FormData();
+        data.left = new FormAttachment(0, 0);
+        data.top = new FormAttachment(0, 0);
+        data.bottom = new FormAttachment(100, 0);
+        displacementXCombo.setLayoutData(data);
+        displacementXCombo.setToolTipText(Messages.StylingConstants_tooltip_displacement);
+        label = new Label(displacementComposite, SWT.NONE);
+        label.setText("X");
+        data = new FormData();
+        data.left = new FormAttachment(displacementXCombo, 4, SWT.RIGHT);
+        data.bottom = new FormAttachment(displacementXCombo, 0, SWT.BOTTOM);
+        label.setLayoutData(data);
+        label.setToolTipText(Messages.StylingConstants_tooltip_displacement);
+        displacementYCombo = generateFancyCombo(displacementComposite, getDisplacementList(), SWT.DROP_DOWN);
+        data = new FormData();
+        data.left = new FormAttachment(label, 4, SWT.RIGHT);
+        data.top = new FormAttachment(displacementXCombo, 0, SWT.TOP);
+        data.bottom = new FormAttachment(displacementXCombo, 0, SWT.BOTTOM);
+        data.right = new FormAttachment(100, 0);
+        displacementYCombo.setLayoutData(data);
+        displacementYCombo.setToolTipText(Messages.StylingConstants_tooltip_displacement);
+        
         
         
         
@@ -165,13 +232,20 @@ public class PointEditorPage extends StyleEditorPage {
     PageBook graphicBook;
     
     Composite externalGraphicPage;
-    Composite markPage;
+    MarkEditorPage markComponent;
     
     private void createGraphicBook(Composite parent) {
         graphicBook = new PageBook(parent, SWT.NONE);
         GridData gd = new GridData(SWT.FILL, SWT.FILL, true, true);
         gd.verticalSpan = 2;
         graphicBook.setLayoutData(gd);
+        
+        markComponent = new MarkEditorPage();
+        markComponent.createControl(graphicBook);
+        markComponent.markComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        
+        graphicBook.showPage(markComponent.getControl());
+        
     }
     @Override
     public String getErrorMessage() {
@@ -241,6 +315,18 @@ public class PointEditorPage extends StyleEditorPage {
                 "30°", "45°", "60°", "90°", "120°", "135°", "150°", "180°"};
     }
     
+    private String[] getAnchorList() {
+        return new String[] {"0%", "25%", "50%", "75%", "100%"};
+    }
+    
+    private String[] getDisplacementList() {
+        return new String[] {"1", "2", "3", "5", "10", "12", "15", "20"};
+    }
+    
+    private Combo generateFancyCombo(Composite parent, String[] items, int style) {
+        return generateFancyCombo(parent, items, true, -1, style);
+    }
+    
     /**
      * Creates a fancy-ass combo box that may or may not have an included default indicator, and 
      * has an unselected message initially, if no selected value or default are available.
@@ -279,7 +365,6 @@ public class PointEditorPage extends StyleEditorPage {
             };
             fancyCombo.addSelectionListener(listener);
         }
-        
         return fancyCombo;
     }
 }
