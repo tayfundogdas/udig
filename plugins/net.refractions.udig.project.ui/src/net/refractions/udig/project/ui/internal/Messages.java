@@ -20,6 +20,7 @@ import org.eclipse.osgi.util.NLS;
 
 public class Messages extends NLS {
 	private static final String BUNDLE_NAME = "net.refractions.udig.project.ui.internal.messages"; //$NON-NLS-1$
+    public static String Delete_deleteMultipleProjects = null;
 	public static String AbstractToolbarContributionItem_warning_message;
 	public static String AbstractToolbarContributionItem_warning_title;
 	public static String AddToNewMap_resource_selection_page_title;
@@ -92,6 +93,8 @@ public class Messages extends NLS {
 	public static String StopAnimationCommand_name;
     public static String Delete_filesystem;
     public static String Delete_delete;
+    public static String Delete_deleteElement;
+    public static String Delete_deleteMultipleElements;
 	public static String Delete_deleteProject;
 	public static String IssuesView_showGroups;
 	public static String IssuesView_DeleteIssueTooltip;
