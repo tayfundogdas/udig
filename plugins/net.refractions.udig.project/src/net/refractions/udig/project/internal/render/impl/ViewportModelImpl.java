@@ -906,8 +906,6 @@ public class ViewportModelImpl extends EObjectImpl implements ViewportModel {
             return;
 
         Runnable handler = new Runnable(){
-
-			@Override
 			public void run() {
 		        Envelope oldBounds = getBounds();
 		    	
