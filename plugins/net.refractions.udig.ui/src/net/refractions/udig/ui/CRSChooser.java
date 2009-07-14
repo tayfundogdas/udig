@@ -328,8 +328,8 @@ public class CRSChooser {
     }
 
     private boolean exactMatch( CoordinateReferenceSystem crs, Identifier identifier, String item ) {
-        return (crs==DefaultGeographicCRS.WGS84 && item.equals("WGS 84 (4326)")) || 
-            item.equalsIgnoreCase(identifier.toString()) || isInCodeMap(identifier, item); //$NON-NLS-1$
+        return (crs==DefaultGeographicCRS.WGS84 && item.equals("WGS 84 (4326)")) ||  //$NON-NLS-1$
+            item.equalsIgnoreCase(identifier.toString()) || isInCodeMap(identifier, item);
     }
 
     private boolean isInCodeMap( Identifier identifier, String item ) {
@@ -484,6 +484,8 @@ public class CRSChooser {
             } catch (FactoryException e2) {
                 // then we have the wrong factory
                 // is there a better way to do this?
+            }catch (Exception e) {
+                UiPlugin.log("Error creating CRS object, trying more...", e);
             }
         }
         try {
