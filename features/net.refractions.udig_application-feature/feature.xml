@@ -22,7 +22,6 @@
    </url>
 
    <requires>
-      <import feature="net.refractions.udig_platform" version="1.1.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.ui"/>
       <import plugin="org.eclipse.ui.views"/>
       <import plugin="net.refractions.udig.libs"/>
@@ -35,9 +34,14 @@
       <import plugin="org.eclipse.emf.ecore.xmi"/>
       <import plugin="org.eclipse.emf.edit.ui"/>
       <import plugin="org.eclipse.gef"/>
-      <import plugin="org.eclipse.jface.text"/>
       <import plugin="org.eclipse.help"/>
-      <import plugin="org.eclipse.osgi"/>
+      <import feature="net.refractions.udig_platform" version="1.1.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.core.runtime"/>
+      <import plugin="org.eclipse.ui.cheatsheets"/>
+      <import plugin="org.eclipse.core.expressions"/>
+      <import plugin="net.refractions.udig.catalog.wms"/>
+      <import plugin="net.refractions.udig.catalog.wfs"/>
+      <import plugin="net.refractions.udig.catalog.postgis"/>
    </requires>
 
    <plugin
