@@ -31,23 +31,20 @@ import net.refractions.udig.catalog.CatalogPlugin;
 import net.refractions.udig.catalog.IGeoResourceInfo;
 import net.refractions.udig.catalog.URLUtils;
 import net.refractions.udig.catalog.rasterings.AbstractRasterGeoResource;
+import net.refractions.udig.catalog.rasterings.GridCoverageLoader;
 import net.refractions.udig.catalog.worldimage.internal.Messages;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.geotools.data.PrjFileReader;
-import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.parameter.DefaultParameterDescriptor;
 import org.geotools.parameter.DefaultParameterDescriptorGroup;
 import org.geotools.parameter.ParameterGroup;
 import org.geotools.referencing.crs.DefaultEngineeringCRS;
-import org.geotools.referencing.crs.DefaultGeographicCRS;
-import org.opengis.coverage.grid.GridCoverage;
 import org.opengis.parameter.GeneralParameterDescriptor;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
-import com.vividsolutions.jts.geom.Envelope;
 
 /**
  * Provides a handle to a world image resource allowing the service to be lazily
@@ -58,8 +55,7 @@ import com.vividsolutions.jts.geom.Envelope;
  */
 public class WorldImageGeoResourceImpl extends AbstractRasterGeoResource {
 	private URL prjURL;
-
-	String name;
+    private InMemoryCoverageLoader loader;
 
 	/**
 	 * Construct <code>WorldImageGeoResourceImpl</code>.
@@ -76,6 +72,11 @@ public class WorldImageGeoResourceImpl extends AbstractRasterGeoResource {
 			String name, URL prjURL) {
 		super(service, name);
 		this.prjURL = prjURL;
+		try {
+            this.loader = new InMemoryCoverageLoader(this, fileName);
+        } catch (IOException e) {
+            throw (RuntimeException) new RuntimeException( ).initCause( e );
+        }
 	}
 
 	protected IGeoResourceInfo createInfo(IProgressMonitor monitor)
@@ -83,7 +84,7 @@ public class WorldImageGeoResourceImpl extends AbstractRasterGeoResource {
 		this.lock.lock();
 		try {
 			if (this.info == null && getStatus() != Status.BROKEN) {
-				this.info = new IGeoResourceWorldImageInfo();
+				this.info = new IGeoResourceWorldImageInfo(this);
 			}
 			return this.info;
 		} finally {
@@ -121,6 +122,28 @@ public class WorldImageGeoResourceImpl extends AbstractRasterGeoResource {
 		return new PrjFileReader(rbc);
 	}
 
+	@Override
+	public <T> boolean canResolve( Class<T> adaptee ) {
+	    if( GridCoverageLoader.class.isAssignableFrom(adaptee) && !isTiff() ) return true;
+	    
+	    return super.canResolve(adaptee);
+	}
+
+	@Override
+	public <T> T resolve( Class<T> adaptee, IProgressMonitor monitor ) throws IOException {
+        if( GridCoverageLoader.class.isAssignableFrom(adaptee) && !isTiff() ){
+            return adaptee.cast(loader);
+        }
+
+        return super.resolve(adaptee, monitor);
+	}
+	
+    private boolean isTiff() {
+        boolean isTiff = fileName.toLowerCase().endsWith(".tiff") || fileName.toLowerCase().endsWith(".tif"); //$NON-NLS-1$ //$NON-NLS-2$
+        return isTiff;
+    }
+	
+	
 	/**
 	 * Convienience method to create a ReadableByteChannel from a URL.
 	 *
@@ -209,67 +232,5 @@ public class WorldImageGeoResourceImpl extends AbstractRasterGeoResource {
 		}
 	}
 
-	/**
-	 * Describes this Resource.
-	 *
-	 * @author mleslie
-	 * @since 0.6.0
-	 */
-	public class IGeoResourceWorldImageInfo extends IGeoResourceInfo {
-		IGeoResourceWorldImageInfo() {
-            this.keywords = new String[]{"WorldImage", "world image", ".gif", ".jpg", ".jpeg", //$NON-NLS-1$ //$NON-NLS-2$//$NON-NLS-3$//$NON-NLS-4$ //$NON-NLS-5$
-                    ".tif", ".tiff", ".png"}; //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
-            this.name = getIdentifier().getFile();
-            int indexOf = name.lastIndexOf('/');
-            if (indexOf > -1 && indexOf < name.length()) {
-                name = name.substring(indexOf + 1);
-            }
-            this.title = name.replace('_', ' ');
-            this.description = getIdentifier().toString();
-            this.bounds = getBounds();
-        }
 
-		/*
-		 * @see net.refractions.udig.catalog.IGeoResourceInfo#getBounds()
-		 */
-		public ReferencedEnvelope getBounds() {
-			if (this.bounds == null) {
-				Envelope env = null;
-				try {
-					GridCoverage source = (GridCoverage) findResource();
-					org.opengis.geometry.Envelope ptBounds = source
-							.getEnvelope();
-					env = new Envelope(ptBounds.getMinimum(0), ptBounds
-							.getMaximum(0), ptBounds.getMinimum(1), ptBounds
-							.getMaximum(1));
-
-					CoordinateReferenceSystem geomcrs = source
-							.getCoordinateReferenceSystem();
-
-					this.bounds = new ReferencedEnvelope(env, geomcrs);
-					/*
-					 * if(geomcrs != null) {
-					 * if(!geomcrs.equals(CRS.decode("EPSG:4269"))) {
-					 * //$NON-NLS-1$ bounds = JTS.transform(bounds,
-					 * CRS.decode("EPSG:4269")); //$NON-NLS-1$ } } else {
-					 * System.err.println("CRS unknown for WorldImage");
-					 * //$NON-NLS-1$ }
-					 */
-				} catch (Exception e) {
-					CatalogPlugin
-							.getDefault()
-							.getLog()
-							.log(
-									new org.eclipse.core.runtime.Status(
-											IStatus.WARNING,
-											"net.refractions.udig.catalog", 0, //$NON-NLS-1$
-											"Error while getting the bounds of a layer", e)); //$NON-NLS-1$
-
-					this.bounds = new ReferencedEnvelope(new Envelope(-180,
-							180, -90, 90), DefaultGeographicCRS.WGS84);
-				}
-			}
-			return this.bounds;
-		}
-	}
 }

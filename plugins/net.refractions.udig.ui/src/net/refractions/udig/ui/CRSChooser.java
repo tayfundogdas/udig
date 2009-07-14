@@ -322,8 +322,6 @@ public class CRSChooser {
                 list.setTopIndex(next);
                 
             }
-
-            
         }
     }
 

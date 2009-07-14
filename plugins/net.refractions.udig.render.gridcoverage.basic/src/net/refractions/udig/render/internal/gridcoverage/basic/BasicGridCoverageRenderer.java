@@ -24,6 +24,7 @@ import javax.media.jai.JAI;
 import javax.media.jai.TileCache;
 
 import net.refractions.udig.catalog.IGeoResource;
+import net.refractions.udig.catalog.rasterings.GridCoverageLoader;
 import net.refractions.udig.project.ILayer;
 import net.refractions.udig.project.internal.ProjectPlugin;
 import net.refractions.udig.project.internal.StyleBlackboard;
@@ -38,8 +39,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridEnvelope2D;
 import org.geotools.coverage.grid.GridGeometry2D;
-import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
-import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.ReferencingFactoryFinder;
@@ -51,12 +50,8 @@ import org.geotools.styling.SLD;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyleFactory;
 import org.opengis.coverage.grid.GridCoverage;
-import org.opengis.coverage.grid.GridCoverageReader;
 import org.opengis.coverage.grid.GridEnvelope;
 import org.opengis.filter.expression.Expression;
-import org.opengis.parameter.ParameterNotFoundException;
-import org.opengis.parameter.ParameterValue;
-import org.opengis.parameter.ParameterValueGroup;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
@@ -99,41 +94,24 @@ public class BasicGridCoverageRenderer extends RendererImpl {
             screenSize.add( bottomRight );
         	IMapDisplay mapDisplay = currentContext.getMapDisplay();
             
-            
-            final IGeoResource geoResource = currentContext.getGeoResource();
-        	AbstractGridCoverage2DReader reader = (AbstractGridCoverage2DReader) geoResource.resolve( GridCoverageReader.class, monitor);
         	CoordinateReferenceSystem destinationCRS = currentContext.getCRS();
-        	ReferencedEnvelope bounds = (ReferencedEnvelope) currentContext.getImageBounds();
-        	bounds=bounds.transform(destinationCRS, true);
-        	
 
-        	ParameterValueGroup group =geoResource.resolve( ParameterValueGroup.class, monitor);
-        	if(group==null)
-        		group=reader.getFormat().getReadParameters();
-        	else{
-        		//temporary fix for imageio
-        		try{
-        		ParameterValue<?> tempParam = group.parameter(AbstractGridFormat.USE_JAI_IMAGEREAD.getName().toString());
-        		if(tempParam!=null)
-        			tempParam.setValue(false);
-        		}catch (ParameterNotFoundException e) {
-					// do nothing
-				}
-        	}
-        	ParameterValue param = group.parameter(AbstractGridFormat.READ_GRIDGEOMETRY2D.getName().toString());
-        	GridEnvelope range=new GridEnvelope2D(0,0, mapDisplay.getWidth(), mapDisplay.getHeight() );
-			
-			
-			MathTransform displayToLayer=currentContext.worldToScreenMathTransform().inverse();
-			ReferencingFactoryFinder.getMathTransformFactory(null).createConcatenatedTransform(displayToLayer, currentContext.getLayer().mapToLayerTransform()); 
-			GridGeometry2D geom=new GridGeometry2D(range, displayToLayer, destinationCRS );
-			param.setValue(geom);
-			
-			currentContext.setStatus(ILayer.WORKING);
-			setState( STARTING );
-			
-			GridCoverage2D coverage = (GridCoverage2D) reader.read(group.values().toArray(new ParameterValue[0]));
-			if(coverage!=null)
+            final IGeoResource geoResource = currentContext.getGeoResource();
+            ReferencedEnvelope bounds = (ReferencedEnvelope) currentContext.getImageBounds();
+            bounds=bounds.transform(destinationCRS, true);
+            
+            GridEnvelope range=new GridEnvelope2D(0,0, mapDisplay.getWidth(), mapDisplay.getHeight() );
+            
+            MathTransform displayToLayer=currentContext.worldToScreenMathTransform().inverse();
+            ReferencingFactoryFinder.getMathTransformFactory(null).createConcatenatedTransform(displayToLayer, currentContext.getLayer().mapToLayerTransform()); 
+            GridGeometry2D geom=new GridGeometry2D(range, displayToLayer, destinationCRS );
+
+            currentContext.setStatus(ILayer.WORKING);
+            setState( STARTING );
+            
+            GridCoverage2D coverage = (GridCoverage2D) geoResource.resolve(GridCoverageLoader.class, monitor).load(geom, monitor);
+
+            if(coverage!=null)
 			{
 	            
 	            //setting rendering hints

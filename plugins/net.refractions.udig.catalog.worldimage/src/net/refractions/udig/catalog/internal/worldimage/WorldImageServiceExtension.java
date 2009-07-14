@@ -49,14 +49,13 @@ public class WorldImageServiceExtension implements ServiceExtension2 {
     }
 
     public IService createService(URL id, Map<String, Serializable> params ) {
-        URL id2=id;
+        URL id2 = getID(params);
 
-        if (id2 == null) {
-            id2=getID(params);
-        }
         if (!canProcess(id2)) {
             return null;
         }
+        
+        
         WorldImageServiceImpl service = 
                 new WorldImageServiceImpl(id2, getFactory());
         return service;
