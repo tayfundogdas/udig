@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import net.refractions.udig.catalog.ID;
 import net.refractions.udig.catalog.IService;
 import net.refractions.udig.catalog.IServiceInfo;
 import net.refractions.udig.catalog.ITransientResolve;
@@ -27,6 +28,7 @@ public class MapGraphicService extends IService {
     
     /** Dummy url for a MapGraphic */
     public final static URL SERVICE_URL;
+    public final static ID SERVICE_ID;
     static {
         URL tmp;
         try {
@@ -36,6 +38,7 @@ public class MapGraphicService extends IService {
             e.printStackTrace();
         }
         SERVICE_URL=tmp;
+        SERVICE_ID=new ID(SERVICE_URL);
     }
 
     /** MapGraphic resource children * */

@@ -5,6 +5,7 @@ import java.io.IOException;
 import net.crischan.udig.arcgrid.internal.Messages;
 import net.refractions.udig.catalog.IGeoResourceInfo;
 import net.refractions.udig.catalog.rasterings.AbstractRasterGeoResource;
+import net.refractions.udig.catalog.rasterings.AbstractRasterGeoResourceInfo;
 import net.refractions.udig.catalog.rasterings.AbstractRasterService;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -23,7 +24,7 @@ public class ArcGridGeoResourceImplementation extends AbstractRasterGeoResource 
 		}
 		
 		if (this.info == null) {
-			this.info = new ArcGridGeoResourceInfo(this);
+			this.info = new AbstractRasterGeoResourceInfo(this, "asc", "grd");  //$NON-NLS-1$//$NON-NLS-2$
 			if (monitor != null)
 				monitor.worked(1);
 		}

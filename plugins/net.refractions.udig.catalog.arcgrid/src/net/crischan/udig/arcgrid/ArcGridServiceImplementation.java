@@ -11,12 +11,13 @@ import java.util.Map;
 import net.refractions.udig.catalog.IServiceInfo;
 import net.refractions.udig.catalog.rasterings.AbstractRasterGeoResource;
 import net.refractions.udig.catalog.rasterings.AbstractRasterService;
+import net.refractions.udig.catalog.rasterings.AbstractRasterServiceInfo;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 
 public class ArcGridServiceImplementation extends AbstractRasterService {	
 	public ArcGridServiceImplementation(URL id, org.geotools.coverage.grid.io.GridFormatFactorySpi factory) {
-		super(id, factory);
+		super(id, ArcGridServiceExtension.TYPE, factory);
 	}
 
 	@Override
@@ -27,7 +28,7 @@ public class ArcGridServiceImplementation extends AbstractRasterService {
 		if (this.info == null) {
 			if (monitor != null)
 				monitor.worked(1);
-			this.info = new ArcGridServiceInfo(this);
+			this.info = new AbstractRasterServiceInfo(this, ".asc", ".grd");  //$NON-NLS-1$//$NON-NLS-2$
 		}
 		
 		if (monitor != null)

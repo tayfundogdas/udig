@@ -239,7 +239,7 @@ public abstract class IService implements IResolve {
      */
     public ICatalog parent( IProgressMonitor monitor ) {
     	ICatalog localCatalog = CatalogPlugin.getDefault().getLocalCatalog();
-    	if(localCatalog.getById(IService.class, getIdentifier(), monitor)!=null ) {
+    	if(localCatalog.getById(IService.class, getID(), monitor)!=null ) {
 			return localCatalog;
 		} else {
 			return null;
@@ -364,9 +364,8 @@ public abstract class IService implements IResolve {
     public final boolean equals( Object obj ) {
         if (obj != null && obj instanceof IService) {
             IService service = (IService) obj;
-            if (getIdentifier() != null && service.getIdentifier() != null)
-                return URLUtils.urlToString(getIdentifier(), false).equals(
-                        URLUtils.urlToString(service.getIdentifier(), false));
+            if (getID() != null && service.getID() != null)
+                return getID().equals(service.getID());
         }
         return false;
     }
@@ -379,8 +378,8 @@ public abstract class IService implements IResolve {
     public final int hashCode() {
         int value = 31;
         
-        if (getIdentifier() != null)
-            value += 31 + URLUtils.urlToString(getIdentifier(), false).hashCode();
+        if (getID() != null)
+            value += 31 + getID().hashCode();
         value += 31 + getClass().getName().hashCode();
         return value;
     }

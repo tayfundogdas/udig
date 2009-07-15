@@ -65,8 +65,9 @@ public abstract class AbstractRasterService extends IService {
      * @param id
      * @param factory
      */
-    public AbstractRasterService( URL url, GridFormatFactorySpi factory ) {
+    public AbstractRasterService( URL url, String typeQualifier, GridFormatFactorySpi factory ) {
         this.id = new ID( url );
+        id.setTypeQualifier(typeQualifier);
         this.factory = factory;
     }
 
@@ -116,21 +117,21 @@ public abstract class AbstractRasterService extends IService {
         if (this.reader == null) {
             try {
                 AbstractGridFormat frmt = (AbstractGridFormat) getFormat();
-                URL id = getIdentifier();
-                if( "file".equals(id.getProtocol()) ){ //$NON-NLS-1$
+                ID id = getID();
+                if( id.isFile() ){
 //	                if( id.toExternalForm().startsWith("C:/")){
 //	                    id = new URL("file:///"+id.toExternalForm());
 //	                }
-	                File file = DataUtilities.urlToFile(id);
+	                File file = id.toFile();
 	                if( file != null ){
 	                	this.reader = (AbstractGridCoverage2DReader) frmt.getReader( file );
 	                	return this.reader;
 	                }
 	                else {
-	                	throw new FileNotFoundException( id.toExternalForm() );
+	                	throw new FileNotFoundException( id.toFile().toString() );
 	                }
                 }
-                this.reader = (AbstractGridCoverage2DReader) frmt.getReader( id );
+                this.reader = (AbstractGridCoverage2DReader) frmt.getReader( id.toURL() );
             } catch (Exception ex) {
                 this.message = ex;
             }

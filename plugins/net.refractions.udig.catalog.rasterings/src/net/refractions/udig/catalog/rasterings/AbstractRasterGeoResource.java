@@ -20,12 +20,12 @@ import java.awt.Rectangle;
 import java.io.File;
 import java.io.IOException;
 import java.lang.ref.SoftReference;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.locks.Lock;
 
+import net.refractions.udig.catalog.ID;
 import net.refractions.udig.catalog.IGeoResource;
 import net.refractions.udig.catalog.IGeoResourceInfo;
 import net.refractions.udig.catalog.IService;
@@ -49,7 +49,6 @@ import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.opengis.coverage.grid.GridCoverage;
 import org.opengis.coverage.grid.GridCoverageReader;
 import org.opengis.coverage.grid.GridGeometry;
-import org.opengis.coverage.grid.GridRange;
 import org.opengis.parameter.GeneralParameterDescriptor;
 import org.opengis.parameter.GeneralParameterValue;
 import org.opengis.parameter.ParameterDescriptor;
@@ -63,6 +62,7 @@ import org.opengis.parameter.ParameterDescriptor;
  * @author mleslie
  * @since 0.6.0
  */
+@SuppressWarnings("deprecation")
 public abstract class AbstractRasterGeoResource extends IGeoResource {
 	private volatile SoftReference<GridCoverage> coverage;
 
@@ -154,7 +154,7 @@ public abstract class AbstractRasterGeoResource extends IGeoResource {
                     this.coverage = new SoftReference<GridCoverage>(gridCoverage);
 				} catch (Throwable t) {
 					msg = t;
-					RasteringsPlugin.log("error reading coverage", t);
+					RasteringsPlugin.log("error reading coverage", t); //$NON-NLS-1$
 					return null;
 				}
 			}
@@ -173,23 +173,19 @@ public abstract class AbstractRasterGeoResource extends IGeoResource {
     protected GridCoverage loadCoverage() throws IOException {
         AbstractGridCoverage2DReader reader = this.service(new NullProgressMonitor()).getReader(null);
         ParameterGroup pvg = getReadParameters();
-        List list = pvg.values();
-        @SuppressWarnings("unchecked") GeneralParameterValue[] values = 
-        (GeneralParameterValue[]) list
-        		.toArray(new GeneralParameterValue[0]);
+        List<GeneralParameterValue> list = pvg.values();
+        GeneralParameterValue[] values = list.toArray(new GeneralParameterValue[0]);
         GridCoverage gridCoverage = reader.read(values);
         return gridCoverage;
     }
 
+    @Override
+    public ID getID() {
+        return  new ID (service.getID(), fileName);
+    }
+    
 	public URL getIdentifier() {
-		try {
-			return new URL(this.service.getIdentifier().toString()
-					+ "#" + this.fileName); // $NON_NLS-1$
-			// //$NON-NLS-1$
-		} catch (MalformedURLException ex) {
-			msg = ex;
-			return this.service.getIdentifier();
-		}
+		return getID().toURL();
 	}
 
 	public <T> T resolve(Class<T> adaptee, IProgressMonitor monitor)
@@ -202,11 +198,12 @@ public abstract class AbstractRasterGeoResource extends IGeoResource {
             if (adaptee == null) {
                 return null;
             }
-            if (GridCoverageLoader.class.isAssignableFrom(adaptee)) {
+            if (adaptee.isAssignableFrom(GridCoverageLoader.class)) {
                 return adaptee.cast(new GridCoverageLoader(this));
             }
             if (adaptee.isAssignableFrom(AbstractGridCoverage2DReader.class)) {
-                return adaptee.cast(service(monitor).getReader(monitor));
+                AbstractGridCoverage2DReader reader = service(monitor).getReader(monitor);
+                return adaptee.cast(reader);
             }
             if (adaptee.isAssignableFrom(GridCoverage.class)) {
                 return adaptee.cast(findResource());
@@ -236,7 +233,8 @@ public abstract class AbstractRasterGeoResource extends IGeoResource {
 		return adaptee.isAssignableFrom(IGeoResourceInfo.class)
 				|| adaptee.isAssignableFrom(IService.class)
 				|| adaptee.isAssignableFrom(GridCoverage.class)
-				|| adaptee.isAssignableFrom(AbstractGridCoverage2DReader.class)
+                || adaptee.isAssignableFrom(AbstractGridCoverage2DReader.class)
+                || adaptee.isAssignableFrom(GridCoverageLoader.class)
 				|| super.canResolve(adaptee);
 	}
 
@@ -260,7 +258,7 @@ public abstract class AbstractRasterGeoResource extends IGeoResource {
 	
 		DefaultParameterDescriptor<GridGeometry> gridGeometryDescriptor = new DefaultParameterDescriptor<GridGeometry>(
 				AbstractGridFormat.READ_GRIDGEOMETRY2D.getName().toString(),
-				GridGeometry.class, null, world); //$NON-NLS-1$ //$NON-NLS-2$
+				GridGeometry.class, null, world); 
 		return gridGeometryDescriptor;
 	}
 

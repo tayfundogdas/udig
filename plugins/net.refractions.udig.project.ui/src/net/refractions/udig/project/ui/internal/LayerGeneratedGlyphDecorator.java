@@ -328,7 +328,7 @@ public class LayerGeneratedGlyphDecorator implements ILabelDecorator {
         }
 
         String layerName = null;
-        String title = info.getTitle();
+        String title = info.getShortTitle();
         if (title != null) {
             layerName = title;
         } else {

@@ -215,7 +215,7 @@ public final class MapGraphicChooserDialog extends TitleAreaDialog {
      */
     public static MapGraphicService getMapGraphicService() {
         return CatalogPlugin.getDefault().getLocalCatalog().getById(MapGraphicService.class,
-                MapGraphicService.SERVICE_URL, ProgressManager.instance().get());
+                MapGraphicService.SERVICE_ID, ProgressManager.instance().get());
     }
 
 }

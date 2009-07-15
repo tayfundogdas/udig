@@ -304,7 +304,7 @@ public class CatalogRef {
     private boolean serviceExistsInCatalog( List<IService> createdServices, ICatalog catalog ) {
         boolean found = false;
         for( IService service : createdServices ) {
-            if (catalog.getById(IService.class, service.getIdentifier(), ProgressManager.instance()
+            if (catalog.getById(IService.class, service.getID(), ProgressManager.instance()
                     .get()) != null) {
                 found = true;
             } else {

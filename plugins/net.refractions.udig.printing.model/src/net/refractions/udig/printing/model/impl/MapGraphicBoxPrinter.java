@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.List;
 
 import net.refractions.udig.catalog.CatalogPlugin;
+import net.refractions.udig.catalog.ID;
 import net.refractions.udig.catalog.IGeoResource;
 import net.refractions.udig.catalog.URLUtils;
 import net.refractions.udig.core.Pair;
@@ -195,7 +196,7 @@ public class MapGraphicBoxPrinter extends AbstractBoxPrinter {
 
         try {
             IGeoResource resource = CatalogPlugin.getDefault().getLocalCatalog().getById(
-                    IGeoResource.class, new URL(MapGraphicService.SERVICE_URL, url),
+                    IGeoResource.class, new ID(new URL(MapGraphicService.SERVICE_URL, url)),
                     new NullProgressMonitor());
             setMapGraphic((MapGraphicResource) resource);
         } catch (IOException e) {

@@ -36,7 +36,7 @@
 	<classpathentry exported="true" kind="lib" path="lib/gt-data-2.6-SNAPSHOT.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/gt-db2-2.6-SNAPSHOT.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/gt-epsg-hsql-2.6-SNAPSHOT.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/gt-geotiff-2.6-SNAPSHOT.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/gt-geotiff-2.6-SNAPSHOT.jar" sourcepath="/net.refractions.udig.libs.source/src/net.refractions.udig.libs_1.2.0/lib/gt-geotiff-2.6-SNAPSHOTsrc.zip"/>
 	<classpathentry exported="true" kind="lib" path="lib/gt-gml-2.6-SNAPSHOT.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/gt-graph-2.6-SNAPSHOT.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/gt-image-2.6-SNAPSHOT.jar"/>

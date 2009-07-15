@@ -39,7 +39,8 @@ import org.osgi.service.prefs.Preferences;
  * @author Jesse
  */
 public class ServiceParameterPersister {
-	private static final String PROPERTIES_KEY = "_properties"; //$NON-NLS-1$
+	private static final String TYPE_QUALIFIER = "@type@"; //$NON-NLS-1$
+    private static final String PROPERTIES_KEY = "_properties"; //$NON-NLS-1$
     private static final String VALUE_ID = "value"; //$NON-NLS-1$
 	private static final String TYPE_ID = "type"; //$NON-NLS-1$
     private static final String ENCODING = "UTF-8"; //$NON-NLS-1$
@@ -69,14 +70,12 @@ public class ServiceParameterPersister {
 		try {
 			for (String id : node.childrenNames()) {
 				try {
+				    Preferences servicePref = node.node(id);
 					ID url = toId(id);
-					Preferences servicePref = node.node(id);
 					
-					// BACKWARDS COMPATIBILITY
-					Map<String, Serializable> connectionParams = backwardCompatibleRestore(servicePref);
-					
+					Map<String, Serializable> connectionParams = new HashMap<String, Serializable>();
 					String[] nodes = servicePref.childrenNames();
-					for (String childName : nodes) {
+                    for (String childName : nodes) {
 					    if( PROPERTIES_KEY.equals(childName)) {
 					        // slip properties entry
 					        continue;
@@ -110,12 +109,18 @@ public class ServiceParameterPersister {
         ID id;
         try {
         	String decodeId = URLDecoder.decode(encodedId, ENCODING);
+        	String[] parts = decodeId.split(TYPE_QUALIFIER);
         	try {
-        		URL url = new URL(null, decodeId, CorePlugin.RELAXED_HANDLER);
+        		URL url = new URL(null, parts[0], CorePlugin.RELAXED_HANDLER);
         		id= new ID(url);
         	} catch (MalformedURLException e) {
-        		id = new ID(new File(decodeId));
+        		id = new ID(new File(parts[0]));
         	}
+        	
+        	if(parts.length==2){
+        	    id.setTypeQualifier(parts[1]);
+        	}
+        	
         } catch (UnsupportedEncodingException e) {
         	CatalogPlugin.log("Could not code preferences URL", e); //$NON-NLS-1$
         	throw new RuntimeException(e);
@@ -124,31 +129,6 @@ public class ServiceParameterPersister {
     }
 
 	/**
-	 * Helper method that will unpack a servicePreference node
-	 * into a map of connection parameters.
-	 * @param service
-	 * @param keys
-	 * @return Connection parameters
-	 */
-	private Map<String, Serializable> backwardCompatibleRestore(Preferences preference ) {
-	    Map<String, Serializable> map = new HashMap<String, Serializable>();
-	    String[] keys;
-        try {
-            keys = preference.keys();
-    		for( int j = 0; j < keys.length; j++ ) {
-    			String currentKey = keys[j];
-    			if( PROPERTIES_KEY.equals( currentKey )) {
-    			    continue;
-    			}
-    			map.put(currentKey, preference.get(currentKey, null));
-    		}
-        } catch (BackingStoreException e) {
-            throw (RuntimeException) new RuntimeException( ).initCause( e );
-        }               
-		return map;
-	}
-		
-	/**
 	 * Create an IService from the provided connection parameters
 	 * and add them to the provided catalog.
 	 * 
@@ -156,24 +136,30 @@ public class ServiceParameterPersister {
 	 * @param connectionParameters Used to to ask the ServiceFactory for list of candidates 
 	 */
 	protected void locateService(ID targetID, Map<String, Serializable> connectionParameters,  Map<String,Serializable> properties) {
+        IService found = localCatalog.getById( IService.class,targetID, null );
+	    
+        if( found!=null ){
+            return;
+        }
+        
 		List<IService> newServices = serviceFactory.createService(connectionParameters);
 		if( !newServices.isEmpty() ){
 			for( IService service : newServices ) {
 			    // should we check the local catalog to see if it already
 			    // has an entry for this service?
-			    IService found = localCatalog.getById( IService.class,service.getIdentifier(), null );
-			    if( found == null ){
+			    found = localCatalog.getById( IService.class,service.getID(), null );
+			    if( found == null && service.getID().equals(targetID)){
 			        localCatalog.add(service);
+			        try {
+			            // restore persisted properties			        
+			            service.getPersistentProperties().putAll( properties );
+			        } catch (Exception e) {
+			            // could not restore propreties
+			        }
 			    }
 			    else {
 			        // Service was already available
 			    }
-			    try {
-			        // restore persisted properties			        
-                    service.getPersistentProperties().putAll( properties );
-                } catch (Exception e) {
-                    // could not restore propreties
-                }
 		    }
 		} else {
 			CatalogPlugin.log("Nothing was able to be loaded from saved preferences: "+connectionParameters, null); //$NON-NLS-1$
@@ -299,12 +285,16 @@ public class ServiceParameterPersister {
                 	continue;
                 
                 String id;
-				try {
-				    if( service.getID().isFile() ){
-				        id = URLEncoder.encode(service.getID().toFile().getAbsolutePath(), ENCODING);
+				ID iD = service.getID();
+                try {
+				    if( iD.isFile() ){
+				        id = URLEncoder.encode(iD.toFile().getAbsolutePath(), ENCODING);
 				    }
 				    else {
-				        id = URLEncoder.encode( service.getID().toString(), ENCODING);
+				        id = URLEncoder.encode( iD.toString(), ENCODING);
+				    }
+				    if(iD.getTypeQualifier()!=null){
+				        id = id+TYPE_QUALIFIER+URLEncoder.encode( iD.getTypeQualifier(), ENCODING);
 				    }
                 } catch (UnsupportedEncodingException e1) {
                     // should never happen
@@ -312,7 +302,7 @@ public class ServiceParameterPersister {
                     throw new BackingStoreException(e1.toString());
                 }
 
-                Preferences serviceNode = node.node(id);
+                    Preferences serviceNode = node.node(id);
 
                 for ( Map.Entry<String, Serializable> entry : service.getConnectionParams().entrySet()) {
                     String key = entry.getKey().toString();

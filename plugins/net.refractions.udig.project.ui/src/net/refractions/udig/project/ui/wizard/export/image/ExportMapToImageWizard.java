@@ -228,7 +228,7 @@ private void addPageChangeListener() {
 	}
 
 	private void addToCatalog(File destination) throws MalformedURLException {
-		List<IService> services = CatalogPlugin.getDefault().getServiceFactory().createService(destination.toURL());
+		List<IService> services = CatalogPlugin.getDefault().getServiceFactory().createService(destination.toURI().toURL());
 		ICatalog localCatalog = CatalogPlugin.getDefault().getLocalCatalog();
 		for (IService service : services) {
 			addToCatalog(localCatalog, service);
@@ -236,8 +236,8 @@ private void addPageChangeListener() {
 	}
 
     private void addToCatalog( ICatalog localCatalog, IService service ) {
-        if( localCatalog.getById(IService.class, service.getIdentifier(), new NullProgressMonitor())!=null ){
-            localCatalog.replace(service.getIdentifier(), service);
+        if( localCatalog.getById(IService.class, service.getID(), new NullProgressMonitor())!=null ){
+            localCatalog.replace(service.getID(), service);
         }else{
             localCatalog.add(service);
         }

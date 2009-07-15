@@ -27,6 +27,7 @@ public class ID implements Serializable {
     private File file;
     private URL url;
     private URI uri;
+    private String typeQualifier;
     
     public ID( File file ) {
         this.file = file;        
@@ -45,6 +46,15 @@ public class ID implements Serializable {
             }
         } catch (MalformedURLException e) {
         }
+    }
+    
+    /**
+     * Fully defined id.  this shouldn't normally be required
+     */
+    public ID(String id, URL url, File file){
+        this.id=id;
+        this.url=url;
+        this.file=file;
     }
     
     public ID( URL url ){
@@ -103,17 +113,54 @@ public class ID implements Serializable {
             id = uri.toString();
         }
     }
+
+    /**
+     * Constructs an ID that can be used to identify a child of the object identified by this id 
+     *
+     * The algorithm for creating a sub child id is:
+     * <ol>
+     * <li>if the url of this does not have an REF part then the extension will be added to the
+     * url as the REF</li>
+     * <li>if the url of this <strong>does</strong> have an fragment part then the extension will be added to the
+     * end of the url REF with a / at the start</li>
+     * </ol>
+     * 
+     * Examples:
+     * child "c" of http://xyz.com would get id http://xyz.com#c
+     * child "gc" of file://xyz.com#c would get id http://xyz.com#c/gc
+     * 
+     * Type qualifiers and other information are also copied to the child
+     *
+     * @param child an identifier for the child within the parent object
+     */
     public ID( ID parent, String child ) {
-        this.id = parent.id+"#"+child; //$NON-NLS-1$
+        String extension;
+        
+        if( parent.id.contains("#") ){ //$NON-NLS-1$
+            extension = "/"+child; //$NON-NLS-1$
+        }else{
+            extension = "#"+child; //$NON-NLS-1$
+        }
+        
+        this.id = parent.id+extension;
         try {
-            this.url = new URL( null, parent.id.toString()+"#"+child, CorePlugin.RELAXED_HANDLER ); //$NON-NLS-1$
+            this.url = new URL( null, parent.toURL().toString()+extension, CorePlugin.RELAXED_HANDLER );
         } catch (MalformedURLException e1) {
         }
         try {
-            this.uri = new URI( parent.uri.toString()+"#"+child ); //$NON-NLS-1$
+            this.uri = new URI( parent.uri.toString()+extension );
         } catch (URISyntaxException e) {
         }
-        this.file = parent.file;              
+        this.file = parent.file;        
+        typeQualifier = parent.getTypeQualifier();
+    }
+    
+    public void setTypeQualifier( String typeQualifier ) {
+        this.typeQualifier = typeQualifier;
+    }
+    
+    public String getTypeQualifier() {
+        return typeQualifier;
     }
     
     public File toFile(){
@@ -155,15 +202,14 @@ public class ID implements Serializable {
         return id;
     }
 
+    
     @Override
     public int hashCode() {
-        return (id == null) ? 0 : id.hashCode();
-        /*
         final int prime = 31;
         int result = 1;
         result = prime * result + ((id == null) ? 0 : id.hashCode());
+        result = prime * result + ((typeQualifier == null) ? 0 : typeQualifier.hashCode());
         return result;
-        */
     }
 
     @Override
@@ -180,9 +226,14 @@ public class ID implements Serializable {
                 return false;
         } else if (!id.equals(other.id))
             return false;
+        if (typeQualifier == null) {
+            if (other.typeQualifier != null)
+                return false;
+        } else if (!typeQualifier.equals(other.typeQualifier))
+            return false;
         return true;
-    }    
-    
+    }
+
     //
     // URL Handling
     //

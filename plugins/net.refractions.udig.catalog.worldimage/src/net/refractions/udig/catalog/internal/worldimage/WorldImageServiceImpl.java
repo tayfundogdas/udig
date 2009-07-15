@@ -29,6 +29,7 @@ import net.refractions.udig.catalog.IServiceInfo;
 import net.refractions.udig.catalog.URLUtils;
 import net.refractions.udig.catalog.rasterings.AbstractRasterGeoResource;
 import net.refractions.udig.catalog.rasterings.AbstractRasterService;
+import net.refractions.udig.catalog.rasterings.AbstractRasterServiceInfo;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.geotools.gce.image.WorldImageFormatFactory;
@@ -49,7 +50,7 @@ public class WorldImageServiceImpl extends AbstractRasterService {
      * @param factory
      */
     public WorldImageServiceImpl(URL id2, WorldImageFormatFactory factory) {
-        super(id2, factory);
+        super(id2, WorldImageServiceExtension.TYPE, factory);
     }
 
 	/** Added to prevent creation of new GeoResource on each call to members */
@@ -82,7 +83,9 @@ public class WorldImageServiceImpl extends AbstractRasterService {
  
     protected IServiceInfo createInfo(IProgressMonitor monitor) throws IOException {
         if(this.info == null) {            
-            this.info = new WorldImageServiceInfo();
+            this.info = new AbstractRasterServiceInfo(this,
+                    "WorldImage", "world image", ".gif", ".jpg", ".jpeg", //$NON-NLS-1$ //$NON-NLS-2$//$NON-NLS-3$//$NON-NLS-4$ //$NON-NLS-5$
+                    ".tif", ".tiff", ".png"); //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$);
         }
         return this.info;
     }
@@ -96,16 +99,5 @@ public class WorldImageServiceImpl extends AbstractRasterService {
     
     public void dispose( IProgressMonitor monitor ) {
         // do nothing
-    }
-    
-    private class WorldImageServiceInfo extends IServiceInfo {
-        WorldImageServiceInfo() {
-            this.keywords = new String[] {
-                    "WorldImage", "world image", ".gif", ".jpg", ".jpeg",   //$NON-NLS-1$ //$NON-NLS-2$//$NON-NLS-3$//$NON-NLS-4$ //$NON-NLS-5$
-                    ".tif", ".tiff", ".png"};   //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
-            title = getIdentifier().getFile();
-            title = title.replace("%20"," "); //$NON-NLS-1$ //$NON-NLS-2$
-            description = getIdentifier().toString();
-        }
     }
 }

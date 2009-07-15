@@ -62,6 +62,14 @@ public class CorePlugin extends Plugin {
         super.start(context);
     }
 	
+    public static URL createSafeURL( String spec ) {
+        try {
+            return new URL(null, spec, RELAXED_HANDLER);
+        } catch (MalformedURLException e) {
+            throw (RuntimeException) new RuntimeException( e );
+        }
+    }
+
     /**
      * Returns the system created plugin object
      * 

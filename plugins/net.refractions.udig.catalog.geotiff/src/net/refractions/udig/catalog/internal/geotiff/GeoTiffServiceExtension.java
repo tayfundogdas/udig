@@ -45,6 +45,8 @@ public class GeoTiffServiceExtension implements ServiceExtension2 {
     /** <code>URL_PARAM</code> field */
     public final static String URL_PARAM = "URL"; //$NON-NLS-1$
 
+    public static final String TYPE = "geotiff"; //$NON-NLS-1$
+
     private static GeoTiffFormatFactorySpi factory;
     private static GeoTiffFormat format;
 

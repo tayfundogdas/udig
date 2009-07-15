@@ -22,6 +22,7 @@ import java.util.Map;
 
 import net.refractions.udig.catalog.IGeoResourceInfo;
 import net.refractions.udig.catalog.rasterings.AbstractRasterGeoResource;
+import net.refractions.udig.catalog.rasterings.AbstractRasterGeoResourceInfo;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
@@ -64,7 +65,7 @@ public class ImageGeoResourceImpl extends AbstractRasterGeoResource {
 		this.lock.lock();
 		try {
 			if (this.info == null && getStatus() != Status.BROKEN) {
-				this.info = new ImageGeoResourceInfo(this);
+				this.info = new AbstractRasterGeoResourceInfo(this, "ECW", "SID"); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 			return this.info;
 		} finally {
@@ -85,7 +86,8 @@ public class ImageGeoResourceImpl extends AbstractRasterGeoResource {
 		info1.put("docURL", "http://www.geotools.org/"); //$NON-NLS-1$ //$NON-NLS-2$
 		info1.put("version", "1.0"); //$NON-NLS-1$ //$NON-NLS-2$
 
-		return (ParameterGroup) ((AbstractGridFormat) ImageServiceExtension.getFactory("HFA").createFormat()).getReadParameters();
-	}
+        return (ParameterGroup) ((AbstractGridFormat) ImageServiceExtension
+                .getFactory("HFA").createFormat()).getReadParameters(); //$NON-NLS-1$
+    }
 	
 }

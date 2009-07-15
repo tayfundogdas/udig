@@ -248,8 +248,8 @@ public abstract class IGeoResource implements IResolve {
     public boolean equals( Object arg0 ) {
         if (arg0 != null && arg0 instanceof IGeoResource) {
             IGeoResource resource = (IGeoResource) arg0;
-            if (getIdentifier() != null && resource.getIdentifier() != null)
-                return getStringURL().equals(resource.getStringURL());
+            if (getID() != null )
+                return getID().equals(resource.getID());
         }
         return false;
     }
@@ -278,8 +278,8 @@ public abstract class IGeoResource implements IResolve {
     public int hashCode() {
         int value = 31;
         
-        if (getIdentifier() != null)
-            value += 31 + URLUtils.urlToString(getIdentifier(), false).hashCode();
+        if (getID() != null)
+            value += 31 + getID().hashCode();
         value += 31 + getClass().getName().hashCode();
         return value;
     }

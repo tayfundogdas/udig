@@ -58,7 +58,7 @@ public class CreateMapCommand extends AbstractCommand implements UndoableMapComm
 
                 IGeoResourceInfo info = resource.getInfo(monitor);
                 if (info != null) {
-                    name = info.getTitle();
+                    name = info.getShortTitle();
                     if (name == null)
                         name = info.getName();
                 }

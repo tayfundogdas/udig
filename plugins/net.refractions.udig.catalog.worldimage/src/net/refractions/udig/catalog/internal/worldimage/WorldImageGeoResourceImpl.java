@@ -31,6 +31,7 @@ import net.refractions.udig.catalog.CatalogPlugin;
 import net.refractions.udig.catalog.IGeoResourceInfo;
 import net.refractions.udig.catalog.URLUtils;
 import net.refractions.udig.catalog.rasterings.AbstractRasterGeoResource;
+import net.refractions.udig.catalog.rasterings.AbstractRasterGeoResourceInfo;
 import net.refractions.udig.catalog.rasterings.GridCoverageLoader;
 import net.refractions.udig.catalog.worldimage.internal.Messages;
 
@@ -41,6 +42,7 @@ import org.geotools.parameter.DefaultParameterDescriptor;
 import org.geotools.parameter.DefaultParameterDescriptorGroup;
 import org.geotools.parameter.ParameterGroup;
 import org.geotools.referencing.crs.DefaultEngineeringCRS;
+import org.opengis.coverage.grid.GridGeometry;
 import org.opengis.parameter.GeneralParameterDescriptor;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -83,9 +85,11 @@ public class WorldImageGeoResourceImpl extends AbstractRasterGeoResource {
 			throws IOException {
 		this.lock.lock();
 		try {
-			if (this.info == null && getStatus() != Status.BROKEN) {
-				this.info = new IGeoResourceWorldImageInfo(this);
-			}
+            if (this.info == null && getStatus() != Status.BROKEN) {
+                this.info = new AbstractRasterGeoResourceInfo(this,
+                        "WorldImage", "world image", ".gif", ".jpg", ".jpeg", //$NON-NLS-1$ //$NON-NLS-2$//$NON-NLS-3$//$NON-NLS-4$ //$NON-NLS-5$
+                        ".tif", ".tiff", ".png");   //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
+            }
 			return this.info;
 		} finally {
 			lock.unlock();
@@ -190,11 +194,11 @@ public class WorldImageGeoResourceImpl extends AbstractRasterGeoResource {
 				crsSys = DefaultEngineeringCRS.GENERIC_2D;
 			}
 
-			DefaultParameterDescriptor crs = new DefaultParameterDescriptor(
+			DefaultParameterDescriptor<CoordinateReferenceSystem> crs = new DefaultParameterDescriptor<CoordinateReferenceSystem>(
 					"crs", //$NON-NLS-1$
 					CoordinateReferenceSystem.class, null, crsSys);
 
-			DefaultParameterDescriptor gridGeometryDescriptor = getWorldGridGeomDescriptor();
+			DefaultParameterDescriptor<GridGeometry> gridGeometryDescriptor = getWorldGridGeomDescriptor();
 
 			// Stolen from WorldImageFormat, as mInfo is not externally
 			// accesible

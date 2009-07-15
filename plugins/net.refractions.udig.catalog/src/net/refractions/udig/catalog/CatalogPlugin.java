@@ -442,4 +442,5 @@ public class CatalogPlugin extends Plugin {
         return resolveManager;
     }
 
+
 }
