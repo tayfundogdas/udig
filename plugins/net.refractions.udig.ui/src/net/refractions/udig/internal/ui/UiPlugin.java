@@ -1,11 +1,19 @@
 package net.refractions.udig.internal.ui;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.Authenticator;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.PropertyResourceBundle;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -351,6 +359,52 @@ public class UiPlugin extends AbstractUIPlugin  {
         }
         
         return new UDIGMenuBuilder();
+    }
+
+
+    /**
+     * Sets the max heap size in the configuration file so on a restart the maximum size will be changed
+     *
+     * @param maxHeadSize new heapsize. 1024M 1G are legal options
+     * @return the configFile to use for setting configuration information
+     */
+    public static File setMaxHeapSize( String maxHeadSize ) throws FileNotFoundException, IOException {
+        URL configUrlURL = Platform.getConfigurationLocation().getURL();
+    
+        String configFilePath = configUrlURL.getFile() + File.separator + "config.ini"; //$NON-NLS-1$
+        File configFile = new File(configFilePath);
+        // System.out.println("config.ini changed:" + configFile);
+    
+        // vmargs go in the udig.ini file
+        File appFolder = configFile.getParentFile().getParentFile();
+        String[] list = appFolder.list();
+        String iniName = null;
+        for( String l : list ) {
+            if (l.endsWith(".ini")) { //$NON-NLS-1$
+                iniName = l;
+            }
+        }
+        File iniFile = new File(appFolder, iniName);
+        // System.out.println("udig.ini changed:" + iniFile.getAbsolutePath());
+        if (iniFile.exists()) {
+            BufferedReader bR = new BufferedReader(new FileReader(iniFile));
+            List<String> opts = new ArrayList<String>();
+            String line = null;
+            while( (line = bR.readLine()) != null ) {
+                if (line.matches(".*Xmx.*")) { //$NON-NLS-1$
+                    line = line.replaceFirst("Xmx[0-9]+", "Xmx" + maxHeadSize); //$NON-NLS-1$ //$NON-NLS-2$
+                }
+                opts.add(line);
+            }
+            bR.close();
+            BufferedWriter bW = new BufferedWriter(new FileWriter(iniFile));
+            for( String lineStr : opts ) {
+                bW.write(lineStr);
+                bW.write("\n"); //$NON-NLS-1$
+            }
+            bW.close();
+        }
+        return configFile;
     }
 
 

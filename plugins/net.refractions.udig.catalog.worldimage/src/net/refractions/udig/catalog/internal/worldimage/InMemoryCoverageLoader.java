@@ -22,8 +22,13 @@ import java.util.Hashtable;
 
 import net.refractions.udig.catalog.rasterings.AbstractRasterGeoResource;
 import net.refractions.udig.catalog.rasterings.GridCoverageLoader;
+import net.refractions.udig.catalog.rasterings.RasteringsPlugin;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.jface.dialogs.InputDialog;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.PlatformUI;
 import org.geotools.coverage.grid.GeneralGridGeometry;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridCoverageFactory;
@@ -58,19 +63,36 @@ public class InMemoryCoverageLoader extends GridCoverageLoader {
             throws IOException {
         if( coverage == null ){
 
-            AbstractGridCoverage2DReader reader = (AbstractGridCoverage2DReader) resource.resolve(
-                    GridCoverageReader.class, monitor);
-            GridEnvelope range = reader.getOriginalGridRange();
-            GeneralEnvelope env = reader.getOriginalEnvelope();
-            GridGeometry2D all = new GridGeometry2D(range, env);
-            GridCoverage2D coverage2d = (GridCoverage2D) super.load(all, monitor);
-            RenderedImage image = coverage2d.view(ViewType.RENDERED).getRenderedImage();
-            BufferedImage bi = new BufferedImage(image.getColorModel(), (WritableRaster)image.getData(), false, new Hashtable()); 
-            GridCoverageFactory fac = new GridCoverageFactory();
-            
-            coverage = fac.create(fileName, bi, env);
+            try {
+                AbstractGridCoverage2DReader reader = (AbstractGridCoverage2DReader) resource
+                        .resolve(GridCoverageReader.class, monitor);
+                GridEnvelope range = reader.getOriginalGridRange();
+                GeneralEnvelope env = reader.getOriginalEnvelope();
+                GridGeometry2D all = new GridGeometry2D(range, env);
+                GridCoverage2D coverage2d = (GridCoverage2D) super.load(all, monitor);
+                RenderedImage image = coverage2d.view(ViewType.RENDERED).getRenderedImage();
+                BufferedImage bi = new BufferedImage(image.getColorModel(), (WritableRaster) image
+                        .getData(), false, new Hashtable());
+                GridCoverageFactory fac = new GridCoverageFactory();
+
+                coverage = fac.create(fileName, bi, env);
+                RasteringsPlugin
+                        .log(
+                                "WARNING.  Loading an image fully into memory.  It is about " + size(bi) + " MB in size decompressed", null); //$NON-NLS-1$//$NON-NLS-2$
+            }catch (OutOfMemoryError e) {
+                input = new InputDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), "Maximum Permitted Memory Exceeded", )
+            }
         }
         return coverage;
+    }
+
+    private int size( BufferedImage bi ) {
+        int colorData = 0;
+        for( int elem : bi.getColorModel().getComponentSize() ) {
+            colorData += elem;
+        }
+        
+        return (bi.getWidth()*bi.getHeight()*colorData)/1024;
     }
 
 }
