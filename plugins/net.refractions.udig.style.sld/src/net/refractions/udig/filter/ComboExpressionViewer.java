@@ -9,6 +9,7 @@ import org.eclipse.jface.viewers.DecorationOverlayIcon;
 import org.eclipse.jface.viewers.IContentProvider;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
@@ -86,11 +87,17 @@ public class ComboExpressionViewer extends Viewer {
     public ComboExpressionViewer( Composite parent, int style ) {
         viewer = new ComboViewer( parent, style );
         viewer.addPostSelectionChangedListener( listener );
-        viewer.setContentProvider( new IContentProvider(){            
+        viewer.setContentProvider( new IStructuredContentProvider(){            
             public void inputChanged( Viewer viewer, Object oldInput, Object newInput ) {
                 // we are not really listening to our input here ...
             }            
             public void dispose() {
+            }
+            public Object[] getElements( Object inputElement ) {
+                if(inputElement instanceof List) {
+                    return ((List)inputElement).toArray();
+                }
+                return new Object[0];
             }
         });
         viewer.setLabelProvider( new LabelProvider(){

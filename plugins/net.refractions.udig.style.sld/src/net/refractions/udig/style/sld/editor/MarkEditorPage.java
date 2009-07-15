@@ -1,5 +1,9 @@
 package net.refractions.udig.style.sld.editor;
 
+import net.refractions.udig.filter.ComboExpressionViewer;
+import net.refractions.udig.filter.ExpressionViewer;
+
+import org.eclipse.jface.fieldassist.ControlDecoration;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -7,8 +11,12 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.ui.forms.widgets.TableWrapData;
 import org.eclipse.ui.forms.widgets.TableWrapLayout;
+import org.eclipse.ui.forms.widgets.Twistie;
 import org.eclipse.ui.part.Page;
+import org.geotools.filter.FilterFactoryImpl;
+import org.opengis.filter.expression.Expression;
 
 /**
  * 
@@ -20,11 +28,21 @@ import org.eclipse.ui.part.Page;
  * @since 1.1.0
  */
 public class MarkEditorPage extends Page {
-    private static String[] WELL_KNOWN_NAMES = {"square", "circle", "triangle", "star", "cross", "X"};
+    private static FilterFactoryImpl factory = new FilterFactoryImpl();
+    private static Expression[] WELL_KNOWN_NAMES = {
+            factory.createLiteralExpression("square"), //$NON-NLS-1$
+            factory.createLiteralExpression("circle"), //$NON-NLS-1$
+            factory.createLiteralExpression("triangle"), //$NON-NLS-1$
+            factory.createLiteralExpression("star"), //$NON-NLS-1$
+            factory.createLiteralExpression("cross"), //$NON-NLS-1$
+            factory.createLiteralExpression("X") }; //$NON-NLS-1$
     
     Composite markComposite;
     private Label titleLabel;
-    private ComboViewer markerTypeCombo;
+    private ComboExpressionViewer markerTypeCombo;
+    private ControlDecoration markerTypeDecoration;
+    private FillEditorComponent fillComponent;
+    private StrokeEditorComponent strokeComponent;
     
     /**
      * This is fairly straight forward, as we only really accept the name of a marker and
@@ -36,13 +54,34 @@ public class MarkEditorPage extends Page {
      */
     public void createControl( Composite parent ) {
         markComposite = new Composite(parent, SWT.NONE);
-        markComposite.setLayout(new GridLayout());
+        markComposite.setLayout(new GridLayout(2, false));
         titleLabel = new Label(markComposite, SWT.NONE);
         titleLabel.setText("Mark");
-        titleLabel.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, false));
+        titleLabel.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, false, 2, 1));
+        
+        Label label = new Label(markComposite, SWT.NONE);
+        label.setText("Marker Type");
+        
+        markerTypeCombo = new ComboExpressionViewer(markComposite, SWT.SINGLE);
+        markerTypeCombo.getControl().setLayoutData(new TableWrapData(TableWrapData.LEFT));
+        markerTypeDecoration = new ControlDecoration(label, SWT.LEFT | SWT.TOP);
+        markerTypeDecoration.hide();
+        markerTypeCombo.getControl().setLayoutData(new GridData(SWT.LEFT, SWT.FILL, true, false));
+        
         Composite additionalComposite = new Composite(markComposite, SWT.NONE);
-        additionalComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        additionalComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
         additionalComposite.setLayout(new TableWrapLayout());
+        
+        Composite fillComp = new Composite(additionalComposite, SWT.NONE);
+        fillComp.setLayoutData(new TableWrapData(TableWrapData.FILL));
+        fillComponent = new FillEditorComponent();
+        fillComponent.createControl(fillComp);
+        
+        Composite strokeComp = new Composite(additionalComposite, SWT.NONE);
+        strokeComp.setLayoutData(new TableWrapData(TableWrapData.FILL));
+        strokeComponent = new StrokeEditorComponent();
+        strokeComponent.createControl(strokeComp);
+        
     }
 
     @Override
