@@ -39,6 +39,7 @@ import org.osgi.service.prefs.Preferences;
  * @author Jesse
  */
 public class ServiceParameterPersister {
+	private static final String COLON_ENCODING = "@col@";
 	private static final String TYPE_QUALIFIER = "@type@"; //$NON-NLS-1$
     private static final String PROPERTIES_KEY = "_properties"; //$NON-NLS-1$
     private static final String VALUE_ID = "value"; //$NON-NLS-1$
@@ -103,7 +104,6 @@ public class ServiceParameterPersister {
 	 * This method will decode the string based ENCODING
 	 * @param id Persisted id string
 	 * @return URL based on provided id string
-	 * @throws MalformedURLException If the id could not be decoded into a valid URL
 	 */
 	private ID toId( String encodedId )  {
         ID id;
@@ -114,7 +114,8 @@ public class ServiceParameterPersister {
         		URL url = new URL(null, parts[0], CorePlugin.RELAXED_HANDLER);
         		id= new ID(url);
         	} catch (MalformedURLException e) {
-        		id = new ID(new File(parts[0]));
+        		String path = parts[0].replaceAll(COLON_ENCODING, ":");
+				id = new ID(new File(path));
         	}
         	
         	if(parts.length==2){
@@ -288,7 +289,10 @@ public class ServiceParameterPersister {
 				ID iD = service.getID();
                 try {
 				    if( iD.isFile() ){
-				        id = URLEncoder.encode(iD.toFile().getAbsolutePath(), ENCODING);
+				    	
+				        String path = iD.toFile().getAbsolutePath();
+				        path = path.replace(":", COLON_ENCODING);
+						id = URLEncoder.encode(path, ENCODING);
 				    }
 				    else {
 				        id = URLEncoder.encode( iD.toString(), ENCODING);
