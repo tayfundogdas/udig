@@ -184,6 +184,30 @@
                 id="refreshAction"
                 name="%refreshAction.label">
           </editAction>
+          <editAction
+                class="net.refractions.udig.printing.ui.internal.editor.BringToFrontAction"
+                id="bringtofrontAction"
+                image="icons/obj16/bringtofront.png"
+                name="%bringtofrontAction.label">
+          </editAction>
+          <editAction
+                class="net.refractions.udig.printing.ui.internal.editor.BringForwardAction"
+                id="bringforwardAction"
+                image="icons/obj16/bringforward.png"
+                name="%bringforwardAction.label">
+          </editAction>
+          <editAction
+                class="net.refractions.udig.printing.ui.internal.editor.BringBackwardAction"
+                id="bringbackwardAction"
+                image="icons/obj16/bringbackward.png"
+                name="%bringbackwardAction.label">
+          </editAction>
+          <editAction
+                class="net.refractions.udig.printing.ui.internal.editor.BringToBackAction"
+                id="bringtobackAction"
+                image="icons/obj16/bringtoback.png"
+                name="%bringtobackAction.label">
+          </editAction>
        </editActionGroup>
      </extension>
 </plugin>

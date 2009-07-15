@@ -86,7 +86,7 @@ public class SetScaleAction implements IBoxEditAction {
     }
 
     public boolean isDone() {
-        return scale!=null;
+        return true;
     }
 
     public void perform() {

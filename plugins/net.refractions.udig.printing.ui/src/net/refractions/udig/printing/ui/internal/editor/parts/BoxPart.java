@@ -269,4 +269,5 @@ public class BoxPart extends AbstractGraphicalEditPart implements NodeEditPart, 
     public BoxAction getDefaultAction() {
         return defaultAction;
     }
+    
 }

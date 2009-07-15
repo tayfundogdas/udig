@@ -62,7 +62,7 @@ public class SetLabelBoxFontAction implements IBoxEditAction {
     }
 
     public boolean isDone() {
-        return dialog!=null && dialog.getFontList()!=null && dialog.getFontList().length>0;
+        return true;
     }
 
     public void perform() {
