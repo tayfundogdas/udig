@@ -181,8 +181,13 @@ public final class RunntimeFieldEditor extends FieldEditor {
     private void restart() {
         try {
             String maxHeadSize = memoryText.getText();
+            UiPlugin.setMaxHeapSize(maxHeadSize);
 
-            File configFile = UiPlugin.setMaxHeapSize(maxHeadSize);
+            URL configUrlURL = Platform.getConfigurationLocation().getURL();
+            
+            String configFilePath = configUrlURL.getFile() + File.separator + "config.ini"; //$NON-NLS-1$
+            File configFile = new File(configFilePath);
+            
 
             // language and path go in the config.ini file
             Properties properties = new Properties();

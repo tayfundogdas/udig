@@ -14,20 +14,31 @@
  */
 package net.refractions.udig.catalog.internal.worldimage;
 
+import static net.refractions.udig.catalog.worldimage.internal.Messages.InMemoryCoverageLoader_close_button;
+import static net.refractions.udig.catalog.worldimage.internal.Messages.InMemoryCoverageLoader_message;
+import static net.refractions.udig.catalog.worldimage.internal.Messages.InMemoryCoverageLoader_msgTitle;
+import static net.refractions.udig.catalog.worldimage.internal.Messages.InMemoryCoverageLoader_restart_button;
+import static org.eclipse.jface.dialogs.MessageDialog.QUESTION;
+
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 import java.awt.image.WritableRaster;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.Hashtable;
 
 import net.refractions.udig.catalog.rasterings.AbstractRasterGeoResource;
 import net.refractions.udig.catalog.rasterings.GridCoverageLoader;
 import net.refractions.udig.catalog.rasterings.RasteringsPlugin;
+import net.refractions.udig.internal.ui.UiPlugin;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.jface.dialogs.InputDialog;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
 import org.geotools.coverage.grid.GeneralGridGeometry;
 import org.geotools.coverage.grid.GridCoverage2D;
@@ -52,16 +63,17 @@ public class InMemoryCoverageLoader extends GridCoverageLoader {
     private volatile GridCoverage coverage;
     private String fileName;
 
-    public InMemoryCoverageLoader( AbstractRasterGeoResource resource, String fileName ) throws IOException {
+    public InMemoryCoverageLoader( AbstractRasterGeoResource resource, String fileName )
+            throws IOException {
         super(resource);
         this.fileName = fileName;
     }
-    
+
     @SuppressWarnings("unchecked")
     @Override
     public synchronized GridCoverage load( GeneralGridGeometry geom, IProgressMonitor monitor )
             throws IOException {
-        if( coverage == null ){
+        if (coverage == null) {
 
             try {
                 AbstractGridCoverage2DReader reader = (AbstractGridCoverage2DReader) resource
@@ -79,11 +91,58 @@ public class InMemoryCoverageLoader extends GridCoverageLoader {
                 RasteringsPlugin
                         .log(
                                 "WARNING.  Loading an image fully into memory.  It is about " + size(bi) + " MB in size decompressed", null); //$NON-NLS-1$//$NON-NLS-2$
-            }catch (OutOfMemoryError e) {
-                input = new InputDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), "Maximum Permitted Memory Exceeded", )
+            } catch (OutOfMemoryError e) {
+                updateMemoryLevel();
+            } catch (RuntimeException t) {
+                if(t.getMessage().contains("javax.imageio.IIOException") && t.getMessage().contains("202")){  //$NON-NLS-1$//$NON-NLS-2$
+                    updateMemoryLevel();
+                }
             }
         }
         return coverage;
+    }
+
+    private void updateMemoryLevel() {
+        Display.getDefault().asyncExec(new Runnable(){
+
+            @Override
+            public void run() {
+                Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
+                String title = InMemoryCoverageLoader_msgTitle;
+                String desc = MessageFormat.format(InMemoryCoverageLoader_message, resource
+                        .getIdentifier());
+                String[] buttons = {InMemoryCoverageLoader_restart_button,
+                        InMemoryCoverageLoader_close_button};
+                MessageDialog dialog = new MessageDialog(shell, title, null, desc, QUESTION,
+                        buttons, 0){
+
+                    @Override
+                    protected void buttonPressed( int buttonId ) {
+                        if (buttonId == 0) {
+                            try {
+                                int heap;
+                                heap = UiPlugin.getMaxHeapSize() * 2;
+                                if (heap < 512) {
+                                    heap = 512;
+                                }
+                                if (heap > 1024 && Platform.getOS() == Platform.OS_WIN32) {
+                                    heap = 1024;
+                                }
+                                UiPlugin.setMaxHeapSize(heap + "M"); //$NON-NLS-1$
+                                PlatformUI.getWorkbench().restart();
+
+                            } catch (IOException e) {
+                                // TODO Handle IOException
+                                throw (RuntimeException) new RuntimeException().initCause(e);
+                            }
+                        }
+                        super.buttonPressed(buttonId);
+                    }
+                };
+                int result = dialog.open();
+
+            }
+        });
     }
 
     private int size( BufferedImage bi ) {
@@ -91,8 +150,8 @@ public class InMemoryCoverageLoader extends GridCoverageLoader {
         for( int elem : bi.getColorModel().getComponentSize() ) {
             colorData += elem;
         }
-        
-        return (bi.getWidth()*bi.getHeight()*colorData)/1024;
+
+        return (bi.getWidth() * bi.getHeight() * colorData) / 1024;
     }
 
 }

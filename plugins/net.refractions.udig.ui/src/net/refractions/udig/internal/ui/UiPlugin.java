@@ -15,6 +15,9 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.PropertyResourceBundle;
+import java.util.concurrent.Callable;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
@@ -45,6 +48,8 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.prefs.Preferences;
+
+import com.google.common.base.Function;
 
 /**
  * The UiPlugin helps integrate uDig with your custom RCP application.
@@ -363,20 +368,64 @@ public class UiPlugin extends AbstractUIPlugin  {
 
 
     /**
+     * Returns the max heap size in MB
+     */
+    public static int getMaxHeapSize() throws IOException {
+        final Pattern pattern = Pattern.compile("Xmx([0-9]+)([mMgGkKbB])");
+        final int[] heapS = new int[1];
+        processAppIni(true, new Function<String,String>(){
+
+            @Override
+            public String apply( String line ) {
+                if (line.matches(".*Xmx.*")) { //$NON-NLS-1$
+                    Matcher matcher = pattern.matcher(line);
+                    matcher.find();
+                    int num = Integer.parseInt(matcher.group(1));
+                    String unit = matcher.group(2).toLowerCase();
+                    if( unit.equals("m") ){ //$NON-NLS-1$
+                        heapS[0] = num*1;
+                    }else if( unit.equals("g") ){ //$NON-NLS-1$
+                        heapS[0] = num*1024;
+                    }else if( unit.equals("k") ){ //$NON-NLS-1$
+                        heapS[0] = num/1024;
+                    }else if( unit.equals("b") ){ //$NON-NLS-1$
+                        heapS[0] = num/(1024*1024);
+                    }
+                }
+                return line;
+            }
+            
+        });
+        
+        return heapS[0];
+    }
+    
+    /**
      * Sets the max heap size in the configuration file so on a restart the maximum size will be changed
      *
      * @param maxHeadSize new heapsize. 1024M 1G are legal options
      * @return the configFile to use for setting configuration information
      */
-    public static File setMaxHeapSize( String maxHeadSize ) throws FileNotFoundException, IOException {
-        URL configUrlURL = Platform.getConfigurationLocation().getURL();
-    
-        String configFilePath = configUrlURL.getFile() + File.separator + "config.ini"; //$NON-NLS-1$
-        File configFile = new File(configFilePath);
-        // System.out.println("config.ini changed:" + configFile);
-    
-        // vmargs go in the udig.ini file
-        File appFolder = configFile.getParentFile().getParentFile();
+    public static void setMaxHeapSize( final String maxHeadSize ) throws FileNotFoundException, IOException {
+        processAppIni(false, new Function<String,String>(){
+
+            @Override
+            public String apply( String line ) {
+                if (line.matches(".*Xmx.*")) { //$NON-NLS-1$
+                    line = line.replaceFirst("Xmx[0-9]+", "Xmx" + maxHeadSize); //$NON-NLS-1$ //$NON-NLS-2$
+                }
+                return line;
+            }
+            
+        });
+        
+    }
+
+
+    private static void processAppIni( boolean readOnly, Function<String, String> func )
+            throws IOException {
+        URL installLoc = Platform.getInstallLocation().getURL();
+        File appFolder = new File(installLoc.getFile());
         String[] list = appFolder.list();
         String iniName = null;
         for( String l : list ) {
@@ -385,26 +434,36 @@ public class UiPlugin extends AbstractUIPlugin  {
             }
         }
         File iniFile = new File(appFolder, iniName);
-        // System.out.println("udig.ini changed:" + iniFile.getAbsolutePath());
         if (iniFile.exists()) {
-            BufferedReader bR = new BufferedReader(new FileReader(iniFile));
-            List<String> opts = new ArrayList<String>();
-            String line = null;
-            while( (line = bR.readLine()) != null ) {
-                if (line.matches(".*Xmx.*")) { //$NON-NLS-1$
-                    line = line.replaceFirst("Xmx[0-9]+", "Xmx" + maxHeadSize); //$NON-NLS-1$ //$NON-NLS-2$
+            BufferedReader bR = null;
+            BufferedWriter bW = null;
+            try {
+                bR = new BufferedReader(new FileReader(iniFile));
+                if (!readOnly) {
+                    bW = new BufferedWriter(new FileWriter(iniFile));
                 }
-                opts.add(line);
+                String line = null;
+                while( (line = bR.readLine()) != null ) {
+                    String newLine = func.apply(line);
+                    if (!readOnly) {
+                        bW.write(newLine);
+                        bW.write("\n"); //$NON-NLS-1$
+                    }
+                }
+            } finally {
+                try {
+                    if (bR != null)
+                        bR.close();
+                } finally {
+                    if (bW != null)
+                        bW.close();
+                }
             }
-            bR.close();
-            BufferedWriter bW = new BufferedWriter(new FileWriter(iniFile));
-            for( String lineStr : opts ) {
-                bW.write(lineStr);
-                bW.write("\n"); //$NON-NLS-1$
-            }
-            bW.close();
         }
-        return configFile;
+
+        if(!readOnly){
+            UiPlugin.log("udig.ini changed:" + iniFile.getAbsolutePath(), null);
+        }
     }
 
 
@@ -549,4 +608,5 @@ public class UiPlugin extends AbstractUIPlugin  {
     public static Preferences getUserPreferences() {
         return new InstanceScope().getNode(ID);
     }
+
 }
