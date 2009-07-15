@@ -43,36 +43,6 @@
       </boxprinter>
    </extension>
    
-      <extension
-        point="org.eclipse.ui.exportWizards">
-      <wizard
-            class="net.refractions.udig.printing.ui.pdf.SivecoExportMapToImageWizard"
-            icon="icons/obj16/grid_obj.gif"
-            id="net.refractions.udig.printing.ui.pdf"
-            name="Siveco Export">
-         <description>
-            %exportToImage.desc
-         </description>
-      </wizard>
-      <wizard
-            class="net.refractions.udig.printing.ui.pdf.ExportPDFWizard"
-            icon="icons/obj16/exportpdf_obj.gif"
-            id="net.refractions.udig.printing.ui.pdf.ExportPDFWizard"
-            name="Export as PDF">
-         <description>
-            %exportToImage.desc
-         </description>
-      </wizard>  
-      <wizard
-            class="net.refractions.udig.printing.ui.pdf.PrintWizard"
-            icon="icons/obj16/exportpdf_obj.gif"
-            id="net.refractions.udig.printing.ui.pdf.PrintWizard"
-            name="Print">
-         <description>
-            %exportToImage.desc
-         </description>
-      </wizard>  
-   </extension>
 
    <extension
          point="org.eclipse.ui.preferencePages">
@@ -113,19 +83,6 @@
                tooltip="%printing.ui.action.printFromMap.tooltip"
                style="push"
                menubarPath="file/print.ext"
-               id="net.refractions.udig.printing.ui.printAction"/>
-      </editorContribution>
-      <editorContribution
-            targetID="net.refractions.udig.printing.ui.internal.editor.pageEditor"
-            id="net.refractions.udig.printing.ui.pageEditorContribution">
-         <action
-               disabledIcon="icons/dtool16/print_tsk.gif"
-               toolbarPath="global/additions"
-               label="%printing.ui.action.printFromPage.label"
-               class="net.refractions.udig.printing.ui.internal.PrintAction"
-               icon="icons/etool16/print_tsk.gif"
-               tooltip="%printing.ui.action.printFromPage.label"
-               style="push"
                id="net.refractions.udig.printing.ui.printAction"/>
       </editorContribution>
    </extension>

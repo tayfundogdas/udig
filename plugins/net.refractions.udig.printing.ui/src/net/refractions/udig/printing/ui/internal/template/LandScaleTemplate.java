@@ -65,7 +65,8 @@ public class LandScaleTemplate extends AbstractTemplate {
      * @param map the Map to be drawn
      */
     public void init( Page page, Map map ) {
-        page.setSize(page.getSize().transpose());
+        Dimension transpose = page.getSize().transpose();
+        page.setSize(transpose);
         
         int height = page.getSize().height;
         int width = page.getSize().width;
