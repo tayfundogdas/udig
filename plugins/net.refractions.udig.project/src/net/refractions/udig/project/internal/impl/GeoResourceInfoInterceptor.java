@@ -122,6 +122,11 @@ public class GeoResourceInfoInterceptor implements IResourceInterceptor<IGeoReso
         public String toString() {
             return info.toString();
         }
+        
+        @Override
+        public String getShortTitle() {
+            return info.getShortTitle();
+        }
 
         @Override
         public int hashCode() {

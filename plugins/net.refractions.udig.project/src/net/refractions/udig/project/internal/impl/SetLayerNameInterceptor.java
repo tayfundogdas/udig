@@ -40,7 +40,7 @@ public class SetLayerNameInterceptor implements LayerInterceptor {
     }
 
     private void nameLayer( IGeoResourceInfo info, Layer layer ) {
-        String label = info.getTitle(); // may be empty?
+        String label = info.getShortTitle(); // may be empty?
         if (label == null || label.trim().length() == 0) {
             label = info.getName(); // really should not be empty?
         }
