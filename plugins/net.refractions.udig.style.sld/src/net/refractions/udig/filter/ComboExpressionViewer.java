@@ -160,8 +160,13 @@ public class ComboExpressionViewer extends Viewer {
     public void setOptions( SimpleFeatureType featureType ){
         List<Expression> options = new ArrayList<Expression>();
         for( AttributeDescriptor attributeDescriptor : featureType.getAttributeDescriptors() ){
-            options.add( ff.literal( attributeDescriptor.getName().getLocalPart() ));
+            options.add( ff.property( attributeDescriptor.getName().getLocalPart() ));
         }
+        viewer.setInput( options );
+    }
+
+    public void setOptions( List<Expression> list ){
+        List<Expression> options = new ArrayList<Expression>( list );
         viewer.setInput( options );
     }
 
