@@ -16,12 +16,12 @@
  */
 package net.refractions.udig.catalog.internal.arcsde;
 
-import static org.geotools.arcsde.pool.ArcSDEConnectionConfig.DBTYPE_PARAM;
-import static org.geotools.arcsde.pool.ArcSDEConnectionConfig.INSTANCE_NAME_PARAM;
-import static org.geotools.arcsde.pool.ArcSDEConnectionConfig.PASSWORD_PARAM;
-import static org.geotools.arcsde.pool.ArcSDEConnectionConfig.PORT_NUMBER_PARAM;
-import static org.geotools.arcsde.pool.ArcSDEConnectionConfig.SERVER_NAME_PARAM;
-import static org.geotools.arcsde.pool.ArcSDEConnectionConfig.USER_NAME_PARAM;
+import static org.geotools.arcsde.ArcSDEDataStoreFactory.DBTYPE_PARAM;
+import static org.geotools.arcsde.ArcSDEDataStoreFactory.INSTANCE_PARAM;
+import static org.geotools.arcsde.ArcSDEDataStoreFactory.PASSWORD_PARAM;
+import static org.geotools.arcsde.ArcSDEDataStoreFactory.PORT_PARAM;
+import static org.geotools.arcsde.ArcSDEDataStoreFactory.SERVER_PARAM;
+import static org.geotools.arcsde.ArcSDEDataStoreFactory.USER_PARAM;
 
 import java.io.Serializable;
 import java.net.MalformedURLException;
@@ -36,7 +36,6 @@ import net.refractions.udig.catalog.arcsde.internal.Messages;
 
 import org.geotools.arcsde.ArcSDEDataStoreFactory;
 import org.geotools.data.DataStoreFactorySpi;
-import org.geotools.data.DataAccessFactory.Param;
 
 /**
  * Arc SDE Service Extension Implementation.
@@ -50,18 +49,18 @@ public class ArcServiceExtension extends AbstractDataStoreServiceExtension imple
     public IService createService(URL id, Map<String, Serializable> params) {
         final ArcSDEDataStoreFactory factory = getFactory();
 
-        if (params != null && params.containsKey(PORT_NUMBER_PARAM)
-                && params.get(PORT_NUMBER_PARAM) instanceof String) {
-            String val = (String) params.get(PORT_NUMBER_PARAM);
-            params.put(PORT_NUMBER_PARAM, new Integer(val));
+        if (params != null && params.containsKey(PORT_PARAM.key)
+                && params.get(PORT_PARAM.key) instanceof String) {
+            String val = (String) params.get(PORT_PARAM.key);
+            params.put(PORT_PARAM.key, Integer.valueOf(val));
         }
 
         if (!factory.canProcess(params))
             return null;
         if (id == null) {
-            String host = (String) params.get(SERVER_NAME_PARAM);
-            String port = params.get(PORT_NUMBER_PARAM).toString();
-            String db = (String) params.get(INSTANCE_NAME_PARAM);
+            String host = (String) params.get(SERVER_PARAM.key);
+            String port = params.get(PORT_PARAM.key).toString();
+            String db = (String) params.get(INSTANCE_PARAM.key);
             if (null == db) {
                 db = "";
             }
@@ -85,12 +84,12 @@ public class ArcServiceExtension extends AbstractDataStoreServiceExtension imple
         ParamInfo info = parseParamInfo(url);
 
         Map<String, Serializable> params = new HashMap<String, Serializable>();
-        params.put( ArcSDEDataStoreFactory.DBTYPE_PARAM, "arcsde"); // dbtype //$NON-NLS-1$
-        params.put(SERVER_NAME_PARAM, info.host); // host
-        params.put(PORT_NUMBER_PARAM, info.the_port); // port
-        params.put(INSTANCE_NAME_PARAM, info.the_database); // database
-        params.put(USER_NAME_PARAM, info.username); // user
-        params.put(PASSWORD_PARAM, info.password); // pass
+        params.put(DBTYPE_PARAM.key, "arcsde"); // dbtype //$NON-NLS-1$
+        params.put(SERVER_PARAM.key, info.host); // host
+        params.put(PORT_PARAM.key, info.the_port); // port
+        params.put(INSTANCE_PARAM.key, info.the_database); // database
+        params.put(USER_PARAM.key, info.username); // user
+        params.put(PASSWORD_PARAM.key, info.password); // pass
 
         if (getFactory().canProcess(params)) {
             return params;
