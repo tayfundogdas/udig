@@ -20,11 +20,12 @@ import static net.refractions.udig.catalog.worldimage.internal.Messages.InMemory
 import static net.refractions.udig.catalog.worldimage.internal.Messages.InMemoryCoverageLoader_restart_button;
 import static org.eclipse.jface.dialogs.MessageDialog.QUESTION;
 
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 import java.awt.image.WritableRaster;
-import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.lang.ref.SoftReference;
 import java.text.MessageFormat;
 import java.util.Hashtable;
 
@@ -36,7 +37,6 @@ import net.refractions.udig.internal.ui.UiPlugin;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
@@ -47,9 +47,12 @@ import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.coverage.grid.ViewType;
 import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
 import org.geotools.geometry.GeneralEnvelope;
+import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.opengis.coverage.grid.GridCoverage;
 import org.opengis.coverage.grid.GridCoverageReader;
 import org.opengis.coverage.grid.GridEnvelope;
+import org.opengis.geometry.Envelope;
 
 /**
  * Keeps the full coverage in memory and returns the same instance
@@ -60,7 +63,19 @@ import org.opengis.coverage.grid.GridEnvelope;
 @SuppressWarnings("deprecation")
 public class InMemoryCoverageLoader extends GridCoverageLoader {
 
-    private volatile GridCoverage coverage;
+    private static final GridCoverage EMPTY_COVERAGE;
+    static {
+
+        Envelope envelope = new ReferencedEnvelope(0, .00001, 0, 0.00001, DefaultGeographicCRS.WGS84);
+        BufferedImage image = new BufferedImage(1, 1, BufferedImage.TYPE_BYTE_GRAY);
+        Graphics2D createGraphics = image.createGraphics();
+        createGraphics.drawRect(0, 0, 1, 1);
+        createGraphics.dispose();
+        EMPTY_COVERAGE = new GridCoverageFactory().create(
+                "placeholder", image, envelope); //$NON-NLS-1$
+
+    }
+    private volatile SoftReference<GridCoverage> coverage = new SoftReference<GridCoverage>(null);
     private String fileName;
 
     public InMemoryCoverageLoader( AbstractRasterGeoResource resource, String fileName )
@@ -74,7 +89,11 @@ public class InMemoryCoverageLoader extends GridCoverageLoader {
     public synchronized GridCoverage load( GeneralGridGeometry geom, IProgressMonitor monitor )
             throws IOException {
         if (coverage == null) {
+            // we have tried to load and failed. so return empty
+            return EMPTY_COVERAGE;
+        }
 
+        if (coverage.get() == null) {
             try {
                 AbstractGridCoverage2DReader reader = (AbstractGridCoverage2DReader) resource
                         .resolve(GridCoverageReader.class, monitor);
@@ -87,22 +106,25 @@ public class InMemoryCoverageLoader extends GridCoverageLoader {
                         .getData(), false, new Hashtable());
                 GridCoverageFactory fac = new GridCoverageFactory();
 
-                coverage = fac.create(fileName, bi, env);
+                GridCoverage2D c = fac.create(fileName, bi, env);
+                coverage = new SoftReference<GridCoverage>(c);
+
                 RasteringsPlugin
                         .log(
                                 "WARNING.  Loading an image fully into memory.  It is about " + size(bi) + " MB in size decompressed", null); //$NON-NLS-1$//$NON-NLS-2$
             } catch (OutOfMemoryError e) {
                 updateMemoryLevel();
             } catch (RuntimeException t) {
-                if(t.getMessage().contains("javax.imageio.IIOException") && t.getMessage().contains("202")){  //$NON-NLS-1$//$NON-NLS-2$
+                if (t.getMessage().contains("javax.imageio.IIOException") && t.getMessage().contains("202")) { //$NON-NLS-1$//$NON-NLS-2$
                     updateMemoryLevel();
                 }
             }
         }
-        return coverage;
+        return coverage.get();
     }
 
     private void updateMemoryLevel() {
+        coverage = null;
         Display.getDefault().asyncExec(new Runnable(){
 
             @Override
@@ -139,7 +161,7 @@ public class InMemoryCoverageLoader extends GridCoverageLoader {
                         super.buttonPressed(buttonId);
                     }
                 };
-                int result = dialog.open();
+                dialog.open();
 
             }
         });
