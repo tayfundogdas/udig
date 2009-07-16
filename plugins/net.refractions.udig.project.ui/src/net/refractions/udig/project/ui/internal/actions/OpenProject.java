@@ -18,6 +18,7 @@ package net.refractions.udig.project.ui.internal.actions;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.text.MessageFormat;
 
 import net.refractions.udig.project.internal.ProjectPlugin;
 import net.refractions.udig.project.internal.ProjectRegistry;
@@ -60,6 +61,8 @@ public class OpenProject implements IViewActionDelegate, IWorkbenchWindowActionD
      * @see org.eclipse.ui.IActionDelegate#run(org.eclipse.jface.action.IAction)
      */
     public void run( IAction action ) {
+        path=null;
+        
     	Shell activeShell = Display.getDefault().getActiveShell();
 
     	while(path==null){
@@ -71,10 +74,10 @@ public class OpenProject implements IViewActionDelegate, IWorkbenchWindowActionD
 	        if (path == null)
 	        	return;
 	        
-	        File projFile = new File(path+File.pathSeparator+ProjectRegistry.PROJECT_FILE);
+	        File projFile = new File(path+File.separator+ProjectRegistry.PROJECT_FILE);
 	        if( !projFile.exists() ){
 	        	String message = Messages.OpenProject_ErrorMessage;
-	        	message = Messages.bind(message, ProjectRegistry.PROJECT_FILE);
+	        	message = MessageFormat.format(message, ProjectRegistry.PROJECT_FILE);
                 MessageDialog.openInformation(activeShell, Messages.OpenProject_ErrorTitle, 
 	        			message);
 	        	path = null;
