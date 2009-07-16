@@ -856,7 +856,7 @@
                class="net.refractions.udig.project.ui.operations.SyncProjection"
                enablesFor="1"
                id="net.refractions.udig.project.ui.syncProjection"
-               name="Synchronize Projection"
+               name="Set Map Projection From Layer"
                targetClass="net.refractions.udig.project.ILayer">
          </operation>      
  	</extension>
