@@ -192,4 +192,9 @@ public class LandScaleTemplate extends AbstractTemplate {
             throw new IllegalStateException("Please initialize the template before calling this method.");
         return mapBounds;
     }
+
+    @Override
+    public String getAbbreviation() {
+        return getName();
+    }
 }

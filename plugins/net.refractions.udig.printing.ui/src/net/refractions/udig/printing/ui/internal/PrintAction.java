@@ -16,7 +16,7 @@
  */
 package net.refractions.udig.printing.ui.internal;
 
-import java.awt.print.PrinterJob;
+import java.io.File;
 
 import net.refractions.udig.printing.model.Page;
 import net.refractions.udig.printing.ui.internal.editor.PageEditorInput;
@@ -29,8 +29,11 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.ui.IEditorActionDelegate;
 import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 
 /**
@@ -54,50 +57,51 @@ import org.eclipse.ui.PlatformUI;
  */
 public class PrintAction extends Action implements IEditorActionDelegate {
 
-    public PrintAction (){
+    public PrintAction() {
         super();
     }
-    
+
     public void run() {
-    	Page page = null;
-        UDIGEditorInput editorInput = (UDIGEditorInput) PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor().getEditorInput();
+        Page page = null;
+        IWorkbenchWindow workbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+        UDIGEditorInput editorInput = (UDIGEditorInput) workbenchWindow.getActivePage()
+                .getActiveEditor().getEditorInput();
         if (editorInput instanceof PageEditorInput) {
             page = (Page) ((PageEditorInput) editorInput).getProjectElement();
         }
         if (page == null) {
-            throw new RuntimeException(Messages.PrintAction_pageError); 
+            throw new RuntimeException(Messages.PrintAction_pageError);
         }
-        
-        final String jobName = page.getName();
 
-        final PrintingEngine engine = new PrintingEngine(page);
+        FileDialog fileDialog = new FileDialog(workbenchWindow.getShell(), SWT.SAVE);
+        String path = fileDialog.open();
 
-        Job job = new Job(Messages.PrintAction_jobTitle) { 
+        File outFile = null;
+        if (path == null || path.length() < 1) {
+            return;
+        } else {
+            outFile = new File(path);
+        }
+
+        final PdfPrintingEngine engine = new PdfPrintingEngine(page, outFile);
+
+        Job job = new Job(Messages.PrintAction_jobTitle){
             protected IStatus run( IProgressMonitor monitor ) {
 
                 engine.setMonitor(monitor);
-                
-                PrinterJob printerJob = PrinterJob.getPrinterJob();
-                
-                engine.setPrinterJob(printerJob);
-                
-                if (printerJob.printDialog()) {
-                    try {
-                    	printerJob.setPageable(engine);
-                    	printerJob.setJobName(jobName);
-                        printerJob.print();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+
+                boolean printToPdf = engine.printToPdf();
+                if (printToPdf) {
+                    return Status.OK_STATUS;
+                } else {
+                    return Status.CANCEL_STATUS;
                 }
-                
-                return Status.OK_STATUS;
             }
         };
-        
-        if( job.isSystem() )
+
+        if (job.isSystem())
             job.setSystem(false);
-        
+
         job.schedule();
     }
 

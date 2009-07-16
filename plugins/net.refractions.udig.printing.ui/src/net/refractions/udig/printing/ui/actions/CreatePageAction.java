@@ -102,7 +102,7 @@ public class CreatePageAction implements IEditorActionDelegate {
 
         page.setSize(new Dimension(width, height));
 
-        MessageFormat formatter = new MessageFormat(Messages.CreatePageAction_newPageName, Locale
+        MessageFormat formatter = new MessageFormat("{0} - " + template.getAbbreviation(), Locale
                 .getDefault());
         if (page.getName() == null || page.getName().length() == 0) {
             page.setName(formatter.format(new Object[]{map.getName()}));

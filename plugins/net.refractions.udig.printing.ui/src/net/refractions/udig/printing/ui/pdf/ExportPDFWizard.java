@@ -207,7 +207,6 @@ public class ExportPDFWizard extends Wizard implements IExportWizard {
             return new Rectangle(suggestedPageSize.height(), suggestedPageSize.width());
         }
         return suggestedPageSize;
-        
     }
     
     /**

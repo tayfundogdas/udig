@@ -25,16 +25,16 @@ import org.eclipse.swt.graphics.Rectangle;
 import com.lowagie.text.PageSize;
 
 /**
- * Implementation of an A4 size Template in landscape mode. 
+ * Implementation of an A1 size Template in landscape mode. 
  * 
  * @author Andrea Antonello (www.hydrologis.com)
  */
-public class A4LandscapeTemplate extends LandScaleTemplate {
+public class A1LandscapeTemplate extends LandScaleTemplate {
 
     /**
      * Constructs the BasicTemplate and populates its two boxes with a title and a map.
      */
-    public A4LandscapeTemplate() {
+    public A1LandscapeTemplate() {
         super();
     }
 
@@ -45,8 +45,8 @@ public class A4LandscapeTemplate extends LandScaleTemplate {
      * @param map the Map to be drawn
      */
     public void init( Page page, Map map ) {
-        com.lowagie.text.Rectangle a4 = PageSize.A4;
-        Dimension paperSize = new Dimension((int) a4.height(), (int) a4.width());
+        com.lowagie.text.Rectangle a1 = PageSize.A1;
+        Dimension paperSize = new Dimension((int) a1.height(), (int) a1.width());
         page.setPaperSize(paperSize);
 
         setPageSizeFromPaperSize(page, paperSize);
@@ -71,7 +71,7 @@ public class A4LandscapeTemplate extends LandScaleTemplate {
     
     @Override
     public String getAbbreviation() {
-        return "A4L";
+        return "A1L";
     }
 
 }

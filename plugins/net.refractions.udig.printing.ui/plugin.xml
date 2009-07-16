@@ -8,19 +8,15 @@
 
    <extension
          point="net.refractions.udig.printing.ui.templateFactories">
-      <templateFactory
-            class="net.refractions.udig.printing.ui.internal.template.LandscapeTemplateFactory"
-            id="landScape">
-      </templateFactory>
-      <template
-            class="net.refractions.udig.printing.ui.internal.BasicTemplate"
-            id="net.refractions.udig.printing.ui.template.basic"
-            name="Basic Template">
-      </template>
       <template
             class="net.refractions.udig.printing.ui.internal.template.A4LandscapeTemplate"
             id="net.refractions.udig.printing.ui.internal.template.A4LandscapeTemplate"
-            name="A4 lanscape template">
+            name="A4 landscape template">
+      </template>
+      <template
+            class="net.refractions.udig.printing.ui.internal.template.A1LandscapeTemplate"
+            id="net.refractions.udig.printing.ui.internal.template.A1LandscapeTemplate"
+            name="A1 landscape template">
       </template>
    </extension>
    
@@ -89,6 +85,20 @@
                style="push"
                menubarPath="file/print.ext"
                id="net.refractions.udig.printing.ui.printAction"/>
+      </editorContribution>
+      <editorContribution
+            id="net.refractions.udig.printing.ui.pageEditorContribution"
+            targetID="net.refractions.udig.printing.ui.internal.editor.pageEditor">
+         <action
+               class="net.refractions.udig.printing.ui.internal.PrintAction"
+               disabledIcon="icons/etool16/pdf.png"
+               icon="icons/etool16/pdf.png"
+               id="net.refractions.udig.printing.ui.printAction"
+               label="%printing.ui.action.printFromPage.label"
+               style="push"
+               toolbarPath="global/additions"
+               tooltip="%printing.ui.action.printFromPage.label">
+         </action>
       </editorContribution>
    </extension>
          <extension
