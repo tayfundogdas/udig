@@ -28,6 +28,7 @@ import net.refractions.udig.core.Pair;
 import net.refractions.udig.core.filter.AdaptingFilter;
 import net.refractions.udig.project.ILayer;
 import net.refractions.udig.project.IMap;
+import net.refractions.udig.project.IProjectElement;
 import net.refractions.udig.project.command.MapCommand;
 import net.refractions.udig.project.command.UndoableMapCommand;
 import net.refractions.udig.project.command.factory.EditCommandFactory;
@@ -198,6 +199,12 @@ public class Delete extends UDIGGenericAction {
                 if (editor != null)
                     page.closeEditor(editor, false);
             }
+            
+            List<ProjectElement> elements = element.getElements(ProjectElement.class);
+            for( ProjectElement projectElement : elements ) {
+                doDelete(projectElement, deleteFiles, returncode);
+            }
+            
             Project projectInternal = element.getProjectInternal();
             if (projectInternal != null)
                 projectInternal.getElementsInternal().remove(element);

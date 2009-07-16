@@ -22,6 +22,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import net.refractions.udig.printing.model.Box;
+import net.refractions.udig.printing.model.Page;
 import net.refractions.udig.printing.model.impl.MapBoxPrinter;
 import net.refractions.udig.printing.ui.Template;
 
@@ -138,5 +139,13 @@ public abstract class AbstractTemplate implements Template {
     
     public int getActivePage() {
         return activePage;
+    }
+
+    protected void setPageSizeFromPaperSize( Page page, Dimension paperSize ) {
+        float factor = (float) paperSize.width / (float) paperSize.height;
+        Dimension pageSize = page.getSize();
+        int h = pageSize.height;
+        int w = (int) ((float) h * factor);
+        page.setSize(new Dimension(w, h));
     }
 }

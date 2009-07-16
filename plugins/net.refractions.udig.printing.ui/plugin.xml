@@ -17,6 +17,11 @@
             id="net.refractions.udig.printing.ui.template.basic"
             name="Basic Template">
       </template>
+      <template
+            class="net.refractions.udig.printing.ui.internal.template.A4LandscapeTemplate"
+            id="net.refractions.udig.printing.ui.internal.template.A4LandscapeTemplate"
+            name="A4 lanscape template">
+      </template>
    </extension>
    
    <extension

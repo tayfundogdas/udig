@@ -46,10 +46,10 @@ import org.eclipse.swt.widgets.Display;
  */
 public class LandScaleTemplate extends AbstractTemplate {
 
-    private static final int MARGIN = 10;
-    private static final int SPACING = 10;
+    protected static final int MARGIN = 10;
+    protected static final int SPACING = 10;
     
-    private Rectangle mapBounds;
+    protected Rectangle mapBounds;
     
     /**
      * Constructs the BasicTemplate and populates its two boxes with a title and a map.
@@ -86,7 +86,7 @@ public class LandScaleTemplate extends AbstractTemplate {
         addScale(height, scaleHeight, scaleWidth);
     }
 
-    private void addScale( int height, int scaleHeight, int scaleWidth ) {
+    protected void addScale( int height, int scaleHeight, int scaleWidth ) {
         Box scaleBox = ModelFactory.eINSTANCE.createBox();
         MapGraphicBoxPrinter scale = new MapGraphicBoxPrinter();
         scale.setMapGraphic(MapGraphicChooserDialog.findResource(ScalebarMapGraphic.class));
@@ -97,7 +97,7 @@ public class LandScaleTemplate extends AbstractTemplate {
         boxes.add(scaleBox);
     }
 
-    private int addLabelBox( Map map, int width, final int labelWidth) {
+    protected int addLabelBox( Map map, int width, final int labelWidth) {
         Box labelBox = ModelFactory.eINSTANCE.createBox();
         LabelBoxPrinter labelBoxPrinter = new LabelBoxPrinter();
         labelBoxPrinter.setText(formatName(map.getName()));
@@ -141,7 +141,7 @@ public class LandScaleTemplate extends AbstractTemplate {
         return builder.toString();
     }
 
-    private Rectangle addMapBox( Map map, int width, int height, final int labelHeight, int scaleHeight,
+    protected Rectangle addMapBox( Map map, int width, int height, final int labelHeight, int scaleHeight,
             int legendWidth ) {
         Box mapBox = ModelFactory.eINSTANCE.createBox();
         MapBoxPrinter mapBoxPrinter = new MapBoxPrinter();
@@ -171,7 +171,7 @@ public class LandScaleTemplate extends AbstractTemplate {
         return mapBounds;
     }
 
-    private void addLegendBox( int height, final int legendWidth, int legendHeight, int labelHeight,
+    protected void addLegendBox( int height, final int legendWidth, int legendHeight, int labelHeight,
             Rectangle mapBounds ) {
         Box legendBox = ModelFactory.eINSTANCE.createBox();
         MapGraphicBoxPrinter legend = new MapGraphicBoxPrinter();
