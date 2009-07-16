@@ -40,6 +40,7 @@ public class MoveProjectElement extends IDropAction {
 
     @Override
     public boolean accept() {
+        
         Collection<ProjectElement> elements = new HashSet<ProjectElement>(toProjectElements());
         
         for( Iterator<ProjectElement> iterator = elements.iterator(); iterator.hasNext(); ) {
@@ -72,10 +73,18 @@ public class MoveProjectElement extends IDropAction {
             return null;
         }
 
+        Object[] array = null;
         if (getData() instanceof Collection< ? >) {
-            Collection<ProjectElement> elements = new HashSet<ProjectElement>();
             Collection< ? > data = (Collection< ? >) getData();
-            for( Object object : data ) {
+            array=data.toArray();
+        }
+        if(getData().getClass().isArray()){
+            array=(Object[]) getData();
+        }
+        if (array != null) {
+            Collection<ProjectElement> elements = new HashSet<ProjectElement>();
+
+            for( Object object : array ) {
                 if (object instanceof ProjectElement) {
                     ProjectElement element = (ProjectElement) object;
                     elements.add(element);
@@ -90,10 +99,9 @@ public class MoveProjectElement extends IDropAction {
                         elements.add((ProjectElement) eobj);
                 }
             }
-
             if (!elements.isEmpty())
                 return elements;
-        }
+        }        
         return null;
     }
     @Override

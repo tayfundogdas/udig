@@ -49,14 +49,28 @@ public class OnProjectDropAction extends IDropAction {
         if( isLegalType(getData()) )
             return true;
         
-        if( getData() instanceof Collection ){
-            Collection<Object> coll=(Collection<Object>) getData();
-            for( Object object : coll ) {
+        List<Object> obj = toCollection();
+        return !obj.isEmpty();
+    }
+
+    private List<Object> toCollection() {
+        Object[] array=null;
+        
+        if(getData().getClass().isArray()){
+            array=(Object[])getData();
+        }
+        if( getData() instanceof Collection<?> ){
+            Collection<?> coll=(Collection<?>) getData();
+            array=coll.toArray();
+        }
+        List<Object> obj=new ArrayList<Object>();
+        if(array!=null){
+            for( Object object : array ) {
                 if( isLegalType(object) )
-                    return true;
+                    obj.add(object);
             }
         }
-        return false;
+        return obj;
     }
 
     private boolean  isLegalType(Object obj) {
@@ -69,7 +83,6 @@ public class OnProjectDropAction extends IDropAction {
         return false;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public void perform( IProgressMonitor monitor ) {
         if( !accept() )
@@ -83,11 +96,11 @@ public class OnProjectDropAction extends IDropAction {
         } else if( getData() instanceof IService ){
             resources.addAll(MapDropAction.toResources(monitor, getData(), getClass()));
         } else {
-            List<Object> list=(List<Object>) getData();
+            List<Object> list=toCollection();
             for( Object object : list ) {
                 if( object instanceof IGeoResource ){
                     resources.add((IGeoResource) object);
-                } else if( object instanceof IService ){
+                } else if( object instanceof IService || object instanceof IResolveFolder){
                     Collection<IGeoResource> toResources = MapDropAction.toResources(monitor, object, getClass());
                     resources.addAll(toResources);
                 }
