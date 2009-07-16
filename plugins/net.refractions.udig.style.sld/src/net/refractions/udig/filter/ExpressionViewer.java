@@ -1,7 +1,13 @@
 package net.refractions.udig.filter;
 
+import org.eclipse.jface.fieldassist.ContentProposalAdapter;
+import org.eclipse.jface.fieldassist.ControlDecoration;
+import org.eclipse.jface.fieldassist.FieldDecorationRegistry;
+import org.eclipse.jface.fieldassist.SimpleContentProposalProvider;
+import org.eclipse.jface.fieldassist.TextContentAdapter;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
@@ -10,9 +16,11 @@ import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Text;
+import org.geotools.filter.FunctionFinder;
 import org.geotools.filter.text.cql2.CQL;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.filter.text.ecql.ECQL;
+import org.geotools.util.Utilities;
 import org.opengis.filter.expression.Expression;
 
 /**
@@ -52,26 +60,29 @@ public class ExpressionViewer extends Viewer {
      * This is our internal widget we are sharing with the outside world;
      * in many cases it will be a Composite.
      */
-    private Control control;
+    private Text text;
 
+    /**
+     * Indicates this is a required field
+     */
+    private boolean isRequired;
+    
     private KeyListener keyListener = new KeyListener(){        
         public void keyReleased( KeyEvent e ) {
             // we can try and parse this puppy; and issue a selection changed
-            // event when we actually have an expression that works
-            if( e.widget instanceof Text ){
-                Text text = (Text) e.widget;
-                String cql = text.getText();
-                try {
-                    expr = CQL.toExpression( cql );
-                } catch (CQLException e1) {
-                    expr = Expression.NIL; // no valid expression right now
-                    // set warning on associated feedback label
-                }
+            // event when we actually have an expression that works            
+            String before = expr != null ? CQL.toCQL( expr ) : "(empty)";
+            validate();
+            String after = expr != null ? CQL.toCQL( expr ) : "(empty)";
+            if( !Utilities.equals( before, after )){
+                fireSelectionChanged( new SelectionChangedEvent( ExpressionViewer.this, getSelection() ));                
             }
         }
         public void keyPressed( KeyEvent e ) {
         }
     };
+
+    private ControlDecoration feedback;
     
     public ExpressionViewer( Composite parent ){
         this( parent, SWT.SINGLE );
@@ -92,9 +103,17 @@ public class ExpressionViewer extends Viewer {
      * @param none
      */
     public ExpressionViewer( Composite parent, int style ) {
-        control = new Text( parent, style );
+        text = new Text( parent, style );
+        feedback = new ControlDecoration(text, SWT.TOP | SWT.LEFT);
         
-        control.addKeyListener(keyListener);
+        FunctionFinder ff = new FunctionFinder(null);
+
+        ContentProposalAdapter adapter = new ContentProposalAdapter(
+                text, new TextContentAdapter(), 
+                new SimpleContentProposalProvider(new String [] {"ProposalOne", "ProposalTwo", "ProposalThree"}),
+                null, null);
+        
+        text.addKeyListener(keyListener);
     }
     
     /**
@@ -104,10 +123,94 @@ public class ExpressionViewer extends Viewer {
      *
      * @return
      */
-    public Control getControl(){
-        return control;
+    public Text getControl(){
+        return text;
+    }
+    /**
+     * The isRequired flag will be used to determine the default decoration
+     * to show (if there is no warning or error to take precedence).
+     * <p>
+     * Please note that if this is a required field Expression.NIL is not
+     * considered to be a valid state.
+     * </p>
+     * @param isRequired true if this is a required field
+     */
+    public void setRequired( boolean isRequired ) {
+        this.isRequired = isRequired;
     }
     
+    /**
+     * @return true if this is a required field
+     */
+    public boolean isRequired() {
+        return isRequired;
+    }
+    
+    /**
+     * Check if the expr is valid.
+     * <p>
+     * The default implementation checks that the expr is not null (which would be an error);
+     * and that if isRequired is true that a required decoration is shown.
+     * <p>
+     * Subclasses can overide to perform additional checks (say for entering dates). They should
+     * take care to use the feedback decoration in order to indicate to the user any problems
+     * encountered.
+     * 
+     * @return true if the field is valid
+     */
+    public boolean validate(){
+        FieldDecorationRegistry decorations = FieldDecorationRegistry.getDefault();        
+        try {
+            expr = ECQL.toExpression( text.getText() );
+        } catch (CQLException e) {
+            expr = null;
+            feedback.setDescriptionText( e.getSyntaxError() );
+            feedback.setImage( decorations.getFieldDecoration( FieldDecorationRegistry.DEC_ERROR).getImage() );
+            feedback.show();
+            return false;
+        }
+        if( expr == null ){
+            feedback.setDescriptionText("(empty)");
+            feedback.setImage( decorations.getFieldDecoration( FieldDecorationRegistry.DEC_ERROR).getImage() );
+            feedback.show();
+            
+            return false; // so not valid!
+        }
+        if( isRequired && expr == Expression.NIL ){
+            feedback.setDescriptionText("Required");
+            feedback.setImage( decorations.getFieldDecoration( FieldDecorationRegistry.DEC_REQUIRED ).getImage() );
+            feedback.show();
+            
+            return false;
+        }
+        feedback.setDescriptionText(null);
+        feedback.setImage( null );
+        feedback.hide();
+        return true;
+    }
+    
+    /**
+     * Used to check for any validation messages (such as required field etc...)
+     * @return Validation message
+     */
+    public String getValidationMessage(){
+        FieldDecorationRegistry decorations = FieldDecorationRegistry.getDefault();
+        if( feedback.getImage() == decorations.getFieldDecoration( FieldDecorationRegistry.DEC_ERROR).getImage() ){
+            String errorMessage = feedback.getDescriptionText();
+            if( errorMessage == null ){
+                errorMessage = "invalid";
+            }
+            return errorMessage;
+        }
+        if( feedback.getImage() == decorations.getFieldDecoration( FieldDecorationRegistry.DEC_REQUIRED ).getImage() ){
+            String requiredMessage = feedback.getDescriptionText();
+            if( requiredMessage == null ){
+                requiredMessage = "invalid";
+            }
+            return requiredMessage;
+        }
+        return null; // all good then
+    }
     /**
      * Provides access to the Expression being used by this viewer.
      * <p>
@@ -120,21 +223,20 @@ public class ExpressionViewer extends Viewer {
     
     @Override
     public ISelection getSelection() {
+        if( expr == null ) return null;
+        
         IStructuredSelection selection = new StructuredSelection(expr);
         return selection;
     }
     
     @Override
     public void refresh() {
-        if( control != null ){
-            control.getDisplay().asyncExec( new Runnable(){                
+        if( text != null && !text.isDisposed()){
+            text.getDisplay().asyncExec( new Runnable(){                
                 public void run() {
-                    if (control == null || control.isDisposed() ) return;
-                    if( control instanceof Text){
-                        Text text = (Text) control;
-                        String cql = CQL.toCQL(expr);
-                        text.setText( cql );
-                    }
+                    if (text == null || text.isDisposed() ) return;
+                    String cql = CQL.toCQL(expr);
+                    text.setText( cql );                    
                 }
             });
         }
@@ -156,18 +258,67 @@ public class ExpressionViewer extends Viewer {
     public void setInput( Object input ) {
         if( input instanceof Expression ){
             expr = (Expression) input;
+            refresh();
         }
         else if (input instanceof String){
-            String txt = (String) input;
+            final String txt = (String) input;
             try {
                 expr = ECQL.toExpression( txt );
             } catch (CQLException e) {
+                // feedback that things are bad
             }
-        }
+            // use the text as provided
+            text.getDisplay().asyncExec( new Runnable(){            
+                public void run() {
+                    text.setText( txt );
+                }
+            });
+         }
     }
     
     @Override
     public void setSelection( ISelection selection, boolean reveal ) {
         // do nothing by default
+    }
+    
+    /**
+     * Provide the feedback that everything is fine.
+     * <p>
+     * This method will make use of an associated ControlDecoration if available;
+     * if not it will make use of a tooltip or something.
+     * </p>
+     */
+    public void feedback(){
+        feedback.hide();
+    }
+    /**
+     * Provide the feedback that everything is fine.
+     * <p>
+     * This method will make use of an associated ControlDecoration if available;
+     * if not it will make use of a tooltip or something.
+     * </p>
+     */
+    public void feedback( String warning ){
+        if( feedback != null ){
+            feedback.setDescriptionText( warning );
+            feedback.show();
+        }
+        Control control = getControl();
+        if( control != null && !control.isDisposed() ){
+            control.setToolTipText( warning );
+        }
+    }
+    /**
+     * Provide the feedback that everything is fine.
+     * <p>
+     * This method will make use of an associated ControlDecoration if available;
+     * if not it will make use of a tooltip or something.
+     * </p>
+     */
+    public void feedback( String error, Exception eek ){
+        Control control = getControl();
+        if( control != null && !control.isDisposed() ){
+            control.setToolTipText( error +":"+ eek );
+        }
     }
 }

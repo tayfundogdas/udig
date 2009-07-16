@@ -177,7 +177,6 @@ public class ComboExpressionViewer extends Viewer {
         viewer.setInput( options );
     }
 
-    // used to indicate that everything is okay
     /**
      * Provide the feedback that everything is fine.
      * <p>

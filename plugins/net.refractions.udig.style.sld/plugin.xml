@@ -126,8 +126,15 @@
       <StyleEditorPage
             class="net.refractions.udig.style.sld.editor.PointEditorPage"
             contentType="net.refractions.udig.project.ILayer"
-            id="net.refractions.udig.style.sld.StyleEditorPage1"
+            id="net.refractions.udig.style.sld.PointStyleEditorPage"
             label="Default Point"
+            requires="org.geotools.data.FeatureSource">
+      </StyleEditorPage>
+      <StyleEditorPage
+            class="net.refractions.udig.style.sld.editor.LineEditorPage"
+            contentType="net.refractions.udig.project.ILayer"
+            id="net.refractions.udig.style.sld.LineStyleEditorPage"
+            label="Default Line"
             requires="org.geotools.data.FeatureSource">
       </StyleEditorPage>
    </extension>
