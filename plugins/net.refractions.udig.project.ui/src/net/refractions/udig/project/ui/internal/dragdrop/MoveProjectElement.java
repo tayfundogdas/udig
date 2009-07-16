@@ -14,10 +14,11 @@
  */
 package net.refractions.udig.project.ui.internal.dragdrop;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
 
 import net.refractions.udig.project.internal.Project;
 import net.refractions.udig.project.internal.ProjectElement;
@@ -39,8 +40,16 @@ public class MoveProjectElement extends IDropAction {
 
     @Override
     public boolean accept() {
-        Collection<ProjectElement> elements = toProjectElements();
-        if (elements == null)
+        Collection<ProjectElement> elements = new HashSet<ProjectElement>(toProjectElements());
+        
+        for( Iterator<ProjectElement> iterator = elements.iterator(); iterator.hasNext(); ) {
+            ProjectElement projectElement = iterator.next();
+            if( getDestination().equals(projectElement.getProject())){
+                iterator.remove();
+            }
+        }
+        
+        if (elements == null || elements.isEmpty())
             return false;
 
         return true;
@@ -63,9 +72,9 @@ public class MoveProjectElement extends IDropAction {
             return null;
         }
 
-        if (getData() instanceof Collection<?>) {
+        if (getData() instanceof Collection< ? >) {
             Collection<ProjectElement> elements = new HashSet<ProjectElement>();
-            Collection<?> data = (Collection<?>) getData();
+            Collection< ? > data = (Collection< ? >) getData();
             for( Object object : data ) {
                 if (object instanceof ProjectElement) {
                     ProjectElement element = (ProjectElement) object;
@@ -81,8 +90,8 @@ public class MoveProjectElement extends IDropAction {
                         elements.add((ProjectElement) eobj);
                 }
             }
-            
-            if( !elements.isEmpty() )
+
+            if (!elements.isEmpty())
                 return elements;
         }
         return null;
@@ -90,22 +99,13 @@ public class MoveProjectElement extends IDropAction {
     @Override
     public void perform( IProgressMonitor monitor ) {
         Collection<ProjectElement> elements = toProjectElements();
-        
-        Project destination=(Project) getDestination();
 
-        
-        Collection<Project> projects = new ArrayList<Project>();
-        projects.add(destination);
+        Project destination = (Project) getDestination();
 
-        for( ProjectElement projectElement : elements ) {
-            Project projectInternal = projectElement.getProjectInternal();
-            if( projectInternal!=null){
-                projects.add(projectInternal);
-            }
-        }
-        
+        Collection<Project> projects = collectAffectedProjects(elements, destination);
+
         Collection<String> messages = ProjectPlugin.saveProjects(projects);
-        if( !messages.isEmpty() ){
+        if (!messages.isEmpty()) {
             MessageDialog
                     .openError(
                             Display.getDefault().getActiveShell(),
@@ -113,18 +113,13 @@ public class MoveProjectElement extends IDropAction {
                             "An error occurred while attempting to save projects.  Please verify you have write access to the project files and no other applications have locked the files.");
             return;
         }
-        
-        for( ProjectElement projectElement : elements ) {
-            Project projectInternal = projectElement.getProjectInternal();
-            if( projectInternal!=null){
-                projectInternal.getElementsInternal().remove(projectElement);
-            }
-        }
-        
-        destination.getElementsInternal().addAll(elements);
-        
+
+        Collection<ProjectElement> allElements = removeFromOldProjects(elements);
+
+        destination.getElementsInternal().addAll(allElements);
+
         Collection<String> errors = ProjectPlugin.saveProjects(projects);
-        
+
         if (!errors.isEmpty()) {
             MessageDialog
                     .openError(
@@ -133,6 +128,42 @@ public class MoveProjectElement extends IDropAction {
                             "An error occurred while attempting to save projects.  Please verify you have write access to the project files and no other applications have locked the files.");
             return;
         }
+    }
+
+    private Collection<ProjectElement> removeFromOldProjects( Collection<ProjectElement> elements ) {
+        HashSet<ProjectElement> all = new HashSet<ProjectElement>();
+        
+        for( ProjectElement projectElement : elements ) {
+            Project projectInternal = projectElement.getProjectInternal();
+            all.add(projectElement);
+            List<ProjectElement> children = projectElement.getElements(ProjectElement.class);
+            all.addAll(removeFromOldProjects(children));
+            if (projectInternal != null) {
+                projectInternal.getElementsInternal().remove(projectElement);
+            }
+        }
+        
+        return all;
+    }
+
+    private Collection<Project> collectAffectedProjects( Collection<ProjectElement> elements,
+            Project destination ) {
+
+        Collection<Project> projects = new HashSet<Project>();
+        projects.add(destination);
+
+        for( ProjectElement projectElement : elements ) {
+            Project projectInternal = projectElement.getProjectInternal();
+            if (projectInternal != null) {
+                projects.add(projectInternal);
+            }
+            Collection<Project> affectedProjects = collectAffectedProjects(projectElement
+                    .getElements(ProjectElement.class), destination);
+            projects.addAll(affectedProjects);
+        }
+
+        return projects;
+
     }
 
 }
