@@ -41,6 +41,7 @@ import org.geotools.coverage.grid.GridEnvelope2D;
 import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.referencing.CRS;
 import org.geotools.referencing.ReferencingFactoryFinder;
 import org.geotools.renderer.lite.RendererUtilities;
 import org.geotools.renderer.lite.gridcoverage2d.GridCoverageRenderer;
@@ -76,7 +77,7 @@ public class BasicGridCoverageRenderer extends RendererImpl {
 	public synchronized void render( Graphics2D graphics, IProgressMonitor monitor )
             throws RenderException {
         try {
-        	// ge the current context
+        	// get the current context
         	final IRenderContext currentContext = getContext();       	
         	
         	//check that actually we have something to draw
@@ -128,7 +129,10 @@ public class BasicGridCoverageRenderer extends RendererImpl {
 	            
 	            final TileCache tempCache=currentContext.getTileCache();
 	            hints.add(new RenderingHints(JAI.KEY_TILE_CACHE,tempCache));
-	                        
+	            
+	            if( CRS.getHorizontalCRS(destinationCRS) == null ){
+	                destinationCRS = coverage.getCoordinateReferenceSystem2D();
+	            }
 	            //draw
 	            try {
 	                Style style = grabStyle();
