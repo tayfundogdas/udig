@@ -15,7 +15,7 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import com.vividsolutions.jts.geom.Envelope;
 
 public class AbstractRasterGeoResourceInfo extends IGeoResourceInfo {
-    private final AbstractRasterGeoResource resource;
+    protected final AbstractRasterGeoResource resource;
     
     
     public AbstractRasterGeoResourceInfo( AbstractRasterGeoResource resource, String... keywords ) {

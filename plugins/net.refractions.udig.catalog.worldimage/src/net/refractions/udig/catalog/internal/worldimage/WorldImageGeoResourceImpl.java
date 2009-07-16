@@ -31,7 +31,6 @@ import net.refractions.udig.catalog.CatalogPlugin;
 import net.refractions.udig.catalog.IGeoResourceInfo;
 import net.refractions.udig.catalog.URLUtils;
 import net.refractions.udig.catalog.rasterings.AbstractRasterGeoResource;
-import net.refractions.udig.catalog.rasterings.AbstractRasterGeoResourceInfo;
 import net.refractions.udig.catalog.rasterings.GridCoverageLoader;
 import net.refractions.udig.catalog.worldimage.internal.Messages;
 
@@ -86,9 +85,10 @@ public class WorldImageGeoResourceImpl extends AbstractRasterGeoResource {
 		this.lock.lock();
 		try {
             if (this.info == null && getStatus() != Status.BROKEN) {
-                this.info = new AbstractRasterGeoResourceInfo(this,
-                        "WorldImage", "world image", ".gif", ".jpg", ".jpeg", //$NON-NLS-1$ //$NON-NLS-2$//$NON-NLS-3$//$NON-NLS-4$ //$NON-NLS-5$
-                        ".tif", ".tiff", ".png");   //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
+            	
+            	final CoordinateReferenceSystem crs = readCrs();
+            	
+                this.info = new WorldImageInfo(this, crs); 
             }
 			return this.info;
 		} finally {
@@ -177,22 +177,7 @@ public class WorldImageGeoResourceImpl extends AbstractRasterGeoResource {
 
 	public ParameterGroup getReadParameters() {
 		try {
-			PrjFileReader prjRead = null;
-			try {
-				prjRead = openPrjReader(this.prjURL);
-			} catch (FileNotFoundException e) {
-				CatalogPlugin.getDefault().getLog().log(
-						new org.eclipse.core.runtime.Status(IStatus.WARNING,
-								"net.refractions.udig.catalog", 0, //$NON-NLS-1$
-								"", e)); //$NON-NLS-1$
-			}
-			CoordinateReferenceSystem crsSys = null;
-			if (prjRead != null) {
-				crsSys = prjRead.getCoordinateReferenceSystem();
-			} else {
-				// prj file not read, default to lat long
-				crsSys = DefaultEngineeringCRS.GENERIC_2D;
-			}
+			CoordinateReferenceSystem crsSys = readCrs();
 
 			DefaultParameterDescriptor<CoordinateReferenceSystem> crs = new DefaultParameterDescriptor<CoordinateReferenceSystem>(
 					"crs", //$NON-NLS-1$
@@ -227,13 +212,32 @@ public class WorldImageGeoResourceImpl extends AbstractRasterGeoResource {
 							"net.refractions.udig.catalog", 0, //$NON-NLS-1$
 							"", e)); //$NON-NLS-1$
 			return super.getReadParameters();
+		}
+	}
+
+	private CoordinateReferenceSystem readCrs() throws IOException {
+		PrjFileReader prjRead = null;
+		try {
+			prjRead = openPrjReader(this.prjURL);
+		} catch (FileNotFoundException e) {
+			CatalogPlugin.getDefault().getLog().log(
+					new org.eclipse.core.runtime.Status(IStatus.WARNING,
+							"net.refractions.udig.catalog", 0, //$NON-NLS-1$
+							"", e)); //$NON-NLS-1$
 		} catch (FactoryException e) {
 			CatalogPlugin.getDefault().getLog().log(
 					new org.eclipse.core.runtime.Status(IStatus.WARNING,
 							"net.refractions.udig.catalog", 0, //$NON-NLS-1$
 							"", e)); //$NON-NLS-1$
-			return super.getReadParameters();
 		}
+		CoordinateReferenceSystem crsSys = null;
+		if (prjRead != null) {
+			crsSys = prjRead.getCoordinateReferenceSystem();
+		} else {
+			// prj file not read, default to lat long
+			crsSys = DefaultEngineeringCRS.GENERIC_2D;
+		}
+		return crsSys;
 	}
 
 
