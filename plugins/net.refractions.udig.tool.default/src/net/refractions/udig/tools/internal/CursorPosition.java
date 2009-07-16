@@ -9,10 +9,10 @@
 package net.refractions.udig.tools.internal;
 
 import java.awt.Point;
+import java.text.DecimalFormat;
 import java.text.NumberFormat;
 
 import net.refractions.udig.project.command.Command;
-import net.refractions.udig.project.command.factory.NavigationCommandFactory;
 import net.refractions.udig.project.internal.command.navigation.SetViewportCenterCommand;
 import net.refractions.udig.project.ui.render.displayAdapter.MapMouseEvent;
 import net.refractions.udig.project.ui.tool.AbstractTool;
@@ -63,8 +63,6 @@ public class CursorPosition extends AbstractTool {
 	@Override
 	public void setContext(IToolContext tools) {
 		super.setContext(tools);
-		Display d = Display.getDefault();
-		
 		PlatformGIS.syncInDisplayThread(new Runnable() {
 			/**
 			 * @see java.lang.Runnable#run()
@@ -108,11 +106,6 @@ public class CursorPosition extends AbstractTool {
 		mouseMoved(e);
 	}
 
-    static NumberFormat format = NumberFormat.getNumberInstance();
-    static {
-        format.setMaximumFractionDigits(64);
-    }
-    
 	private class LineItem extends ContributionItem implements KeyListener,
 			FocusListener {
 		private static final double ACCURACY = 0.0000001;
@@ -154,24 +147,18 @@ public class CursorPosition extends AbstractTool {
 
             if (Double.isInfinite(value)) {
                 return Messages.CursorPosition_infinity;
-            }            
-            String string = format.format(value);
-            string += "00"; //$NON-NLS-1$
-
-            // calculate number of digits to display based on zoom level
-            Coordinate coordFactor = getContext().getPixelSize();
-            double inverse = (double) 1 / coordFactor.x;
-            
-            String strFactor = format.format(inverse);
-            int factor = strFactor.lastIndexOf('.');
-
-            int end = Math.max(1, Math.min(string.lastIndexOf('.') + factor, string.length() - 1)); 
-            string = string.substring(0, end);
-
-            if (string.endsWith(".")) { //$NON-NLS-1$
-                string = string.substring(0, string.length() - 1);
             }
+            
+            DecimalFormat format = (DecimalFormat) NumberFormat.getNumberInstance();
+            format.setMaximumFractionDigits(4);
+            format.setMinimumIntegerDigits(1);
+            format.setGroupingUsed(false);
+            String string = format.format(value);
 
+            String[] parts = string.split("\\.");
+            if(parts[0].length()>3){
+            	string = parts[0];
+            }
             return string;
         }
 
@@ -190,7 +177,8 @@ public class CursorPosition extends AbstractTool {
 			textArea.setToolTipText(Messages.CursorPosition_tooltip); 
             setFont(textArea);
 			data=new StatusLineLayoutData();
-			data.widthHint = 150;
+			
+			data.widthHint = 200;
 			data.heightHint = 15;
 			textArea.setLayoutData(data);
 		}
@@ -214,8 +202,6 @@ public class CursorPosition extends AbstractTool {
 			// do nothing
 		}
 
-		Coordinate current;
-
 		public void keyReleased(KeyEvent e) {
 			if (e.character == SWT.Selection) {
 				go();
@@ -229,7 +215,6 @@ public class CursorPosition extends AbstractTool {
 			Coordinate newpos = parse(textArea.getText(),getContext().getCRS());
 			if (Math.abs(newpos.x - position.x) > ACCURACY || Math.abs(newpos.y - position.y) > ACCURACY) {
 				setPosition(newpos);
-                NavigationCommandFactory r = getContext().getNavigationFactory();
 				Command c = new SetViewportCenterCommand(newpos);
 				getContext().sendASyncCommand(c);
 			}
