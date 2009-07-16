@@ -44,12 +44,10 @@ public class MyProjectElement extends AbstractGenericProjectElement implements I
         setDirty(true);
     }
 
-    @Override
     public List getElements( Class type ) {
         return Collections.emptyList();
     }
 
-    @Override
     public List getElements() {
         return Collections.emptyList();
     }

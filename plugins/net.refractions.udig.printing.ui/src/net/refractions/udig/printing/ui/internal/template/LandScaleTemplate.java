@@ -193,7 +193,6 @@ public class LandScaleTemplate extends AbstractTemplate {
         return mapBounds;
     }
 
-    @Override
     public String getAbbreviation() {
         return getName();
     }

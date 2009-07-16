@@ -65,7 +65,6 @@ public class MakeHole implements IOp {
         
         MapCommand drillHoleCommand = new AbstractCommand(){
             
-            @Override
             public void run( IProgressMonitor monitor ) throws Exception {
                 for( Layer targetLayer : getMap().getLayersInternal() ){
                     //make hole filter for target layer

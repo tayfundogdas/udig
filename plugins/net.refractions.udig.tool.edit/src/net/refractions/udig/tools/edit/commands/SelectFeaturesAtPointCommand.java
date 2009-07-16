@@ -258,12 +258,10 @@ public class SelectFeaturesAtPointCommand extends AbstractCommand implements Und
 			this.bbox=bbox;
 		}
 
-		@Override
 		public void close() {
 			wrappedIter.close();
 		}
 
-		@Override
 		public boolean hasNext() {
 			if( next!=null ){
 				return true;
@@ -296,7 +294,6 @@ public class SelectFeaturesAtPointCommand extends AbstractCommand implements Und
 	            return false;
 	        }
 	    }
-		@Override
 		public SimpleFeature next() throws NoSuchElementException {
 			if(!hasNext()){
 				throw new NoSuchElementException();

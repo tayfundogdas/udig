@@ -127,7 +127,6 @@ public class InMemoryCoverageLoader extends GridCoverageLoader {
         coverage = null;
         Display.getDefault().asyncExec(new Runnable(){
 
-            @Override
             public void run() {
                 Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
                 String title = InMemoryCoverageLoader_msgTitle;

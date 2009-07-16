@@ -56,11 +56,12 @@
    <extension
          point="org.eclipse.ui.editors">
          <editor
-            icon="icons/obj16/page_obj.gif"
-            class="net.refractions.udig.printing.ui.internal.editor.PageEditor"
-            default="true"
-            name="%printing.ui.pageEditor.name"
-            id="net.refractions.udig.printing.ui.internal.editor.pageEditor"/>
+               class="net.refractions.udig.printing.ui.internal.editor.PageEditor"
+               contributorClass="net.refractions.udig.printing.ui.internal.editor.PageEditorActionBarContributor"
+               default="true"
+               icon="icons/obj16/page_obj.gif"
+               id="net.refractions.udig.printing.ui.internal.editor.pageEditor"
+               name="%printing.ui.pageEditor.name"/>
    </extension>
    <extension
          point="net.refractions.udig.project.ui.editorInputs">

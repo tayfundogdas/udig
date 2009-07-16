@@ -187,7 +187,6 @@ public class BasicTemplate extends AbstractTemplate {
         return mapBounds;
     }
 
-    @Override
     public String getAbbreviation() {
         return getName();
     }

@@ -375,7 +375,6 @@ public class UiPlugin extends AbstractUIPlugin  {
         final int[] heapS = new int[1];
         processAppIni(true, new Function<String,String>(){
 
-            @Override
             public String apply( String line ) {
                 if (line.matches(".*Xmx.*")) { //$NON-NLS-1$
                     Matcher matcher = pattern.matcher(line);
@@ -409,7 +408,6 @@ public class UiPlugin extends AbstractUIPlugin  {
     public static void setMaxHeapSize( final String maxHeadSize ) throws FileNotFoundException, IOException {
         processAppIni(false, new Function<String,String>(){
 
-            @Override
             public String apply( String line ) {
                 if (line.matches(".*Xmx.*")) { //$NON-NLS-1$
                     line = line.replaceFirst("Xmx[0-9]+", "Xmx" + maxHeadSize); //$NON-NLS-1$ //$NON-NLS-2$

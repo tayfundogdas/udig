@@ -25,6 +25,7 @@ import net.refractions.udig.project.element.ProjectElementAdapter;
 import net.refractions.udig.project.internal.Layer;
 import net.refractions.udig.project.internal.Map;
 import net.refractions.udig.project.internal.Project;
+import net.refractions.udig.project.internal.ProjectElement;
 import net.refractions.udig.project.internal.ProjectPlugin;
 import net.refractions.udig.project.internal.ProjectRegistry;
 import net.refractions.udig.project.internal.impl.MapImpl;
@@ -224,24 +225,21 @@ public class ProjectExplorer extends ViewPart
         ViewerFilter[] filters = new ViewerFilter[1];
         filters[0] = new ViewerFilter(){
             public boolean select( Viewer viewer, Object parentElement, Object element ) {
-                if (element instanceof MapImpl && parentElement instanceof ProjectImpl) {
-                    MapImpl mapElement = (MapImpl) element;
-                    ProjectImpl projectElement = (ProjectImpl) parentElement;
-                        
-                    List elements = projectElement.getElements();
-                    for( Object e : elements ) {
-                        if (e instanceof IProjectElement) {
-                            IProjectElement pElem = (IProjectElement) e;
-                            List<MapImpl> mapElements = pElem.getElements(MapImpl.class);
-                            for( MapImpl mapImpl : mapElements ) {
-                                if (mapImpl.equals(mapElement)) {
-                                    return false;
-                                }
+                if (element instanceof ProjectElement && parentElement instanceof Project) {
+                    ProjectElement mapElement = (ProjectElement) element;
+                    Project projectElement = (Project) parentElement;
+
+                    List<ProjectElement> elements = projectElement
+                            .getElements(ProjectElement.class);
+                    for( ProjectElement pElem : elements ) {
+                        List<ProjectElement> projectElements = pElem
+                                .getElements(ProjectElement.class);
+                        for( ProjectElement projElem : projectElements ) {
+                            if (projElem.equals(mapElement)) {
+                                return false;
                             }
-                            
                         }
                     }
-                    
                 }
 
                 return true;
