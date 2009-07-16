@@ -1988,7 +1988,7 @@ public class LayerImpl extends EObjectImpl implements Layer {
                 try {
                     result = result.transform(crs, true);
                 } catch (Exception fe) {
-                    ProjectPlugin.log("failure to transform layer bounds", fe);
+                    ProjectPlugin.log("failure to transform layer bounds", fe); //$NON-NLS-1$
                 }
             }
         } else {

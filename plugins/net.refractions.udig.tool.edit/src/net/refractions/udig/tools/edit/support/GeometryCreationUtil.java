@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 import net.refractions.udig.core.internal.GeometryBuilder;
+import net.refractions.udig.tool.edit.internal.Messages;
 import net.refractions.udig.tools.edit.EditPlugin;
 
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -205,13 +206,13 @@ public class GeometryCreationUtil {
                         MessageDialog
                                 .openError(
                                         display.getActiveShell(),
-                                        "Internal Error",
-                                        "Apologies an internal error has occurred.  In order to preserve data integrity the last edit sequence is going to be discarded.  Please try again");
+                                        Messages.GeometryCreationUtil_errorTitle,
+                                        Messages.GeometryCreationUtil_errorMsg);
                     }
                 });
-                throw new IllegalStateException("Geometry constructed from EditGeom: "
+                throw new IllegalStateException("Geometry constructed from EditGeom: " //$NON-NLS-1$
                         + shape.getEditGeom().getFeatureIDRef().get()
-                        + " resulted in an invalid geometry");
+                        + " resulted in an invalid geometry"); //$NON-NLS-1$
             }
         }
         return geomToCreate.cast(geom);
