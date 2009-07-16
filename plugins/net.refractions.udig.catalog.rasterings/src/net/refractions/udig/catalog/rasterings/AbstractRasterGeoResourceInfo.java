@@ -1,5 +1,7 @@
 package net.refractions.udig.catalog.rasterings;
 
+import java.io.File;
+
 import net.refractions.udig.catalog.CatalogPlugin;
 import net.refractions.udig.catalog.ID;
 import net.refractions.udig.catalog.IGeoResourceInfo;
@@ -34,7 +36,7 @@ public class AbstractRasterGeoResourceInfo extends IGeoResourceInfo {
     public String getShortTitle() {
         String typeQualifier = resource.getID().getTypeQualifier();
         String title2 = getTitle();
-        String name = title2.substring(title2.lastIndexOf('/')+1);
+        String name = title2.substring(title2.lastIndexOf(File.separator)+1);
         return name+" ("+typeQualifier+")"; //$NON-NLS-1$ //$NON-NLS-2$
     }
     
