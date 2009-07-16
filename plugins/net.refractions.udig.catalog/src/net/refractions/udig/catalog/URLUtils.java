@@ -148,67 +148,39 @@ public class URLUtils {
      * @param destination the URL to transform to a relative path
      * @return the relative path from reference to destination
      */
-    public static URL toRelativePath( File reference, URL destination ) {
-        if (!destination.getProtocol().equalsIgnoreCase("file") //$NON-NLS-1$
-                || destination.getQuery() != null || destination.getRef() != null)
-            return destination;
+	public static URL toRelativePath(File reference, URL destination) {
+		if (!destination.getProtocol().equalsIgnoreCase("file") //$NON-NLS-1$
+				|| destination.getQuery() != null
+				|| destination.getRef() != null)
+			return destination;
 
-        URL referenceURL = fileToURL(reference);
-        String from = urlToString(referenceURL, false).substring(5);
-        String to = urlToString(destination, false).substring(5);
+		try {
+			
+			File destinationFile = urlToFile(destination).getAbsoluteFile();
+			File absReference = reference.getAbsoluteFile();
+			if(absReference.isFile()){
+				absReference = absReference.getParentFile().getAbsoluteFile();
+			}
 
-        // check if the path is the same
-        if (from.equals(to)) {
-            try {
-                return new URL("file:/./"); //$NON-NLS-1$
-            } catch (MalformedURLException e1) {
-                throw new RuntimeException(e1);
-            }
-        }
-        /*
-         * check if the root drives are different, in which case it is not possible
-         * to create relative paths (and the destination is returned for now in that 
-         * case). 
-         */
-        char referenceRoot = reference.getAbsolutePath().charAt(0);
-        char destinationRoot = urlToFile(destination).getAbsolutePath().charAt(0);
-        if (referenceRoot != destinationRoot) {
-            return destination;
-        }
+			if (destinationFile.equals(absReference)) {
+				if (destinationFile.isFile()) {
+					return new URL("file:/./" + destinationFile.getName());
+				} else {
+					return new URL("file:/./");
+				}
+			}
 
-        int endOfMatch = 0;
-        int lastSlash = 0;
-        for( int i = 0; i < from.length(); i++ ) {
-            char fromChar = from.charAt(i);
-            char toChar = to.charAt(i);
-
-            endOfMatch = i;
-            if (fromChar != toChar) {
-                break;
-            }
-            if (fromChar == '/')
-                lastSlash = i;
-
-        }
-
-        if (endOfMatch == 0) {
-            return destination;
-        }
-        String substring = from.substring(lastSlash + 1);
-        int slashes = substring.split("/").length - 1; //$NON-NLS-1$
-
-        StringBuilder result = new StringBuilder();
-
-        for( int i = 0; i < slashes; i++ ) {
-            result.append("../"); //$NON-NLS-1$
-        }
-
-        try {
-            return new URL("file:/" + result.toString() + to.substring(lastSlash + 1)); //$NON-NLS-1$
-        } catch (MalformedURLException e) {
-            return destination;
-        }
-    }
+			if (!destination.getPath().startsWith(absReference.getPath())) {
+				return destination;
+			} else {
+				int length = absReference.getPath().length();
+				String frag = destination.getPath().substring(length);
+				return new URL("file:/./" + frag);
+			}
+		} catch (Exception e) {
+			return destination;
+		}
+	}
 
     public static String getPrefix( File file ) {
         if (!file.isAbsolute()) {

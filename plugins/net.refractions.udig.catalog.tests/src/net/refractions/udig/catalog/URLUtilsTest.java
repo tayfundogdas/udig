@@ -48,15 +48,15 @@ public class URLUtilsTest extends TestCase {
 		result = URLUtils.toRelativePath(reference, url);
 		assertSame(url, result);
 		
-		url = new URL("file:/C:/Users/Jody/Desktop/raster/norway/trond50geor.jpg");
-		reference = new File("C:\\java\\udig\\runtime-udig.product\\.localCatalog");
-		result = URLUtils.toRelativePath( reference, url);
-		assertEquals( new URL("file:/../../../Users/Jody/Desktop/raster/norway/trond50geor.jpg"), result );		
+		try{
+			url = new URL("file:/C:/Users/Jody/Desktop/raster/norway/trond50geor.jpg");
+			reference = new File("C:\\java\\udig\\runtime-udig.product\\.localCatalog");
+			result = URLUtils.toRelativePath( reference, url);
+			fail("we do not allow this right now");
+		}catch (Exception e) {
+			// expected
+		}
 		
-        url = new URL("file:/D:/Users/Jody/Desktop/raster/norway/trond50geor.jpg");
-        reference = new File("C:\\java\\udig\\runtime-udig.product\\.localCatalog");
-        result = URLUtils.toRelativePath( reference, url);
-        assertEquals( url, result );
 	}
 
 	public void testConstructURL() throws Exception {
