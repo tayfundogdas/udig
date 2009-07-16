@@ -3,6 +3,9 @@
  */
 package net.refractions.udig.project.internal;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -75,6 +78,33 @@ public final class ProjectPlugin extends EMFPlugin {
      */
     public ResourceLocator getPluginResourceLocator() {
         return plugin;
+    }
+
+    /**
+     * Save the collection of projects
+     *
+     * @param projects projects to save
+     * @return Collection of error messages or empty collection
+     */
+    public static Collection<String> saveProjects( Collection<Project> projects ) {
+        ArrayList<String> errors = new ArrayList<String>();
+        for( Project project : projects ) {
+            try{
+                Resource eResource = project.eResource();
+                Map<String, String> saveOptions = getPlugin().saveOptions;
+                eResource.save(saveOptions);
+                List<ProjectElement> elementsInternal = project.getElementsInternal();
+                for( ProjectElement projectElement : elementsInternal ) {
+                    projectElement.eResource().save(saveOptions);
+                }
+            }catch (Exception e) {
+                log("Error while saving resource", e);
+                String msg = "Error occurred while saving project: "+ project.getID().toString(); //$NON-NLS-1$
+                errors.add(msg);
+            }
+        }
+        
+        return errors;
     }
 
     /**

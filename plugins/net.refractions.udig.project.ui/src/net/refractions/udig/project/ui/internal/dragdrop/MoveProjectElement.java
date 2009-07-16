@@ -14,16 +14,20 @@
  */
 package net.refractions.udig.project.ui.internal.dragdrop;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 
 import net.refractions.udig.project.internal.Project;
 import net.refractions.udig.project.internal.ProjectElement;
+import net.refractions.udig.project.internal.ProjectPlugin;
 import net.refractions.udig.ui.IDropAction;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.widgets.Display;
 
 /**
  * Move Project elements between projects
@@ -59,9 +63,9 @@ public class MoveProjectElement extends IDropAction {
             return null;
         }
 
-        if (getData() instanceof Collection) {
+        if (getData() instanceof Collection<?>) {
             Collection<ProjectElement> elements = new HashSet<ProjectElement>();
-            Collection data = (Collection) getData();
+            Collection<?> data = (Collection<?>) getData();
             for( Object object : data ) {
                 if (object instanceof ProjectElement) {
                     ProjectElement element = (ProjectElement) object;
@@ -88,8 +92,47 @@ public class MoveProjectElement extends IDropAction {
         Collection<ProjectElement> elements = toProjectElements();
         
         Project destination=(Project) getDestination();
+
+        
+        Collection<Project> projects = new ArrayList<Project>();
+        projects.add(destination);
+
+        for( ProjectElement projectElement : elements ) {
+            Project projectInternal = projectElement.getProjectInternal();
+            if( projectInternal!=null){
+                projects.add(projectInternal);
+            }
+        }
+        
+        Collection<String> messages = ProjectPlugin.saveProjects(projects);
+        if( !messages.isEmpty() ){
+            MessageDialog
+                    .openError(
+                            Display.getDefault().getActiveShell(),
+                            "Error saving projects",
+                            "An error occurred while attempting to save projects.  Please verify you have write access to the project files and no other applications have locked the files.");
+            return;
+        }
+        
+        for( ProjectElement projectElement : elements ) {
+            Project projectInternal = projectElement.getProjectInternal();
+            if( projectInternal!=null){
+                projectInternal.getElementsInternal().remove(projectElement);
+            }
+        }
         
         destination.getElementsInternal().addAll(elements);
+        
+        Collection<String> errors = ProjectPlugin.saveProjects(projects);
+        
+        if (!errors.isEmpty()) {
+            MessageDialog
+                    .openError(
+                            Display.getDefault().getActiveShell(),
+                            "Error saving projects",
+                            "An error occurred while attempting to save projects.  Please verify you have write access to the project files and no other applications have locked the files.");
+            return;
+        }
     }
 
 }
