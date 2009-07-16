@@ -91,6 +91,7 @@ import org.geotools.factory.GeoTools;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
+import org.geotools.referencing.crs.DefaultEngineeringCRS;
 import org.geotools.referencing.operation.transform.IdentityTransform;
 import org.geotools.util.Range;
 import org.opengis.feature.simple.SimpleFeature;
@@ -1984,7 +1985,8 @@ public class LayerImpl extends EObjectImpl implements Layer {
         }
 
         if (result != null && !result.isNull()) {
-            if (crs != null) {
+            DefaultEngineeringCRS generic2d = DefaultEngineeringCRS.GENERIC_2D;
+            if (crs != null && result.getCoordinateReferenceSystem() != generic2d) {
                 try {
                     result = result.transform(crs, true);
                 } catch (Exception fe) {
