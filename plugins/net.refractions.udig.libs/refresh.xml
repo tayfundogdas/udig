@@ -50,6 +50,7 @@
 
 			<!-- geotools plug-ins -->
 			<dependency groupId="org.geotools" artifactId="gt-arcgrid" version="${geotools.version}" />
+			<dependency groupId="org.geotools" artifactId="gt-arcsde-common" version="${geotools.version}" />
 			<dependency groupId="org.geotools" artifactId="gt-arcsde" version="${geotools.version}" />
 			<dependency groupId="org.geotools" artifactId="gt-db2" version="${geotools.version}" />
 			<dependency groupId="org.geotools" artifactId="gt-epsg-hsql" version="${geotools.version}" />
