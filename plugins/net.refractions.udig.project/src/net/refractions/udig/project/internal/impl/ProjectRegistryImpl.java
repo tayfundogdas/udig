@@ -289,7 +289,7 @@ public class ProjectRegistryImpl extends EObjectImpl implements ProjectRegistry 
             projectPath = "file://" + projectPath; //$NON-NLS-1$
         }
         // DONE HACK
-        final String path = projectPath + File.separatorChar + "project.uprj"; //$NON-NLS-1$
+        final String path = projectPath + File.separatorChar + ProjectRegistry.PROJECT_FILE; //$NON-NLS-1$
         final URI uri = URI.createURI(path);
         Project project = getProject(uri);
         return project;

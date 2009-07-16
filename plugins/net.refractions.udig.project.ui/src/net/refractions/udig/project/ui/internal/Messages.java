@@ -202,7 +202,9 @@ public class Messages extends NLS {
 	public static String Rename_enterNewName;
 	public static String ResourceSelectionPage_title;
 	public static String OpenMapCommand_taskName;
-	public static String OpenProject_openProject;
+	public static String OpenProject_ErrorMessage;
+    public static String OpenProject_ErrorTitle;
+    public static String OpenProject_openProject;
 	public static String OpenMapCommand_commandName;
 	public static String OpenProject_selectProject;
 	public static String OpenProject_openProject_title;
