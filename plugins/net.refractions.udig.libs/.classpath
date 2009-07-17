@@ -27,7 +27,7 @@
 	<classpathentry exported="true" kind="lib" path="lib/geoapi-pending-2.3-SNAPSHOT.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/google-collect-snapshot-20080321.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/gt-api-2.6-SNAPSHOT.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/gt-arcgrid-2.6-SNAPSHOT.jar" sourcepath="/net.refractions.udig.libs.source/src/net.refractions.udig.libs_1.2.0/lib/gt-coverage-2.6-SNAPSHOTsrc.zip"/>
+	<classpathentry exported="true" kind="lib" path="lib/gt-arcgrid-2.6-SNAPSHOT.jar" sourcepath="/Users/jody/java/geotools/trunk/modules/library/main"/>
 	<classpathentry exported="true" kind="lib" path="lib/gt-arcsde-2.6-SNAPSHOT.jar" sourcepath="/Users/jody/java/geotools/trunk/modules/plugin/arcsde/datastore/src/main/java"/>
 	<classpathentry exported="true" kind="lib" path="lib/gt-arcsde-common-2.6-SNAPSHOT.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/gt-brewer-2.6-SNAPSHOT.jar"/>
