@@ -33,6 +33,7 @@ import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.grid.io.GridFormatFactorySpi;
 import org.geotools.data.DataUtilities;
+import org.geotools.factory.Hints;
 
 /**
  * Provides a handle to a raster service allowing the service to be lazily loaded.
@@ -124,7 +125,10 @@ public abstract class AbstractRasterService extends IService {
 //	                }
 	                File file = id.toFile();
 	                if( file != null ){
-	                	this.reader = (AbstractGridCoverage2DReader) frmt.getReader( file );
+	                	// to force  crs
+//	                	Hints hints = new Hints();
+//	                	hints.put(Hints.DEFAULT_COORDINATE_REFERENCE_SYSTEM, )
+						this.reader = (AbstractGridCoverage2DReader) frmt.getReader( file );
 	                	return this.reader;
 	                }
 	                else {

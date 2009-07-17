@@ -88,20 +88,24 @@ public class InMemoryCoverageLoader extends GridCoverageLoader {
     @Override
     public synchronized GridCoverage load( GeneralGridGeometry geom, IProgressMonitor monitor )
             throws IOException {
-        if (coverage == null) {
-            // we have tried to load and failed. so return empty
-            return EMPTY_COVERAGE;
-        }
 
         if (coverage.get() == null) {
             try {
                 AbstractGridCoverage2DReader reader = (AbstractGridCoverage2DReader) resource
                         .resolve(GridCoverageReader.class, monitor);
+
+                
+                
                 GridEnvelope range = reader.getOriginalGridRange();
                 GeneralEnvelope env = reader.getOriginalEnvelope();
                 GridGeometry2D all = new GridGeometry2D(range, env);
                 GridCoverage2D coverage2d = (GridCoverage2D) super.load(all, monitor);
                 RenderedImage image = coverage2d.view(ViewType.RENDERED).getRenderedImage();
+
+				RasteringsPlugin
+						.log(
+								"WARNING.  Loading an image fully into memory.  It is about " + size(image) + " MB in size decompressed", null); //$NON-NLS-1$//$NON-NLS-2$
+
                 BufferedImage bi = new BufferedImage(image.getColorModel(), (WritableRaster) image
                         .getData(), false, new Hashtable());
                 GridCoverageFactory fac = new GridCoverageFactory();
@@ -109,22 +113,17 @@ public class InMemoryCoverageLoader extends GridCoverageLoader {
                 GridCoverage2D c = fac.create(fileName, bi, env);
                 coverage = new SoftReference<GridCoverage>(c);
 
-                RasteringsPlugin
-                        .log(
-                                "WARNING.  Loading an image fully into memory.  It is about " + size(bi) + " MB in size decompressed", null); //$NON-NLS-1$//$NON-NLS-2$
             } catch (OutOfMemoryError e) {
                 updateMemoryLevel();
-            } catch (RuntimeException t) {
-                if (t.getMessage().contains("javax.imageio.IIOException") && t.getMessage().contains("202")) { //$NON-NLS-1$//$NON-NLS-2$
-                    updateMemoryLevel();
-                }
+            } catch (Exception t) {
+                updateMemoryLevel();
             }
         }
         return coverage.get();
     }
 
     private void updateMemoryLevel() {
-        coverage = null;
+        coverage = new SoftReference<GridCoverage>(EMPTY_COVERAGE);
         Display.getDefault().asyncExec(new Runnable(){
 
             public void run() {
@@ -166,13 +165,17 @@ public class InMemoryCoverageLoader extends GridCoverageLoader {
         });
     }
 
-    private int size( BufferedImage bi ) {
-        int colorData = 0;
+    private double size( RenderedImage bi ) {
+
+    	double colorData = 0;
         for( int elem : bi.getColorModel().getComponentSize() ) {
             colorData += elem;
         }
 
-        return (bi.getWidth() * bi.getHeight() * colorData) / 1024;
+        double width = (double)bi.getWidth();
+		double height = (double)bi.getHeight();
+		double meg = (double)1024*8;
+		return (width * height * colorData) / meg;
     }
 
 }
