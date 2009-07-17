@@ -452,6 +452,12 @@
         <acceptedType
               adapt="true"
               class="net.refractions.udig.catalog.IService"/>
+        <acceptedType
+              adapt="true"
+              class="java.lang.String"/>
+              <acceptedType
+              adapt="true"
+              class="java.io.File"/>
      </action>
      <action
            class="net.refractions.udig.project.ui.internal.dragdrop.MoveLayerDropAction"

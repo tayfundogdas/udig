@@ -340,6 +340,16 @@
                <objectClass name="net.refractions.udig.project.IProject"/>
             </enablement>
          </action>
+          <action
+               label="%map.action.open.name"
+               icon="icons/obj16/project_obj.gif"
+               class="net.refractions.udig.project.ui.internal.actions.OpenMapAction"
+               tooltip="%project.action.open.tooltip"
+               definitionId="net.refractions.udig.project.ui.openMapCommand"
+               style="push"
+               menubarPath="file/project.ext"
+               id="net.refractions.udig.project.ui.openMapAction"/>         
+         
       </actionSet>
       <actionSet
             description="%Layer.Query.Description"

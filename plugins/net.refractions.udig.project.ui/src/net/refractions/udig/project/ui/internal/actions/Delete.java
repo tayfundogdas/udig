@@ -28,7 +28,6 @@ import net.refractions.udig.core.Pair;
 import net.refractions.udig.core.filter.AdaptingFilter;
 import net.refractions.udig.project.ILayer;
 import net.refractions.udig.project.IMap;
-import net.refractions.udig.project.IProjectElement;
 import net.refractions.udig.project.command.MapCommand;
 import net.refractions.udig.project.command.UndoableMapCommand;
 import net.refractions.udig.project.command.factory.EditCommandFactory;
@@ -56,6 +55,7 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.jface.window.Window;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchPage;
@@ -141,7 +141,7 @@ public class Delete extends UDIGGenericAction {
     protected void operate( ProjectElement element, Object context ) {
         if (element == null)
             return;
-        Pair<Boolean, Integer> pair = (Pair<Boolean,Integer>)context;
+        Pair<Boolean, Integer> pair = (Pair<Boolean, Integer>) context;
         boolean deleteFiles = pair.left();
         int returnCode = pair.right();
         doDelete(element, deleteFiles, returnCode);
@@ -165,25 +165,29 @@ public class Delete extends UDIGGenericAction {
 
     private Object dialog( int size, String deleteOne, String name, String deleteMany ) {
         String message;
-        if( size == 1 ){
-            message = MessageFormat.format(deleteOne, name );
-        }else{
+        if (size == 1) {
+            message = MessageFormat.format(deleteOne, name);
+        } else {
             message = MessageFormat.format(deleteMany, size);
         }
-        
+
         MessageDialogWithToggle dialog = MessageDialogWithToggle.openOkCancelConfirm(Display
-                .getCurrent().getActiveShell(), Messages.Delete_delete, message, 
+                .getCurrent().getActiveShell(), Messages.Delete_delete, message,
                 Messages.Delete_filesystem, getDoDelete(), null, null);
         // note: we will do our own preference store persistence, since the built in one is
         // backwards
         boolean deleteFiles = dialog.getToggleState();
         int returnCode = dialog.getReturnCode();
-        if (deleteFiles != getDoDelete()) {
-            setDoDelete(deleteFiles);
+        if (returnCode == 0) {
+            if (deleteFiles != getDoDelete()) {
+                setDoDelete(deleteFiles);
+            }
+            return Pair.create(deleteFiles, returnCode);
+        } else {
+            return null;
         }
-        return Pair.create(deleteFiles, returnCode);
     }
-    
+
     @Override
     protected void operate( ILayer layer, AdaptingFilter filter, Object c ) {
         layer.getMap().sendCommandASync(new DeleteManyFeaturesCommand(layer, filter));
@@ -191,20 +195,19 @@ public class Delete extends UDIGGenericAction {
 
     protected final void doDelete( ProjectElement element, boolean deleteFiles, int returncode ) {
         if (returncode != Window.CANCEL) {
-            for( UDIGEditorInputDescriptor desc : ApplicationGIS
-                    .getEditorInputs(element) ) {
+            for( UDIGEditorInputDescriptor desc : ApplicationGIS.getEditorInputs(element) ) {
                 IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow()
                         .getActivePage();
                 IEditorPart editor = page.findEditor(desc.createInput(element));
                 if (editor != null)
                     page.closeEditor(editor, false);
             }
-            
+
             List<ProjectElement> elements = element.getElements(ProjectElement.class);
             for( ProjectElement projectElement : elements ) {
                 doDelete(projectElement, deleteFiles, returncode);
             }
-            
+
             Project projectInternal = element.getProjectInternal();
             if (projectInternal != null)
                 projectInternal.getElementsInternal().remove(element);
@@ -220,7 +223,7 @@ public class Delete extends UDIGGenericAction {
             }
             if (deleteFiles) {
                 try {
-                    if( resource==null ){
+                    if (resource == null) {
                         return;
                     }
                     String path = resource.getURI().toFileString();
@@ -255,7 +258,7 @@ public class Delete extends UDIGGenericAction {
     protected void operate( Project project, Object context ) {
         if (project == null)
             return;
-        Pair<Boolean, Integer> pair = (Pair<Boolean,Integer>)context;
+        Pair<Boolean, Integer> pair = (Pair<Boolean, Integer>) context;
         boolean deleteFiles = pair.left();
         int returnCode = pair.right();
         doDelete(project, deleteFiles, returnCode);

@@ -445,7 +445,8 @@ public class FeatureTypeEditor {
 
             };
             createAttributeAction.setId("net.refractions.udig.ui.FeatureTypeEditor.createAttributeAction"); //$NON-NLS-1$
-            createAttributeAction.setToolTipText("Add Attribute"); 
+            createAttributeAction.setText(Messages.addAttributeAction_label); 
+            createAttributeAction.setToolTipText(Messages.addAttributeAction_label); 
             createAttributeAction.setImageDescriptor(Images.getDescriptor("elcl16/new_attribute.gif")); //$NON-NLS-1$
         }
         return createAttributeAction;

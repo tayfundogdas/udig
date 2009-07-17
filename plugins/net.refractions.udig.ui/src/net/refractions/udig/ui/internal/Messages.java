@@ -196,6 +196,7 @@ public class Messages extends NLS {
     public static String orientation_automatic_description;
     public static String orientation_automatic_tooltip;
     
+    public static String addAttributeAction_label;
     
 	static {
 		// initialize resource bundle

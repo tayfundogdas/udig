@@ -38,16 +38,22 @@ import org.eclipse.core.runtime.IProgressMonitor;
  */
 public class OnProjectDropAction extends IDropAction {
 
+    public OnProjectDropAction() {
+    }
+    
     @SuppressWarnings("unchecked")
     @Override
     public boolean accept() {
-        if( getViewerLocation()==ViewerDropLocation.NONE )
+        if( getViewerLocation()==ViewerDropLocation.NONE ){
             return false;
-        if( !(getDestination() instanceof Project) )
+        }
+        if( !(getDestination() instanceof Project) ){
             return false;
+        }
         
-        if( isLegalType(getData()) )
+        if( isLegalType(getData()) ){
             return true;
+        }
         
         List<Object> obj = toCollection();
         return !obj.isEmpty();
@@ -66,35 +72,44 @@ public class OnProjectDropAction extends IDropAction {
         List<Object> obj=new ArrayList<Object>();
         if(array!=null){
             for( Object object : array ) {
-                if( isLegalType(object) )
+                if( isLegalType(object) ){
                     obj.add(object);
+                }
             }
         }
         return obj;
     }
 
-    private boolean  isLegalType(Object obj) {
-        if( obj instanceof IGeoResource )
+    private boolean isLegalType( Object obj ) {
+        if (obj instanceof IGeoResource) {
             return true;
-        if( obj instanceof IResolveFolder )
+        }
+        if (obj instanceof IResolveFolder) {
             return true;
-        if( obj instanceof IService )
+        }
+        if (obj instanceof IService) {
             return true;
+        }
         return false;
     }
 
     @Override
     public void perform( IProgressMonitor monitor ) {
-        if( !accept() )
+        if (!accept()) {
             throw new IllegalStateException("the data or destination is not legal"); //$NON-NLS-1$
+        }
         List<IGeoResource> resources=new ArrayList<IGeoResource>();
         
-        if( getData() instanceof IGeoResource ){
-            resources.add((IGeoResource) getData());
-        } else if( getData() instanceof IResolveFolder ){
-            resources.addAll(MapDropAction.toResources(monitor, getData(), getClass()));
-        } else if( getData() instanceof IService ){
-            resources.addAll(MapDropAction.toResources(monitor, getData(), getClass()));
+        Object data = getData();
+        if( data instanceof IGeoResource ){
+            resources.add((IGeoResource) data);
+        } else if( data instanceof IResolveFolder ){
+            resources.addAll(MapDropAction.toResources(monitor, data, getClass()));
+        } else if( data instanceof IService ){
+            resources.addAll(MapDropAction.toResources(monitor, data, getClass()));
+        } else if (data instanceof String) {
+            new OpenMapAction().loadMapFromString((String) data, null, true);
+            return;
         } else {
             List<Object> list=toCollection();
             for( Object object : list ) {
@@ -106,8 +121,10 @@ public class OnProjectDropAction extends IDropAction {
                 }
             }
         }
-        
+
         ApplicationGIS.createAndOpenMap(resources, (IProject) getDestination());
     }
+
+
 
 }
