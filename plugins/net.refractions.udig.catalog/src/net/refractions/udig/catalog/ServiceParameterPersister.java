@@ -267,6 +267,15 @@ public class ServiceParameterPersister {
 	}
 	
 
+	/**
+	 * Stores the files into the preferences node.
+	 * 
+	 * @param monitor Progress monitor 
+	 * @param node the preferences to write to
+	 * @param resolves the resolves to commit
+	 * @throws BackingStoreException
+	 * @throws IOException
+	 */
 	public void store(IProgressMonitor monitor, Preferences node,
 			Collection<? extends IResolve> resolves ) throws BackingStoreException, IOException {
 		clearPreferences(node);

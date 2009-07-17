@@ -37,7 +37,7 @@ import net.refractions.udig.core.internal.CorePlugin;
 public class URLUtils {
 
     /**
-     * Primarily for testing the comparison of URLS. it is not a simple thing because different
+     * Primarily for testing the cOomparison of URLS. it is not a simple thing because different
      * platforms can sometimes create ones with a dangling / or with / vs \ some times file:/// or
      * file:/.
      * 
@@ -143,12 +143,15 @@ public class URLUtils {
      * </ul>
      * </p>
      * 
-     * @param reference the "from" file. The file that the relative path will start at. <b>MUST BE A
-     *        FILE</b>
-     * @param destination the URL to transform to a relative path
+     * @param reference the "from" file/directory. The file/directory that the 
+     *                  relative path will start at.  It MUST exist 
+     * @param destination the URL to transform to a relative path. 
      * @return the relative path from reference to destination
      */
 	public static URL toRelativePath(File reference, URL destination) {
+	    if(!reference.exists()){
+	        
+	    }
 		if (!destination.getProtocol().equalsIgnoreCase("file") //$NON-NLS-1$
 				|| destination.getQuery() != null
 				|| destination.getRef() != null)
@@ -157,12 +160,19 @@ public class URLUtils {
 		try {
 			
 			File destinationFile = urlToFile(destination).getAbsoluteFile();
+			File destDir;
+			if(destinationFile.isFile()){
+                destDir = destinationFile.getParentFile();
+			}else{
+			    destDir = destinationFile;
+			}
+			
 			File absReference = reference.getAbsoluteFile();
 			if(absReference.isFile()){
 				absReference = absReference.getParentFile().getAbsoluteFile();
 			}
 
-			if (destinationFile.equals(absReference)) {
+			if (destDir.equals(absReference)) {
 				if (destinationFile.isFile()) {
 					return new URL("file:/./" + destinationFile.getName());
 				} else {
@@ -170,12 +180,13 @@ public class URLUtils {
 				}
 			}
 
-			if (!destination.getPath().startsWith(absReference.getPath())) {
+			if (!destinationFile.getPath().startsWith(absReference.getPath())) {
 				return destination;
 			} else {
 				int length = absReference.getPath().length();
-				String frag = destination.getPath().substring(length);
-				return new URL("file:/./" + frag);
+				String frag = destinationFile.getPath().substring(length+1);
+				String dirPath = "file:/./" + frag.replaceAll("\\\\", "/");
+                return new URL(dirPath);
 			}
 		} catch (Exception e) {
 			return destination;

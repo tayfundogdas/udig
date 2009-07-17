@@ -873,7 +873,7 @@ public class CatalogImpl extends ICatalog {
 		try{
         	Preferences toSave = Platform.getPreferencesService().getRootNode().node(CatalogPlugin.ID).node("LOCAL_CATALOG_SERVICES");  //$NON-NLS-1$
 	        if (services!=null) {
-	            ServiceParameterPersister persister=new ServiceParameterPersister(this, factory, catalogLocation);
+	            ServiceParameterPersister persister=new ServiceParameterPersister(this, factory, catalogLocation.getParentFile());
 	         
 	            persister.store(monitor, toSave, services);
 	        }
