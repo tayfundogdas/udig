@@ -406,6 +406,7 @@
      </action>
      <action
            class="net.refractions.udig.project.ui.internal.actions.LayerDropAction"
+           enablesFor="+"
            name="%LayerDropAction.name">
         <destination class="net.refractions.udig.project.ILayer"/>
         <acceptedType class="net.refractions.udig.project.ILayer"/>
