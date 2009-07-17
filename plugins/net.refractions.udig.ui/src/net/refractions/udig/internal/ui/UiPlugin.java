@@ -13,6 +13,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.PropertyResourceBundle;
 import java.util.concurrent.Callable;
@@ -409,8 +410,8 @@ public class UiPlugin extends AbstractUIPlugin  {
         processAppIni(false, new Function<String,String>(){
 
             public String apply( String line ) {
-                if (line.matches(".*Xmx.*")) { //$NON-NLS-1$
-                    line = line.replaceFirst("Xmx[0-9]+", "Xmx" + maxHeadSize); //$NON-NLS-1$ //$NON-NLS-2$
+                if (line.matches(".*Xmx([0-9]+)([mMgGkKbB]).*")) { //$NON-NLS-1$
+                    line = line.replaceFirst("Xmx([0-9]+)([mMgGkKbB])", "Xmx" + maxHeadSize); //$NON-NLS-1$ //$NON-NLS-2$
                 }
                 return line;
             }
@@ -436,16 +437,18 @@ public class UiPlugin extends AbstractUIPlugin  {
             BufferedReader bR = null;
             BufferedWriter bW = null;
             try {
+                Collection<String>  updatedLines = new ArrayList<String>(); 
                 bR = new BufferedReader(new FileReader(iniFile));
-                if (!readOnly) {
-                    bW = new BufferedWriter(new FileWriter(iniFile));
-                }
                 String line = null;
                 while( (line = bR.readLine()) != null ) {
                     String newLine = func.apply(line);
-                    if (!readOnly) {
-                        bW.write(newLine);
-                        bW.write("\n"); //$NON-NLS-1$
+                    updatedLines.add(newLine);
+                    updatedLines.add("\n"); //$NON-NLS-1$
+                }
+                if (!readOnly) {
+                    bW = new BufferedWriter(new FileWriter(iniFile));
+                    for( String string : updatedLines ) {
+                        bW.write(string);
                     }
                 }
             } finally {

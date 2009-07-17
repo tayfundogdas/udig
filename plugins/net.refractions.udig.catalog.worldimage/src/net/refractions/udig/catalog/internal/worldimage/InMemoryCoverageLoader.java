@@ -122,15 +122,35 @@ public class InMemoryCoverageLoader extends GridCoverageLoader {
         return coverage.get();
     }
 
-    private void updateMemoryLevel() {
+    private void updateMemoryLevel() throws IOException {
+
+        int heap;
+        int originalHeap = UiPlugin.getMaxHeapSize();
+        if (originalHeap < 700) {
+            heap = 1024;
+        } else if( originalHeap < 1500) {
+            heap = 2048;
+        } else {
+            heap = originalHeap * 2;
+        }
+        
+        String os = Platform.getOS();
+        if (heap > 1024 && os == Platform.OS_WIN32) {
+            heap = 1024;
+        }
+        
+        final int finalHeap = heap;
         coverage = new SoftReference<GridCoverage>(EMPTY_COVERAGE);
+
         Display.getDefault().asyncExec(new Runnable(){
 
             public void run() {
+
+                
                 Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
                 String title = InMemoryCoverageLoader_msgTitle;
                 String desc = MessageFormat.format(InMemoryCoverageLoader_message, resource
-                        .getIdentifier());
+                        .getIdentifier(), finalHeap);
                 String[] buttons = {InMemoryCoverageLoader_restart_button,
                         InMemoryCoverageLoader_close_button};
                 MessageDialog dialog = new MessageDialog(shell, title, null, desc, QUESTION,
@@ -140,15 +160,7 @@ public class InMemoryCoverageLoader extends GridCoverageLoader {
                     protected void buttonPressed( int buttonId ) {
                         if (buttonId == 0) {
                             try {
-                                int heap;
-                                heap = UiPlugin.getMaxHeapSize() * 2;
-                                if (heap < 512) {
-                                    heap = 512;
-                                }
-                                if (heap > 1024 && Platform.getOS() == Platform.OS_WIN32) {
-                                    heap = 1024;
-                                }
-                                UiPlugin.setMaxHeapSize(heap + "M"); //$NON-NLS-1$
+                                UiPlugin.setMaxHeapSize(finalHeap + "M"); //$NON-NLS-1$
                                 PlatformUI.getWorkbench().restart();
 
                             } catch (IOException e) {
