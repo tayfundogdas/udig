@@ -46,7 +46,7 @@ import org.opengis.filter.expression.Expression;
  * @author Jody Garnett, Refractions Research.
  * @since 0.7.0
  */
-public final class SLDs extends SLD {
+public class SLDs extends SLD {
 
     public static final double ALIGN_LEFT = 1.0;
     public static final double ALIGN_CENTER = 0.5;
