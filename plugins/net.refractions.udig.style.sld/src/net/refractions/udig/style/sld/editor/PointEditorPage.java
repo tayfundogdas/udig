@@ -1,7 +1,7 @@
 package net.refractions.udig.style.sld.editor;
 
-import java.util.Map;
-
+import net.refractions.udig.filter.ComboExpressionViewer;
+import net.refractions.udig.style.sld.SLD;
 import net.refractions.udig.style.sld.SLDPlugin;
 import net.refractions.udig.style.sld.internal.Messages;
 
@@ -19,6 +19,15 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.List;
 import org.eclipse.ui.part.PageBook;
+import org.geotools.filter.FilterFactoryImpl;
+import org.geotools.styling.Displacement;
+import org.geotools.styling.FeatureTypeStyle;
+import org.geotools.styling.Graphic;
+import org.geotools.styling.PointSymbolizer;
+import org.geotools.styling.Rule;
+import org.geotools.styling.Symbolizer;
+import org.opengis.filter.expression.Expression;
+import org.opengis.style.AnchorPoint;
 
 public class PointEditorPage extends StyleEditorPage {
     private static int standardPadding = 2;
@@ -35,6 +44,49 @@ public class PointEditorPage extends StyleEditorPage {
     	createListContent(parent);
     	createGraphicBook(parent);
     	createGraphicContent(parent);
+    }
+    
+    private void applyStyle() {
+        /*
+         * This first section should really be handled by a containing shell or some such 
+         * thing that will allow multiple rules, and handle the rule-level options  such as 
+         * max/min scale denominator and filter.
+         */
+        FeatureTypeStyle defaultStyle = null;
+        for(FeatureTypeStyle typeStyle : getStyle().featureTypeStyles()) {
+            if(typeStyle.getName().equals("Default Styler")) {
+                defaultStyle = typeStyle;
+                break;
+            }
+        }
+        if(defaultStyle == null)
+            return;
+        
+        Rule rule = defaultStyle.rules().get(0);
+        // Find the first PointSymbolizer in the rule
+        PointSymbolizer sym = null;
+        for(Symbolizer symbolizer : rule.symbolizers()) {
+            if(symbolizer instanceof PointSymbolizer) {
+                sym = (PointSymbolizer)symbolizer;
+                break;
+            }
+        }
+        if(sym == null) {
+            SLD.POINT.createDefault();
+            rule.symbolizers().add(sym);
+        }
+        
+//        IProgressMonitor monitor = new NullProgressMonitor();
+//        getSelectedLayer().getResource(FeatureSource.class, monitor);
+        
+        Graphic g = sym.getGraphic();
+        Expression opacity = g.getOpacity();
+        Expression rotation = g.getRotation();
+        Expression size = g.getSize();
+        AnchorPoint anchor = g.getAnchorPoint();
+        Displacement displacement = g.getDisplacement();
+        
+        
     }
     
     /*
@@ -122,13 +174,13 @@ public class PointEditorPage extends StyleEditorPage {
      * common to all graphic options listed in the list composite above.
      */
     Composite graphicComposite;
-    Combo opacityCombo;
-    Combo sizeCombo;
-    Combo rotationCombo;
-    Combo anchorXCombo;
-    Combo anchorYCombo;
-    Combo displacementXCombo;
-    Combo displacementYCombo;
+    ComboExpressionViewer opacityViewer;
+    ComboExpressionViewer sizeViewer;
+    ComboExpressionViewer rotationViewer;
+    ComboExpressionViewer anchorXViewer;
+    ComboExpressionViewer anchorYViewer;
+    ComboExpressionViewer displacementXViewer;
+    ComboExpressionViewer displacementYViewer;
     
     private void createGraphicContent(Composite parent) {
         graphicComposite = new Composite(parent, SWT.NONE);
@@ -139,25 +191,28 @@ public class PointEditorPage extends StyleEditorPage {
         label.setText(Messages.StylingConstants_label_opacity);
         label.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, false));
         label.setToolTipText(Messages.StylingConstants_tooltip_opacity);
-        opacityCombo = generateFancyCombo(graphicComposite, getOpacityList(), SWT.DROP_DOWN);
-        opacityCombo.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-        opacityCombo.setToolTipText(Messages.StylingConstants_label_opacity);
+        opacityViewer = new ComboExpressionViewer(graphicComposite, SWT.SINGLE);
+        opacityViewer.setOptions(getOpacityList());
+        opacityViewer.getControl().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+        opacityViewer.getControl().setToolTipText(Messages.StylingConstants_label_opacity);
         
         label = new Label(graphicComposite, SWT.NONE);
         label.setText(Messages.StylingConstants_label_size);
         label.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, false));
         label.setToolTipText(Messages.StylingConstants_tooltip_size);
-        sizeCombo = generateFancyCombo(graphicComposite, getSizeList(), false, -1, SWT.DROP_DOWN);
-        sizeCombo.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-        sizeCombo.setToolTipText(Messages.StylingConstants_tooltip_size);
+        sizeViewer = new ComboExpressionViewer(graphicComposite, SWT.SINGLE);
+        sizeViewer.setOptions(getSizeList());
+        sizeViewer.getControl().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+        sizeViewer.getControl().setToolTipText(Messages.StylingConstants_tooltip_size);
         
         label = new Label(graphicComposite, SWT.NONE);
         label.setText(Messages.StylingConstants_label_rotation);
         label.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, false));
         label.setToolTipText(Messages.StylingConstants_tooltip_rotation);
-        rotationCombo = generateFancyCombo(graphicComposite, getRotationList(), true, 7, SWT.DROP_DOWN);
-        rotationCombo.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-        rotationCombo.setToolTipText(Messages.StylingConstants_tooltip_rotation);
+        rotationViewer = new ComboExpressionViewer(graphicComposite, SWT.SINGLE);
+        rotationViewer.setOptions(getRotationList());
+        rotationViewer.getControl().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+        rotationViewer.getControl().setToolTipText(Messages.StylingConstants_tooltip_rotation);
         
         label = new Label(graphicComposite, SWT.NONE);
         label.setText(Messages.StylingConstants_label_anchor);
@@ -166,28 +221,30 @@ public class PointEditorPage extends StyleEditorPage {
         Composite anchorComposite = new Composite(graphicComposite, SWT.NONE);
         anchorComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
         anchorComposite.setLayout(new FormLayout());
-        anchorXCombo = generateFancyCombo(anchorComposite, getAnchorList(), SWT.DROP_DOWN);
+        anchorXViewer = new ComboExpressionViewer(anchorComposite, SWT.SINGLE);
+        anchorXViewer.setOptions(getAnchorList());
         FormData data = new FormData();
         data.left = new FormAttachment(0, 0);
         data.top = new FormAttachment(0, 0);
         data.bottom = new FormAttachment(100, 0);
-        anchorXCombo.setLayoutData(data);
-        anchorXCombo.setToolTipText(Messages.StylingConstants_tooltip_anchor);
+        anchorXViewer.getControl().setLayoutData(data);
+        anchorXViewer.getControl().setToolTipText(Messages.StylingConstants_tooltip_anchor);
         label = new Label(anchorComposite, SWT.NONE);
         label.setText("X");
         data = new FormData();
-        data.left = new FormAttachment(anchorXCombo, 4);
-        data.bottom = new FormAttachment(anchorXCombo, 0, SWT.BOTTOM) ;
+        data.left = new FormAttachment(anchorXViewer.getControl(), 4);
+        data.bottom = new FormAttachment(anchorXViewer.getControl(), 0, SWT.BOTTOM) ;
         label.setLayoutData(data);
         label.setToolTipText(Messages.StylingConstants_tooltip_anchor);
-        anchorYCombo = generateFancyCombo(anchorComposite, getAnchorList(), SWT.DROP_DOWN);
+        anchorYViewer = new ComboExpressionViewer(anchorComposite, SWT.SINGLE);
+        anchorYViewer.setOptions(getAnchorList());
         data = new FormData();
         data.left = new FormAttachment(label, 4);
-        data.top = new FormAttachment(anchorXCombo, 0, SWT.TOP);
-        data.bottom = new FormAttachment(anchorXCombo, 0, SWT.BOTTOM);
+        data.top = new FormAttachment(anchorXViewer.getControl(), 0, SWT.TOP);
+        data.bottom = new FormAttachment(anchorXViewer.getControl(), 0, SWT.BOTTOM);
         data.right = new FormAttachment(100, 0);
-        anchorYCombo.setLayoutData(data);
-        anchorYCombo.setToolTipText(Messages.StylingConstants_tooltip_anchor);
+        anchorYViewer.getControl().setLayoutData(data);
+        anchorYViewer.getControl().setToolTipText(Messages.StylingConstants_tooltip_anchor);
         
         label = new Label(graphicComposite, SWT.NONE);
         label.setText(Messages.StylingConstants_label_displacement);
@@ -196,32 +253,30 @@ public class PointEditorPage extends StyleEditorPage {
         Composite displacementComposite = new Composite(graphicComposite, SWT.NONE);
         displacementComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
         displacementComposite.setLayout(new FormLayout());
-        displacementXCombo = generateFancyCombo(displacementComposite, getDisplacementList(), SWT.DROP_DOWN);
+        displacementXViewer = new ComboExpressionViewer(displacementComposite, SWT.SINGLE);
+        displacementXViewer.setOptions(getDisplacementList());
         data = new FormData();
         data.left = new FormAttachment(0, 0);
         data.top = new FormAttachment(0, 0);
         data.bottom = new FormAttachment(100, 0);
-        displacementXCombo.setLayoutData(data);
-        displacementXCombo.setToolTipText(Messages.StylingConstants_tooltip_displacement);
+        displacementXViewer.getControl().setLayoutData(data);
+        displacementXViewer.getControl().setToolTipText(Messages.StylingConstants_tooltip_displacement);
         label = new Label(displacementComposite, SWT.NONE);
         label.setText("X");
         data = new FormData();
-        data.left = new FormAttachment(displacementXCombo, 4, SWT.RIGHT);
-        data.bottom = new FormAttachment(displacementXCombo, 0, SWT.BOTTOM);
+        data.left = new FormAttachment(displacementXViewer.getControl(), 4, SWT.RIGHT);
+        data.bottom = new FormAttachment(displacementXViewer.getControl(), 0, SWT.BOTTOM);
         label.setLayoutData(data);
         label.setToolTipText(Messages.StylingConstants_tooltip_displacement);
-        displacementYCombo = generateFancyCombo(displacementComposite, getDisplacementList(), SWT.DROP_DOWN);
+        displacementYViewer = new ComboExpressionViewer(displacementComposite, SWT.SINGLE);
+        displacementYViewer.setOptions(getDisplacementList());
         data = new FormData();
         data.left = new FormAttachment(label, 4, SWT.RIGHT);
-        data.top = new FormAttachment(displacementXCombo, 0, SWT.TOP);
-        data.bottom = new FormAttachment(displacementXCombo, 0, SWT.BOTTOM);
+        data.top = new FormAttachment(displacementXViewer.getControl(), 0, SWT.TOP);
+        data.bottom = new FormAttachment(displacementXViewer.getControl(), 0, SWT.BOTTOM);
         data.right = new FormAttachment(100, 0);
-        displacementYCombo.setLayoutData(data);
-        displacementYCombo.setToolTipText(Messages.StylingConstants_tooltip_displacement);
-        
-        
-        
-        
+        displacementYViewer.getControl().setLayoutData(data);
+        displacementYViewer.getControl().setToolTipText(Messages.StylingConstants_tooltip_displacement);
     }
     
     /*
@@ -290,6 +345,17 @@ public class PointEditorPage extends StyleEditorPage {
     public void refresh() {
     }
 
+    private static FilterFactoryImpl factory;
+    private FilterFactoryImpl getFilterFactory() {
+        if(factory == null){
+            synchronized(factory) {
+                if(factory == null) {
+                    factory = new FilterFactoryImpl();
+                }
+            }
+        }
+        return factory;
+    }
     /*
      * TODO: implement stuff
      */
@@ -302,12 +368,17 @@ public class PointEditorPage extends StyleEditorPage {
     /*
      * TODO: implement stuff
      */
-    private String[] getOpacityList() {
-        return new String[] {"Clear", "25%", "50%", "75%", "Opaque"};
+    private Expression[] getOpacityList(Expression exp) {
+        return new Expression[] {exp,
+                getFilterFactory().createLiteralExpression("Clear"),
+                getFilterFactory().createLiteralExpression("25%"), 
+                getFilterFactory().createLiteralExpression("50%"),
+                getFilterFactory().createLiteralExpression("75%"), 
+                getFilterFactory().createLiteralExpression("Opaque")};
     }
     
-    private String[] getSizeList() {
-        return new String[] {"1", "2", "3", "5", "10", "12", "15", "20"};
+    private int[] getSizeList() {
+        return new int[] {1, 2, 3, 5, 10, 12, 15, 20};
     }
     
     private String[] getRotationList() {
@@ -319,8 +390,8 @@ public class PointEditorPage extends StyleEditorPage {
         return new String[] {"0%", "25%", "50%", "75%", "100%"};
     }
     
-    private String[] getDisplacementList() {
-        return new String[] {"1", "2", "3", "5", "10", "12", "15", "20"};
+    private int[] getDisplacementList() {
+        return new int[] {1, 2, 3, 5, 10, 12, 15, 20};
     }
     
     private Combo generateFancyCombo(Composite parent, String[] items, int style) {
