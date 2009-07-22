@@ -6,7 +6,10 @@ package net.refractions.udig.project.internal.render.impl;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.geom.AffineTransform;
+import java.util.Collections;
 import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 import net.refractions.udig.project.ILayer;
@@ -1062,7 +1065,15 @@ public class ViewportModelImpl extends EObjectImpl implements ViewportModel {
                 .getDPI());
 
     }
-
+    public SortedSet<Double> getPreferredScaleDenominators() {
+        SortedSet<Double> preferred = new TreeSet<Double>();
+        preferred.add( 100000.0 );
+        preferred.add(  50000.0 );
+        preferred.add(  20000.0 );
+        //...
+        return Collections.unmodifiableSortedSet(preferred); // we need a good default from preferences or something?
+    }
+    
     /**
      * This method will calculate the current width based on ScaleUtils and 
      * the current RenderManager.
