@@ -368,13 +368,16 @@ public class PointEditorPage extends StyleEditorPage {
     /*
      * TODO: implement stuff
      */
-    private Expression[] getOpacityList(Expression exp) {
-        return new Expression[] {exp,
-                getFilterFactory().createLiteralExpression("Clear"),
-                getFilterFactory().createLiteralExpression("25%"), 
-                getFilterFactory().createLiteralExpression("50%"),
-                getFilterFactory().createLiteralExpression("75%"), 
-                getFilterFactory().createLiteralExpression("Opaque")};
+//    private Expression[] getOpacityList(Expression exp) {
+//        return new Expression[] {exp,
+//                getFilterFactory().createLiteralExpression("Clear"),
+//                getFilterFactory().createLiteralExpression("25%"), 
+//                getFilterFactory().createLiteralExpression("50%"),
+//                getFilterFactory().createLiteralExpression("75%"), 
+//                getFilterFactory().createLiteralExpression("Opaque")};
+//    }
+    private String[] getOpacityList() {
+        return new String[] {"Clear", "25%", "50%", "75%", "Opaque"};
     }
     
     private int[] getSizeList() {
