@@ -14,9 +14,59 @@
             name="A4 landscape template">
       </template>
       <template
+            class="net.refractions.udig.printing.ui.internal.template.A3LandscapeTemplate"
+            id="net.refractions.udig.printing.ui.internal.template.A3LandscapeTemplate"
+            name="A3 landscape template">
+      </template>
+      <template
             class="net.refractions.udig.printing.ui.internal.template.A1LandscapeTemplate"
             id="net.refractions.udig.printing.ui.internal.template.A1LandscapeTemplate"
             name="A1 landscape template">
+      </template>
+      <template
+            class="net.refractions.udig.printing.ui.internal.template.A0LandscapeTemplate"
+            id="net.refractions.udig.printing.ui.internal.template.A0LandscapeTemplate"
+            name="A0 landscape template">
+      </template>
+      <template
+            class="net.refractions.udig.printing.ui.internal.template.A4PortraitTemplate"
+            id="net.refractions.udig.printing.ui.internal.template.A4PortraitTemplate"
+            name="A4 portrait template">
+      </template>
+      <template
+            class="net.refractions.udig.printing.ui.internal.template.A3PortraitTemplate"
+            id="net.refractions.udig.printing.ui.internal.template.A3PortraitTemplate"
+            name="A3 portrait template">
+      </template>
+      <template
+            class="net.refractions.udig.printing.ui.internal.template.A1PortraitTemplate"
+            id="net.refractions.udig.printing.ui.internal.template.A1PortraitTemplate"
+            name="A1 portrait template">
+      </template>
+      <template
+            class="net.refractions.udig.printing.ui.internal.template.A0PortraitTemplate"
+            id="net.refractions.udig.printing.ui.internal.template.A0PortraitTemplate"
+            name="A0 portrait template">
+      </template>
+    	<template
+            class="net.refractions.udig.printing.ui.internal.template.LetterLandscapeTemplate"
+            id="net.refractions.udig.printing.ui.internal.template.LetterLandscapeTemplate"
+            name="Letter landscape template">
+      </template>
+    	<template
+            class="net.refractions.udig.printing.ui.internal.template.LegalLandscapeTemplate"
+            id="net.refractions.udig.printing.ui.internal.template.LegalLandscapeTemplate"
+            name="Legal landscape template">
+      </template>
+      <template
+            class="net.refractions.udig.printing.ui.internal.template.LetterPortraitTemplate"
+            id="net.refractions.udig.printing.ui.internal.template.LetterPortraitTemplate"
+            name="Letter portrait template">
+      </template>
+      <template
+            class="net.refractions.udig.printing.ui.internal.template.LegalPortraitTemplate"
+            id="net.refractions.udig.printing.ui.internal.template.LegalPortraitTemplate"
+            name="Legal portrait template">
       </template>
    </extension>
    
@@ -100,6 +150,28 @@
                toolbarPath="global/additions"
                tooltip="%printing.ui.action.printFromPage.label">
          </action>
+         <!--
+         <action
+               class="net.refractions.udig.printing.ui.internal.ZoomInAction"
+               disabledIcon="icons/etool16/zoom_in_co.gif"
+               icon="icons/etool16/zoom_in_co.gif"
+               id="net.refractions.udig.printing.ui.action.zoomin"
+               label="Zoom In Page"
+               style="push"
+               toolbarPath="global/additions"
+               tooltip="Zoom In Page">
+         </action>
+         <action
+               class="net.refractions.udig.printing.ui.internal.ZoomOutAction"
+               disabledIcon="icons/etool16/zoom_out_co.gif"
+               icon="icons/etool16/zoom_out_co.gif"
+               id="net.refractions.udig.printing.ui.action.zoomout"
+               label="Zoom Out Page"
+               style="push"
+               toolbarPath="global/additions"
+               tooltip="Zoom Out Page">
+         </action> 
+         -->
       </editorContribution>
    </extension>
          <extension

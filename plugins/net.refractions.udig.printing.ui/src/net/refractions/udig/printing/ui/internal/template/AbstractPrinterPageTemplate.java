@@ -43,18 +43,32 @@ import org.eclipse.swt.widgets.Display;
  * Implementation of a Template at its most basic. Contains a title bar and a map.
  * 
  * @author Richard Gould
+ * @author Andrea Antonello (www.hydrologis.com)
  */
-public class LandScaleTemplate extends AbstractTemplate {
+public abstract class AbstractPrinterPageTemplate extends AbstractTemplate {
 
-    protected static final int MARGIN = 10;
-    protected static final int SPACING = 10;
-    
+    protected static final float UPPER_MARGIN_PERCENT = 3;
+    protected static final float BOTTOM_MARGIN_PERCENT = 3;
+    protected static final float LEFT_MARGIN_PERCENT = 3;
+    protected static final float RIGHT_MARGIN_PERCENT = 3;
+
+    protected static final float MAP_WIDTH_PERCENT = 90;
+    protected static final float MAP_HEIGHT_PERCENT = 80;
+    protected static final float SCALE_WIDTH_PERCENT = 20;
+    protected static final float SCALE_HEIGHT_PERCENT = 5;
+    protected static final float LEGEND_WIDTH_PERCENT = 20;
+    protected static final float LEGEND_HEIGHT_PERCENT = 15;
+    protected static final float TITLE_WIDTH_PERCENT = MAP_WIDTH_PERCENT;
+    protected static final float TITLE_HEIGHT_PERCENT = 8;
+
+    protected static final float SPACING_PERCENT = 2;
+
     protected Rectangle mapBounds;
-    
+
     /**
      * Constructs the BasicTemplate and populates its two boxes with a title and a map.
      */
-    public LandScaleTemplate() {
+    public AbstractPrinterPageTemplate() {
         super();
     }
 
@@ -65,49 +79,76 @@ public class LandScaleTemplate extends AbstractTemplate {
      * @param map the Map to be drawn
      */
     public void init( Page page, Map map ) {
-        Dimension transpose = page.getSize().transpose();
-        page.setSize(transpose);
-        
+        com.lowagie.text.Rectangle paperRectangle = getPaperSize();
+        Dimension paperSize = new Dimension((int) paperRectangle.width(), (int) paperRectangle
+                .height());
+        // set the requested papersize
+        page.setPaperSize(paperSize);
+        // then apply the ratio of the papersize also to the page size.
+        setPageSizeFromPaperSize(page, paperSize);
+
         int height = page.getSize().height;
         int width = page.getSize().width;
-        final int labelWidth = width;
-        final int labelHeight;
-        int legendWidth = 150;
-        int legendHeight = 150;
-        int scaleHeight = 20;
-        int scaleWidth = 150;
 
-        labelHeight = addLabelBox(map, width, labelWidth);
+        int xPos = getPercentagePieceOf(width, LEFT_MARGIN_PERCENT);
+        int yPos = getPercentagePieceOf(height, UPPER_MARGIN_PERCENT);
+        int w = getPercentagePieceOf(width, TITLE_WIDTH_PERCENT);
+        int h = getPercentagePieceOf(height, TITLE_HEIGHT_PERCENT);
+        addLabelBox(formatName(map.getName()), xPos, yPos, w, h);
 
-        Rectangle mapBounds = addMapBox(map, width, height, labelHeight, scaleHeight, legendWidth);
+        xPos = getPercentagePieceOf(width, LEFT_MARGIN_PERCENT);
+        yPos = getPercentagePieceOf(height, UPPER_MARGIN_PERCENT + TITLE_HEIGHT_PERCENT);
+        w = getPercentagePieceOf(width, MAP_WIDTH_PERCENT);
+        h = getPercentagePieceOf(height, MAP_HEIGHT_PERCENT);
+        addMapBox(map, xPos, yPos, w, h);
 
-        addLegendBox(height, legendWidth, legendHeight, labelHeight, mapBounds);
+        xPos = getPercentagePieceOf(width, 100f - RIGHT_MARGIN_PERCENT - SPACING_PERCENT * 3f
+                - LEGEND_WIDTH_PERCENT);
+        yPos = getPercentagePieceOf(height, 100f - BOTTOM_MARGIN_PERCENT - SPACING_PERCENT * 3f
+                - LEGEND_HEIGHT_PERCENT);
+        w = getPercentagePieceOf(width, LEGEND_WIDTH_PERCENT);
+        h = getPercentagePieceOf(height, LEGEND_HEIGHT_PERCENT);
+        addLegendBox(xPos, yPos, w, h);
 
-        addScale(height, scaleHeight, scaleWidth);
+        xPos = getPercentagePieceOf(width, LEFT_MARGIN_PERCENT + SPACING_PERCENT * 2f);
+        yPos = getPercentagePieceOf(height, 100f - BOTTOM_MARGIN_PERCENT - SPACING_PERCENT * 3f
+                - SCALE_HEIGHT_PERCENT);
+        w = getPercentagePieceOf(width, SCALE_WIDTH_PERCENT);
+        h = getPercentagePieceOf(height, SCALE_HEIGHT_PERCENT);
+        addScale(xPos, yPos, w, h);
+    }
+    private int getPercentagePieceOf( int width, float percent ) {
+        int res = (int) ((float) width * percent / 100f);
+        return res;
     }
 
-    protected void addScale( int height, int scaleHeight, int scaleWidth ) {
+    protected void addScale( int xPos, int yPos, int scaleWidth, int scaleHeight ) {
         Box scaleBox = ModelFactory.eINSTANCE.createBox();
         MapGraphicBoxPrinter scale = new MapGraphicBoxPrinter();
         scale.setMapGraphic(MapGraphicChooserDialog.findResource(ScalebarMapGraphic.class));
         scaleBox.setBoxPrinter(scale);
         scaleBox.setID("Scalebar Box"); //$NON-NLS-1$
-        scaleBox.setLocation(new Point(MARGIN, height - MARGIN - scaleHeight));
+        scaleBox.setLocation(new Point(xPos, yPos));
         scaleBox.setSize(new Dimension(scaleWidth, scaleHeight));
         boxes.add(scaleBox);
     }
 
-    protected int addLabelBox( Map map, int width, final int labelWidth) {
+    /**
+     * @return the iText Rectangle size of the paper. Used in the init method.
+     */
+    protected abstract com.lowagie.text.Rectangle getPaperSize();
+
+    protected int addLabelBox( String text, int xPos, int yPos, int labelWidth, int labelHeight ) {
         Box labelBox = ModelFactory.eINSTANCE.createBox();
         LabelBoxPrinter labelBoxPrinter = new LabelBoxPrinter();
-        labelBoxPrinter.setText(formatName(map.getName()));
+        labelBoxPrinter.setText(text);
         labelBoxPrinter.setHorizontalAlignment(SWT.CENTER);
         try {
             FontData data = Display.getDefault().getSystemFont().getFontData()[0];
 
-            data.setHeight( 18 );
-            data.setStyle( SWT.BOLD );
-            
+            data.setHeight(18);
+            data.setStyle(SWT.BOLD);
+
             Font font = AWTSWTImageUtils.swtFontToAwt(data);
             labelBoxPrinter.setFont(font);
 
@@ -117,9 +158,9 @@ public class LandScaleTemplate extends AbstractTemplate {
         labelBox.setBoxPrinter(labelBoxPrinter);
         labelBox.setID("Standard Label"); //$NON-NLS-1$
         // TODO base it on the font
-        int labelHeight = 30+LabelBoxPrinter.INSET*2;
+        // int labelHeight = 30 + LabelBoxPrinter.INSET * 2;
         labelBox.setSize(new Dimension(labelWidth, labelHeight));
-        labelBox.setLocation(new Point((width - labelWidth) / 2, MARGIN));
+        labelBox.setLocation(new Point(xPos, yPos));
         boxes.add(labelBox);
         return labelHeight;
     }
@@ -141,44 +182,28 @@ public class LandScaleTemplate extends AbstractTemplate {
         return builder.toString();
     }
 
-    protected Rectangle addMapBox( Map map, int width, int height, final int labelHeight, int scaleHeight,
-            int legendWidth ) {
+    protected Rectangle addMapBox( Map map, int xPos, int yPos, int mapWidth, int mapHeight ) {
         Box mapBox = ModelFactory.eINSTANCE.createBox();
         MapBoxPrinter mapBoxPrinter = new MapBoxPrinter();
         mapBox.setID("Standard Map Box"); //$NON-NLS-1$
         mapBox.setBoxPrinter(mapBoxPrinter);
         mapBoxPrinter.setMap(map);
 
-        // calculate mapSize
-        int bothMargins = (MARGIN * 2);
-        int mapWidth = width - bothMargins - legendWidth-SPACING;
-        int labelAndSpacing = labelHeight + SPACING;
-        int scaleAndSpacing = scaleHeight + SPACING;
-        int mapHeight = height - bothMargins - labelAndSpacing - scaleAndSpacing;
-
-        int mapX = MARGIN;
-        int mapY = MARGIN + labelAndSpacing;
-        
-        Rectangle mapBounds = new Rectangle(
-                mapX,
-                mapY,
-                mapWidth, 
-                mapHeight);
+        Rectangle mapBounds = new Rectangle(xPos, yPos, mapWidth, mapHeight);
         mapBox.setSize(new Dimension(mapBounds.width, mapBounds.height));
-        
+
         mapBox.setLocation(new Point(mapBounds.x, mapBounds.y));
         boxes.add(mapBox);
         return mapBounds;
     }
 
-    protected void addLegendBox( int height, final int legendWidth, int legendHeight, int labelHeight,
-            Rectangle mapBounds ) {
+    protected void addLegendBox( int xPos, int yPos, int legendWidth, int legendHeight ) {
         Box legendBox = ModelFactory.eINSTANCE.createBox();
         MapGraphicBoxPrinter legend = new MapGraphicBoxPrinter();
         legend.setMapGraphic(MapGraphicChooserDialog.findResource(LegendGraphic.class));
         legendBox.setBoxPrinter(legend);
         legendBox.setID("Legend Box"); //$NON-NLS-1$
-        legendBox.setLocation(new Point(MARGIN + mapBounds.width + SPACING, MARGIN+labelHeight+MARGIN));
+        legendBox.setLocation(new Point(xPos, yPos));
         legendBox.setSize(new Dimension(legendWidth, legendHeight));
         boxes.add(legendBox);
     }
@@ -189,7 +214,8 @@ public class LandScaleTemplate extends AbstractTemplate {
 
     public Rectangle getMapBounds() throws IllegalStateException {
         if (mapBounds == null)
-            throw new IllegalStateException("Please initialize the template before calling this method.");
+            throw new IllegalStateException(
+                    "Please initialize the template before calling this method.");
         return mapBounds;
     }
 

@@ -1067,6 +1067,7 @@ public class ViewportModelImpl extends EObjectImpl implements ViewportModel {
     }
     public SortedSet<Double> getPreferredScaleDenominators() {
         SortedSet<Double> preferred = new TreeSet<Double>();
+        preferred.add( 1000000.0 );
         preferred.add( 100000.0 );
         preferred.add(  50000.0 );
         preferred.add(  20000.0 );

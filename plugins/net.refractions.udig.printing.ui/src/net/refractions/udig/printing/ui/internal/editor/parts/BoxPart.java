@@ -144,6 +144,11 @@ public class BoxPart extends AbstractGraphicalEditPart implements NodeEditPart, 
         }
     }
 
+    @Override
+    public void setModel( Object model ) {
+        // TODO Auto-generated method stub
+        super.setModel(model);
+    }
     
 	protected List getModelSourceConnections() {
 		return ((Box) getModel()).getSourceConnections();

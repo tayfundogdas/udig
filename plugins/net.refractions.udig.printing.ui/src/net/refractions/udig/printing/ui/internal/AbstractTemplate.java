@@ -144,7 +144,7 @@ public abstract class AbstractTemplate implements Template {
     protected void setPageSizeFromPaperSize( Page page, Dimension paperSize ) {
         float factor = (float) paperSize.width / (float) paperSize.height;
         Dimension pageSize = page.getSize();
-        int h = pageSize.height;
+        int h = pageSize.height - 5;
         int w = (int) ((float) h * factor);
         page.setSize(new Dimension(w, h));
     }

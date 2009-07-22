@@ -16,60 +16,22 @@
  */
 package net.refractions.udig.printing.ui.internal.template;
 
-import net.refractions.udig.printing.model.Page;
-import net.refractions.udig.project.internal.Map;
-
-import org.eclipse.draw2d.geometry.Dimension;
-import org.eclipse.swt.graphics.Rectangle;
-
 import com.lowagie.text.PageSize;
+import com.lowagie.text.Rectangle;
 
 /**
  * Implementation of an A4 size Template in landscape mode. 
  * 
  * @author Andrea Antonello (www.hydrologis.com)
  */
-public class A4LandscapeTemplate extends LandScaleTemplate {
+public class A4LandscapeTemplate extends AbstractPrinterPageTemplate {
 
-    /**
-     * Constructs the BasicTemplate and populates its two boxes with a title and a map.
-     */
-    public A4LandscapeTemplate() {
-        super();
+    protected Rectangle getPaperSize() {
+        Rectangle a4 = PageSize.A4;
+        Rectangle a4Landscape = new Rectangle(0f, 0f, a4.height(), a4.width());
+        return a4Landscape;
     }
 
-    /**
-     * Populates the templates two boxes with a title and map
-     * 
-     * @param page the parent(owner) page
-     * @param map the Map to be drawn
-     */
-    public void init( Page page, Map map ) {
-        com.lowagie.text.Rectangle a4 = PageSize.A4;
-        Dimension paperSize = new Dimension((int) a4.height(), (int) a4.width());
-        page.setPaperSize(paperSize);
-
-        setPageSizeFromPaperSize(page, paperSize);
-
-        int height = page.getSize().height;
-        int width = page.getSize().width;
-        final int labelWidth = width;
-        final int labelHeight;
-        int legendWidth = 150;
-        int legendHeight = 150;
-        int scaleHeight = 20;
-        int scaleWidth = 150;
-
-        labelHeight = addLabelBox(map, width, labelWidth);
-
-        Rectangle mapBounds = addMapBox(map, width, height, labelHeight, scaleHeight, legendWidth);
-
-        addLegendBox(height, legendWidth, legendHeight, labelHeight, mapBounds);
-
-        addScale(height, scaleHeight, scaleWidth);
-    }
-    
-    @Override
     public String getAbbreviation() {
         return "A4L";
     }

@@ -470,4 +470,35 @@ public class PageImpl extends ElementImpl implements Page {
         return getBoxes();
     }
 
+    @Override
+    public void setSize( Dimension newSize ) {
+        Dimension previousSize = getSize();
+        if (previousSize != null) {
+            int newW = newSize.width;
+            int newH = newSize.height;
+            int prevW = previousSize.width;
+            int prevH = previousSize.height;
+
+            float xScale = (float) prevW / (float) newW;
+            float yScale = (float) prevH / (float) newH;
+
+            List<Box> myboxes = getBoxes();
+            for( Box box : myboxes ) {
+                box.eSetDeliver(false);
+                try {
+                    Dimension boxSize = box.getSize();
+                    int boxH = boxSize.height;
+                    int boxW = boxSize.width;
+
+                    float newBoxW = (float) boxW / xScale;
+                    float newBoxH = (float) boxH / yScale;
+
+                    box.setSize(new Dimension((int) newBoxW, (int) newBoxH));
+                } finally {
+                    box.eSetDeliver(true);
+                }
+            }
+        }
+        super.setSize(newSize);
+    }
 } // PageImpl

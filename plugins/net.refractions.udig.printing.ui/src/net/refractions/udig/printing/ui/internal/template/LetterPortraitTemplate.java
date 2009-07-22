@@ -20,20 +20,19 @@ import com.lowagie.text.PageSize;
 import com.lowagie.text.Rectangle;
 
 /**
- * Implementation of an A1 size Template in landscape mode. 
+ * Implementation of a legal size Template in portrait mode. 
  * 
  * @author Andrea Antonello (www.hydrologis.com)
  */
-public class A1LandscapeTemplate extends AbstractPrinterPageTemplate {
+public class LetterPortraitTemplate extends AbstractPrinterPageTemplate {
 
     protected Rectangle getPaperSize() {
-        Rectangle a1 = PageSize.A1;
-        Rectangle a1Landscape = new Rectangle(0f, 0f, a1.height(), a1.width());
-        return a1Landscape;
+        Rectangle legal = PageSize.LEGAL;
+        return legal;
     }
 
     public String getAbbreviation() {
-        return "A1L";
+        return "LegP";
     }
 
 }

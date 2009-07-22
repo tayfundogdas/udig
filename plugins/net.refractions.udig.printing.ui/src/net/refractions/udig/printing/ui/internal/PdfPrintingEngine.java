@@ -27,6 +27,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.List;
 
 import net.refractions.udig.printing.model.Box;
 import net.refractions.udig.printing.model.BoxPrinter;
@@ -116,10 +117,10 @@ public class PdfPrintingEngine {
             /*
              * TODO print boxes
              */
-            Iterator<Box> iter = page.getBoxes().iterator();
-            while( iter.hasNext() ) {
-
-                Box box = iter.next();
+            List<Box> boxes = page.getBoxes();
+            for( Box box : boxes ) {
+                String id = box.getID();
+                System.out.println(id);
                 Point boxLocation = box.getLocation();
                 int x = boxLocation.x;
                 int y = boxLocation.y;
@@ -127,16 +128,16 @@ public class PdfPrintingEngine {
                 int w = size.width;
                 int h = size.height;
 
-                float newX = xScale * (float) x;
-                float newY = yScale * (float) y;
-                float newW = xScale * (float) w;
-                float newH = yScale * (float) h;
+                // float newX = xScale * (float) x;
+                // float newY = yScale * (float) y;
+                // float newW = xScale * (float) w;
+                // float newH = yScale * (float) h;
 
-                Graphics2D boxGraphics = (Graphics2D) graphics.create(x,y,w,h);
-//                Graphics2D boxGraphics = (Graphics2D) graphics.create((int) newX, (int) newY,
-//                        (int) newW, (int) newH);
+                Graphics2D boxGraphics = (Graphics2D) graphics.create(x, y, w, h);
+                // Graphics2D boxGraphics = (Graphics2D) graphics.create((int) newX, (int) newY,
+                // (int) newW, (int) newH);
                 AffineTransform at = AffineTransform.getScaleInstance(xScale, yScale);
-                graphics.setTransform(at);
+                graphics.transform(at);
 
                 BoxPrinter boxPrinter = box.getBoxPrinter();
                 boxPrinter.draw(boxGraphics, monitor);

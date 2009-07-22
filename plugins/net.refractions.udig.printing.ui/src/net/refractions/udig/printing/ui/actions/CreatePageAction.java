@@ -11,8 +11,12 @@ package net.refractions.udig.printing.ui.actions;
 import java.awt.print.PageFormat;
 import java.awt.print.PrinterJob;
 import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 import net.refractions.udig.printing.model.Box;
 import net.refractions.udig.printing.model.ModelFactory;
@@ -172,7 +176,17 @@ public class CreatePageAction implements IEditorActionDelegate {
         ListDialog dialog = new ListDialog(Display.getDefault().getActiveShell());
         dialog.setTitle(Messages.CreatePageAction_dialog_title);
         dialog.setMessage(Messages.CreatePageAction_dialog_message);
-        dialog.setInput(templateFactories.values());
+        
+        Set<String> keySet = templateFactories.keySet();
+        List<String> keyList = new ArrayList<String>();
+        keyList.addAll(keySet);
+        Collections.sort(keyList);
+        List<TemplateFactory> valuesList = new ArrayList<TemplateFactory>();
+        for( String key : keyList ) {
+            valuesList.add(templateFactories.get(key));
+        }
+        
+        dialog.setInput(valuesList);
         ArrayContentProvider provider = new ArrayContentProvider();
         dialog.setContentProvider(provider);
 
