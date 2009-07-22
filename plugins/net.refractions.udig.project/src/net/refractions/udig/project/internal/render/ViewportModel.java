@@ -10,6 +10,7 @@ package net.refractions.udig.project.internal.render;
 
 import java.awt.Point;
 import java.awt.geom.AffineTransform;
+import java.util.SortedSet;
 
 import net.refractions.udig.project.internal.Map;
 import net.refractions.udig.project.internal.render.impl.ViewportModelImpl;
@@ -80,6 +81,18 @@ public interface ViewportModel extends EObject, IMapDisplayListener, IViewportMo
      * @generated
      */
     void setCRS( CoordinateReferenceSystem value );
+    
+    /**
+     * List of preferred scale denominators for the map.
+     * <p>
+     * This set is used to provide good options for a user to change the scale; or to support
+     * the creation of "fixed" zoom in and zoom out tools.
+     * 
+     * @see getScaleDEnominator for a definition of scale denominator
+     * @return List of preferred scale denominator values for the map
+     * @model 
+     */
+    public SortedSet<Double> getPreferredScaleDenominators();    
 
     /**
      * Unsets the value of the '{@link net.refractions.udig.project.internal.render.ViewportModel#getCRS <em>CRS</em>}'

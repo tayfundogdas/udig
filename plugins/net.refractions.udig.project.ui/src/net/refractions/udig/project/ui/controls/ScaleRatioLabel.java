@@ -1,6 +1,8 @@
 package net.refractions.udig.project.ui.controls;
 
 import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 import net.refractions.udig.project.internal.commands.SetScaleCommand;
 import net.refractions.udig.project.render.IViewportModel;
@@ -15,6 +17,10 @@ import net.refractions.udig.ui.ZoomingDialog;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.action.ContributionItem;
 import org.eclipse.jface.action.StatusLineLayoutData;
+import org.eclipse.jface.fieldassist.ContentProposalAdapter;
+import org.eclipse.jface.fieldassist.IContentProposal;
+import org.eclipse.jface.fieldassist.IContentProposalProvider;
+import org.eclipse.jface.fieldassist.TextContentAdapter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
@@ -63,11 +69,51 @@ public class ScaleRatioLabel extends ContributionItem implements KeyListener, Fo
                         updateScale();
                     }
                 });
-
             }
-
         }
+    };
+    
+    /**
+     * Creates proposals based on the viewport model scales
+     */
+    IContentProposalProvider proposals = new IContentProposalProvider(){
+        public IContentProposal[] getProposals( String contents, int position ) {            
+            if( viewportModel == null ) return new IContentProposal[0]; // nothing!
+            List<IContentProposal> list = new ArrayList<IContentProposal>();
+            
+            String filter = contents.substring(0,position);
+            
+            for( Double scaleDenominator : viewportModel.getPreferredScaleDenominators() ){
+                final String proposal = nf.format(scaleDenominator);
+                if( !proposal.startsWith( filter )) continue;
+                    
+                if( scaleDenominator != null ){
+                    list.add( makeContentProposal(scaleDenominator));
+                }                                
+            }
+            return list.toArray( new IContentProposal[ list.size()]);
+        }
+        
+        private IContentProposal makeContentProposal(final double scaleDenominator ) {
+            final String proposal = nf.format(scaleDenominator);
+            return new IContentProposal() {
+                public String getContent() {
+                    return proposal;
+                }
 
+                public String getDescription() {
+                    return null; // it would be fun to have a description here like "Street level" etc..
+                }
+
+                public String getLabel() {
+                    return "1:"+proposal;
+                }
+
+                public int getCursorPosition() {
+                    return proposal.length();
+                }
+            };
+        }
     };
 
     public ScaleRatioLabel(MapEditorPart editor) {
@@ -137,6 +183,13 @@ public class ScaleRatioLabel extends ContributionItem implements KeyListener, Fo
         data.widthHint = 80;
         data.heightHint = STATUS_LINE_HEIGHT;
         this.mapPart.setFont(label);
+        
+        // assume that myTextControl has already been created in some way
+        ContentProposalAdapter adapter = new ContentProposalAdapter(
+            label, new TextContentAdapter(), 
+            proposals,
+            null, null);
+        adapter.setProposalAcceptanceStyle( ContentProposalAdapter.PROPOSAL_REPLACE );
     }
 
     public void keyPressed(KeyEvent e) {
