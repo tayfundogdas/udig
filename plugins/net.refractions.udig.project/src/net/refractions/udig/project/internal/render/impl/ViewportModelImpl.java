@@ -1070,7 +1070,10 @@ public class ViewportModelImpl extends EObjectImpl implements ViewportModel {
         preferred.add( 100000.0 );
         preferred.add(  50000.0 );
         preferred.add(  20000.0 );
-        //...
+        preferred.add(  10000.0 );
+        preferred.add(  5000.0 );
+        preferred.add(  2500.0 );
+        preferred.add(  1000.0 );
         return Collections.unmodifiableSortedSet(preferred); // we need a good default from preferences or something?
     }
     
