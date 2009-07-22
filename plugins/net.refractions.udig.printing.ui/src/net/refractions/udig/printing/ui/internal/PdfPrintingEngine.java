@@ -16,23 +16,16 @@
  */
 package net.refractions.udig.printing.ui.internal;
 
-import static net.refractions.udig.printing.ui.internal.PrintingPlugin.TRACE_PRINTING;
-
-import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
-import java.awt.print.PageFormat;
-import java.awt.print.PrinterException;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.List;
 
 import net.refractions.udig.printing.model.Box;
 import net.refractions.udig.printing.model.BoxPrinter;
 import net.refractions.udig.printing.model.Page;
-import net.refractions.udig.printing.ui.Template;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.draw2d.geometry.Dimension;
@@ -40,7 +33,6 @@ import org.eclipse.draw2d.geometry.Point;
 
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
-import com.lowagie.text.PageSize;
 import com.lowagie.text.Rectangle;
 import com.lowagie.text.pdf.PdfContentByte;
 import com.lowagie.text.pdf.PdfWriter;
@@ -67,27 +59,6 @@ public class PdfPrintingEngine {
         this.outputPdfFile = outputPdfFile;
     }
 
-    // public int print( Graphics graphics ) {
-    //
-    // Graphics2D graphics2d = (Graphics2D) graphics;
-    //
-    // AffineTransform at = graphics2d.getTransform();
-    // double dpi = at.getScaleX() * 72;
-    // // graphics2d.translate(pageFormat.getImageableX(), pageFormat.getImageableY());
-    //
-    // Iterator<Box> iter = page.getBoxes().iterator();
-    // while( iter.hasNext() ) {
-    //
-    // Box box = iter.next();
-    // graphics2d = (Graphics2D) graphics.create(box.getLocation().x, box.getLocation().y, box
-    // .getSize().width, box.getSize().height);
-    //
-    // box.getBoxPrinter().draw(graphics2d, monitor);
-    //
-    // }
-    //
-    // return Printable.PAGE_EXISTS;
-    // }
     /**
      * @param monitor
      */
@@ -114,9 +85,6 @@ public class PdfPrintingEngine {
             PdfContentByte cb = writer.getDirectContent();
             Graphics2D graphics = cb.createGraphics(pageRectangle.width(), pageRectangle.height());
 
-            /*
-             * TODO print boxes
-             */
             List<Box> boxes = page.getBoxes();
             for( Box box : boxes ) {
                 String id = box.getID();
@@ -128,20 +96,18 @@ public class PdfPrintingEngine {
                 int w = size.width;
                 int h = size.height;
 
-                // float newX = xScale * (float) x;
-                // float newY = yScale * (float) y;
-                // float newW = xScale * (float) w;
-                // float newH = yScale * (float) h;
+                float newX = xScale * (float) x;
+                float newY = yScale * (float) y;
+                float newW = xScale * (float) w;
+                float newH = yScale * (float) h;
 
-                Graphics2D boxGraphics = (Graphics2D) graphics.create(x, y, w, h);
-                // Graphics2D boxGraphics = (Graphics2D) graphics.create((int) newX, (int) newY,
-                // (int) newW, (int) newH);
-                AffineTransform at = AffineTransform.getScaleInstance(xScale, yScale);
-                graphics.transform(at);
+                box.setSize(new Dimension((int) newW, (int) newH));
+                box.setLocation(new Point((int) newX, (int) newY));
 
+                Graphics2D boxGraphics = (Graphics2D) graphics.create((int) newX, (int) newY,
+                        (int) newW, (int) newH);
                 BoxPrinter boxPrinter = box.getBoxPrinter();
                 boxPrinter.draw(boxGraphics, monitor);
-
             }
 
             graphics.dispose();

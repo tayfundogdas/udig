@@ -20,12 +20,15 @@ import java.io.File;
 
 import net.refractions.udig.printing.model.Page;
 import net.refractions.udig.printing.ui.internal.editor.PageEditorInput;
+import net.refractions.udig.project.internal.Map;
 import net.refractions.udig.project.ui.UDIGEditorInput;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
@@ -37,23 +40,8 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 
 /**
- * Provides ...TODO summary sentence
- * <p>
- * TODO Description
- * </p><p>
- * Responsibilities:
- * <ul>
- * <li>
- * <li>
- * </ul>
- * </p><p>
- * Example Use:<pre><code>
- * PrintAction x = new PrintAction( ... );
- * TODO code example
- * </code></pre>
- * </p>
  * @author Richard Gould
- * @since 0.3
+ * @author Andrea Antonello (www.hydrologis.com)
  */
 public class PrintAction extends Action implements IEditorActionDelegate {
 
@@ -80,10 +68,15 @@ public class PrintAction extends Action implements IEditorActionDelegate {
         if (path == null || path.length() < 1) {
             return;
         } else {
+            if (!path.endsWith(".pdf") && !path.endsWith(".PDF")) {
+                path = path + ".pdf";
+            }
             outFile = new File(path);
         }
 
-        final PdfPrintingEngine engine = new PdfPrintingEngine(page, outFile);
+        // copy the page before hacking on it
+        final Page copy = (Page) EcoreUtil.copy((EObject) page);
+        final PdfPrintingEngine engine = new PdfPrintingEngine(copy, outFile);
 
         Job job = new Job(Messages.PrintAction_jobTitle){
             protected IStatus run( IProgressMonitor monitor ) {
