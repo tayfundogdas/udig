@@ -1,15 +1,12 @@
 package net.refractions.udig.project.ui.controls;
 
 import java.text.NumberFormat;
-import java.util.ArrayList;
-import java.util.List;
 
 import net.refractions.udig.project.internal.commands.SetScaleCommand;
 import net.refractions.udig.project.render.IViewportModel;
 import net.refractions.udig.project.render.IViewportModelListener;
 import net.refractions.udig.project.render.ViewportModelEvent;
 import net.refractions.udig.project.render.ViewportModelEvent.EventType;
-import net.refractions.udig.project.ui.internal.MapEditor;
 import net.refractions.udig.project.ui.internal.MapEditorPart;
 import net.refractions.udig.project.ui.internal.Messages;
 import net.refractions.udig.ui.ZoomingDialog;
@@ -17,21 +14,21 @@ import net.refractions.udig.ui.ZoomingDialog;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.action.ContributionItem;
 import org.eclipse.jface.action.StatusLineLayoutData;
-import org.eclipse.jface.fieldassist.ContentProposalAdapter;
-import org.eclipse.jface.fieldassist.IContentProposal;
-import org.eclipse.jface.fieldassist.IContentProposalProvider;
-import org.eclipse.jface.fieldassist.TextContentAdapter;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
-import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.PlatformUI;
 
 /**
@@ -52,11 +49,12 @@ public class ScaleRatioLabel extends ContributionItem implements KeyListener, Fo
     private final MapEditorPart mapPart;
     public static final String SCALE_ITEM_ID = "Current scale"; //$NON-NLS-1$
     NumberFormat nf = NumberFormat.getIntegerInstance();
-    Text label;
+    
+    Combo combo;    
     IViewportModel viewportModel;
+    
     /** Listens to viewport changes and updates the displayed scale accordingly */
     IViewportModelListener listener = new IViewportModelListener(){
-
         public void changed( ViewportModelEvent event ) {
             if (event.getType() == EventType.CRS || event.getType() == EventType.BOUNDS) {
                 Display display = PlatformUI.getWorkbench().getDisplay();
@@ -71,50 +69,7 @@ public class ScaleRatioLabel extends ContributionItem implements KeyListener, Fo
                 });
             }
         }
-    };
-    
-    /**
-     * Creates proposals based on the viewport model scales
-     */
-    IContentProposalProvider proposals = new IContentProposalProvider(){
-        public IContentProposal[] getProposals( String contents, int position ) {            
-            if( viewportModel == null ) return new IContentProposal[0]; // nothing!
-            List<IContentProposal> list = new ArrayList<IContentProposal>();
-            
-            String filter = contents.substring(0,position);
-            
-            for( Double scaleDenominator : viewportModel.getPreferredScaleDenominators() ){
-                final String proposal = nf.format(scaleDenominator);
-                if( !proposal.startsWith( filter )) continue;
-                    
-                if( scaleDenominator != null ){
-                    list.add( makeContentProposal(scaleDenominator));
-                }                                
-            }
-            return list.toArray( new IContentProposal[ list.size()]);
-        }
-        
-        private IContentProposal makeContentProposal(final double scaleDenominator ) {
-            final String proposal = nf.format(scaleDenominator);
-            return new IContentProposal() {
-                public String getContent() {
-                    return proposal;
-                }
-
-                public String getDescription() {
-                    return null; // it would be fun to have a description here like "Street level" etc..
-                }
-
-                public String getLabel() {
-                    return "1:"+proposal;
-                }
-
-                public int getCursorPosition() {
-                    return proposal.length();
-                }
-            };
-        }
-    };
+    };    
 
     public ScaleRatioLabel(MapEditorPart editor) {
         super(SCALE_ITEM_ID);
@@ -150,8 +105,8 @@ public class ScaleRatioLabel extends ContributionItem implements KeyListener, Fo
      * @see org.eclipse.jface.action.ContributionItem#dispose()
      */
     public void dispose() {
-        if (label != null)
-            label.dispose();
+        if (combo != null)
+            combo.dispose();
         if (viewportModel != null) {
             viewportModel.removeViewportModelListener(listener);
             viewportModel = null;
@@ -168,32 +123,37 @@ public class ScaleRatioLabel extends ContributionItem implements KeyListener, Fo
         separator.setLayoutData(data);
         data.widthHint = 1;
         data.heightHint = STATUS_LINE_HEIGHT;
-        label = new Text(c, SWT.BORDER|SWT.CENTER);
-        label.addKeyListener(this);
-        label.addFocusListener(this);
-        label.addListener(SWT.MouseDown, new Listener(){
+        
+        combo = new Combo(c, SWT.BORDER|SWT.CENTER);
+        
+        combo.addKeyListener(this);
+        combo.addFocusListener(this);
+        combo.addListener(SWT.MouseDown, new Listener(){
            public void handleEvent(Event e){
-               if( label.getText().contains(":") ) //$NON-NLS-1$
+               if( combo.getText().contains(":") ) //$NON-NLS-1$
                    formatForEditing();
            }
         });
+        combo.addSelectionListener( new SelectionListener(){            
+            public void widgetSelected( SelectionEvent e ) {
+                if( combo.getText().contains(":") ) //$NON-NLS-1$
+                    formatForEditing();
+                go();
+            }
+            public void widgetDefaultSelected( SelectionEvent e ) {
+            }
+        });
         data = new StatusLineLayoutData();
-        label.setLayoutData(data);
+        combo.setLayoutData(data);
         updateScale();
         data.widthHint = 80;
         data.heightHint = STATUS_LINE_HEIGHT;
-        this.mapPart.setFont(label);
+        this.mapPart.setFont(combo);
         
-        // assume that myTextControl has already been created in some way
-        ContentProposalAdapter adapter = new ContentProposalAdapter(
-            label, new TextContentAdapter(), 
-            proposals,
-            null, null);
-        adapter.setProposalAcceptanceStyle( ContentProposalAdapter.PROPOSAL_REPLACE );
     }
 
     public void keyPressed(KeyEvent e) {
-        if( label.getText().contains(":") ) //$NON-NLS-1$
+        if( combo.getText().contains(":") ) //$NON-NLS-1$
             formatForEditing();
         if( !isLegalKey(e) ){
             e.doit=false;
@@ -239,13 +199,13 @@ public class ScaleRatioLabel extends ContributionItem implements KeyListener, Fo
     }
 
     private void go() {
-        String newScale=label.getText().trim();
+        String newScale=combo.getText().trim();
         try{
         	double d = nf.parse(newScale.replace(" ","")).doubleValue();
             SetScaleCommand command=new SetScaleCommand(d);
             this.mapPart.getMap().sendCommandASync(command);
         }catch(Exception e){
-            org.eclipse.swt.graphics.Rectangle start=ZoomingDialog.calculateBounds(label);
+            org.eclipse.swt.graphics.Rectangle start=ZoomingDialog.calculateBounds(combo);
             
             ZoomingDialog.openErrorMessage(start, this.mapPart
 					.getMapEditorSite().getShell(),
@@ -259,7 +219,7 @@ public class ScaleRatioLabel extends ContributionItem implements KeyListener, Fo
     }
 
     private void formatForEditing(){
-        String text=label.getText();
+        String text=combo.getText();
         if( text.contains(":")) //$NON-NLS-1$
             text=text.substring(2);
         StringBuilder builder=new StringBuilder();
@@ -268,25 +228,34 @@ public class ScaleRatioLabel extends ContributionItem implements KeyListener, Fo
             if( c!=',' )
                 builder.append(c);
         }
-        label.setText(builder.toString());
-        int end = label.getText().length();
-        label.setSelection(0, end);
+        combo.setText(builder.toString());
+        int end = combo.getText().length();
+        combo.setSelection( new Point(0, end));
     }
+    
     public void focusLost(FocusEvent e) {
         updateScale();
     }
     
+    String toLabel( double scaleDenominator ){
+        return "1:" + nf.format( scaleDenominator );
+    }
+    
     private void updateScale() {
-        if (label == null || label.isDisposed())
+        if (combo == null || combo.isDisposed())
             return;
 
         if (viewportModel != null) {
-            label.setText("1:" + nf.format(viewportModel.getScaleDenominator())); //$NON-NLS-1$
-            label.setToolTipText(label.getText());
+            combo.removeAll();
+            for( double scaleDenominator : viewportModel.getPreferredScaleDenominators() ){
+                String item = toLabel( scaleDenominator );
+                combo.add( item );
+            }
+            combo.setText( toLabel(viewportModel.getScaleDenominator())); //$NON-NLS-1$
+            combo.setToolTipText(combo.getText());
         } else {
-            label.setText(""); //$NON-NLS-1$
+            combo.setText(""); //$NON-NLS-1$
         }
-
     }
 
 }
