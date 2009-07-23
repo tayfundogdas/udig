@@ -28,7 +28,7 @@ public class LetterLandscapeTemplate extends AbstractPrinterPageTemplate {
 
     protected Rectangle getPaperSize() {
         Rectangle letter = PageSize.LETTER;
-        Rectangle letterLandscape = new Rectangle(0f, 0f, letter.height(), letter.width());
+        Rectangle letterLandscape = new Rectangle(0f, 0f, letter.getHeight(), letter.getWidth());
         return letterLandscape;
     }
 

@@ -28,7 +28,7 @@ public class LegalLandscapeTemplate extends AbstractPrinterPageTemplate {
 
     protected Rectangle getPaperSize() {
         Rectangle legal = PageSize.LEGAL;
-        Rectangle legalLandscape = new Rectangle(0f, 0f, legal.height(), legal.width());
+        Rectangle legalLandscape = new Rectangle(0f, 0f, legal.getHeight(), legal.getWidth());
         return legalLandscape;
     }
 

@@ -16,12 +16,16 @@
  */
 package net.refractions.udig.printing.ui.internal;
 
+import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
+
+import javax.imageio.ImageIO;
 
 import net.refractions.udig.printing.model.Box;
 import net.refractions.udig.printing.model.BoxPrinter;
@@ -74,8 +78,8 @@ public class PdfPrintingEngine {
         float xScale = (float) paperSize.width / (float) pageSize.width;
         float yScale = (float) paperSize.height / (float) pageSize.height;
 
-        Rectangle pageRectangle = new Rectangle(paperSize.width, paperSize.height);
-        Document document = new Document(pageRectangle, 0f, 0f, 0f, 0f);
+        Rectangle paperRectangle = new Rectangle(paperSize.width, paperSize.height);
+        Document document = new Document(paperRectangle, 0f, 0f, 0f, 0f);
 
         try {
 
@@ -83,7 +87,13 @@ public class PdfPrintingEngine {
             document.open();
 
             PdfContentByte cb = writer.getDirectContent();
-            Graphics2D graphics = cb.createGraphics(pageRectangle.width(), pageRectangle.height());
+            Graphics2D graphics = cb
+                    .createGraphics(paperRectangle.getWidth(), paperRectangle.getHeight());
+
+            // BufferedImage bI = new BufferedImage((int) paperRectangle.width(), (int)
+            // paperRectangle
+            // .height(), BufferedImage.TYPE_INT_ARGB);
+            // Graphics graphics2 = bI.getGraphics();
 
             List<Box> boxes = page.getBoxes();
             for( Box box : boxes ) {
@@ -111,6 +121,9 @@ public class PdfPrintingEngine {
             }
 
             graphics.dispose();
+            // ImageIO.write(bI, "png", new File("c:\\Users\\moovida\\Desktop\\test.png"));
+            // graphics.drawImage(bI, null, 0, 0);
+
             document.newPage();
             document.close();
             writer.close();

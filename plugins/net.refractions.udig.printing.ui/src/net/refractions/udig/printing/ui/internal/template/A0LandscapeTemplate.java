@@ -28,7 +28,7 @@ public class A0LandscapeTemplate extends AbstractPrinterPageTemplate {
 
     protected Rectangle getPaperSize() {
         Rectangle a0 = PageSize.A0;
-        Rectangle a0Landscape = new Rectangle(0f, 0f, a0.height(), a0.width());
+        Rectangle a0Landscape = new Rectangle(0f, 0f, a0.getHeight(), a0.getWidth());
         return a0Landscape;
     }
 

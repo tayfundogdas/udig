@@ -86,8 +86,8 @@ public abstract class AbstractPrinterPageTemplate extends AbstractTemplate {
     public void init( Page page, Map map ) {
         this.page = page;
         com.lowagie.text.Rectangle paperRectangle = getPaperSize();
-        Dimension paperSize = new Dimension((int) paperRectangle.width(), (int) paperRectangle
-                .height());
+        Dimension paperSize = new Dimension((int) paperRectangle.getWidth(), (int) paperRectangle
+                .getHeight());
         // set the requested papersize
         page.setPaperSize(paperSize);
         // then apply the ratio of the papersize also to the page size.
@@ -101,7 +101,7 @@ public abstract class AbstractPrinterPageTemplate extends AbstractTemplate {
         int w = getPercentagePieceOf(width, TITLE_WIDTH_PERCENT);
         int h = getPercentagePieceOf(height, TITLE_HEIGHT_PERCENT);
         // the base font size is good for the A4 size, scale every other proportional
-        float scaledSize = (float) BASEFONT_SIZE * (float) paperSize.height / PageSize.A4.height();
+        float scaledSize = (float) BASEFONT_SIZE * (float) paperSize.height / PageSize.A4.getHeight();
         // float scaledFontSize = scaleValue(page, paperSize, scaledSize);
         addLabelBox(formatName(map.getName()), xPos, yPos, w, h, (int) scaledSize);
 
