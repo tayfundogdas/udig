@@ -192,7 +192,8 @@ public class PointEditorPage extends StyleEditorPage {
         label.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, false));
         label.setToolTipText(Messages.StylingConstants_tooltip_opacity);
         opacityViewer = new ComboExpressionViewer(graphicComposite, SWT.SINGLE);
-        opacityViewer.setOptions(getOpacityList());
+        //FIXME it doesn't compile 
+        // opacityViewer.setOptions(getOpacityList());
         opacityViewer.getControl().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
         opacityViewer.getControl().setToolTipText(Messages.StylingConstants_label_opacity);
         
@@ -385,8 +386,8 @@ public class PointEditorPage extends StyleEditorPage {
     }
     
     private String[] getRotationList() {
-        return new String[] {"-150°", "-135°", "-120°", "-90°", "-60°", "-45°", "-30°", "0°", 
-                "30°", "45°", "60°", "90°", "120°", "135°", "150°", "180°"};
+        return new String[] {"-150ï¿½", "-135ï¿½", "-120ï¿½", "-90ï¿½", "-60ï¿½", "-45ï¿½", "-30ï¿½", "0ï¿½", 
+                "30ï¿½", "45ï¿½", "60ï¿½", "90ï¿½", "120ï¿½", "135ï¿½", "150ï¿½", "180ï¿½"};
     }
     
     private String[] getAnchorList() {
