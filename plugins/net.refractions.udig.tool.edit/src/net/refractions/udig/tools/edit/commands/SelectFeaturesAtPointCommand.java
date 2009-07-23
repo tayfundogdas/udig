@@ -143,6 +143,10 @@ public class SelectFeaturesAtPointCommand extends AbstractCommand implements Und
         ILayer editLayer = parameters.handler.getEditLayer();
         FeatureStore<SimpleFeatureType, SimpleFeature> store = getResource(editLayer);
         ReferencedEnvelope bbox = handler.getContext().getBoundingBox(event.getPoint(), SEARCH_SIZE);
+        Filter createBBoxFilter = createBBoxFilter(bbox, editLayer, filterType);
+        FeatureCollection<SimpleFeatureType, SimpleFeature> collection = store.getFeatures(createBBoxFilter);
+
+        // don't transform until after query
         try {
         	bbox = bbox.transform(parameters.handler.getEditLayer().getCRS(), true);
         } catch (TransformException e) {
@@ -150,9 +154,6 @@ public class SelectFeaturesAtPointCommand extends AbstractCommand implements Und
         } catch (FactoryException e) {
         	logTransformationWarning(e);
         }
-        Filter createBBoxFilter = createBBoxFilter(bbox, editLayer, filterType);
-        FeatureCollection<SimpleFeatureType, SimpleFeature> collection = store.getFeatures(createBBoxFilter);
-
         FeatureIterator<SimpleFeature> reader = new IntersectTestingIterator(bbox, collection.features());
         
         

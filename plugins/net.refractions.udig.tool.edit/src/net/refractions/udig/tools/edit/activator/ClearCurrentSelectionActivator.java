@@ -14,37 +14,44 @@
  */
 package net.refractions.udig.tools.edit.activator;
 
-import net.refractions.udig.project.ILayer;
 import net.refractions.udig.tools.edit.Activator;
+import net.refractions.udig.tools.edit.ClearSelection;
 import net.refractions.udig.tools.edit.EditPlugin;
 import net.refractions.udig.tools.edit.EditToolHandler;
 import net.refractions.udig.tools.edit.support.EditUtils;
 
 /**
+ * Activator that clear the current selection on the editblackboard and cancel its hide status.
  * 
- * This hides the selected features on the current layer.
- * 
- * @author Jesse
- * @since 1.1.0
+ * @author Aritz Dávila (www.axios.es)
+ * @author Mauricio Pazos (www.axios.es)
  */
-public class SetRenderingFilter implements Activator {
+public class ClearCurrentSelectionActivator implements Activator {
 
     public void activate( EditToolHandler handler ) {
-        ILayer selectedLayer = handler.getEditLayer();
-        EditUtils.instance.hideSelectedFeatures(handler, selectedLayer);
 
-    }
+        ClearSelection clear = new ClearSelection(handler);
+        clear.run();
 
-    public void deactivate( EditToolHandler handler ) {
+        handler.getContext().sendASyncCommand(
+                handler.getContext().getEditFactory().createSetEditFeatureCommand(null,
+                        handler.getEditLayer()));
         EditUtils.instance.cancelHideSelection(handler.getEditLayer());
     }
 
+    public void deactivate( EditToolHandler handler ) {
+        // do nothing.
+
+    }
+
     public void handleActivateError( EditToolHandler handler, Throwable error ) {
-        EditPlugin.log("", error); //$NON-NLS-1$
+        EditPlugin.log("Error creating and sending command", error); //$NON-NLS-1$
+
     }
 
     public void handleDeactivateError( EditToolHandler handler, Throwable error ) {
-        EditPlugin.log("", error); //$NON-NLS-1$
+        EditPlugin.log("Error invalidating command", error); //$NON-NLS-1$
+
     }
 
 }
