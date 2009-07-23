@@ -52,12 +52,28 @@ public class Activator extends AbstractUIPlugin {
     public void start(BundleContext context) throws Exception {
         super.start(context);
     	if (!GDALUtilities.isGDALAvailable()){
+    		StringBuilder b = new StringBuilder();
+    		b.append("\tLD_LIBRARY_PATH="+absoluteFile("LD_LIBRARY_PATH")+"\n");
+    		b.append("\tDYLD_LIBRARY_PATH="+absoluteFile("DYLD_LIBRARY_PATH")+"\n");
+    		b.append("\tGDAL_DATA="+absoluteFile("GDAL_DATA")+"\n");
+    		b.append("\tjava.libary.path="+System.getProperty("java.library.path")+"\n");
+    		
+    		
     		// we perform a check here to check if gdal is actually around
             // if we fail then the plugin contributions would smoothly
             // not be applied.
-    	    throw new RuntimeException("GDAL Not Available ... some image formats disabled");
+    	    throw new RuntimeException("GDAL Not Available ... some image formats disabled: \nExpected environment variable resolve to:\n"+b);
     	}
     }
+
+	private String absoluteFile(String prop) {
+		String getenv = System.getenv(prop);
+		if(getenv!=null){
+			return new java.io.File(getenv).getAbsolutePath();
+		} else {
+			return null;
+		}
+	}
     
     public void stop(BundleContext context) throws Exception {
         plugin = null;

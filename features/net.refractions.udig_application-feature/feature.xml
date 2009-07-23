@@ -45,13 +45,6 @@
    </requires>
 
    <plugin
-         id="net.refractions.udig.feature.editor"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="net.refractions.udig.mapgraphic"
          download-size="0"
          install-size="0"
@@ -136,13 +129,6 @@
          unpack="false"/>
 
    <plugin
-         id="net.refractions.udig.validation"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="net.refractions.udig.tools.edit"
          download-size="0"
          install-size="0"
@@ -151,13 +137,6 @@
 
    <plugin
          id="net.refractions.udig.browser"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.tcat.citd.sim.udig.bookmarks"
          download-size="0"
          install-size="0"
          version="0.0.0"
@@ -185,6 +164,13 @@
 
    <plugin
          id="net.refractions.udig.project.ui.editor"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.tcat.citd.sim.udig.bookmarks"
          download-size="0"
          install-size="0"
          version="0.0.0"
