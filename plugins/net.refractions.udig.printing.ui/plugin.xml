@@ -87,9 +87,15 @@
             visible="true"/>
       <boxprinter
             class="net.refractions.udig.printing.model.impl.MapGraphicBoxPrinter"
-            defaultAction="net.refractions.udig.printing.ui.styleAction"
+            defaultAction="net.refractions.udig.printing.ui.simpleStyleAction"
             description="A dynamic graphic such as a scalebar"
             name="%graphic.label"
+            visible="true">
+      </boxprinter>
+      <boxprinter
+            class="net.refractions.udig.printing.model.impl.RectangleEllipseBoxPrinter"
+            description="%box.box.printer.description"
+            name="%box.box.printer"
             visible="true">
       </boxprinter>
    </extension>
@@ -251,6 +257,14 @@
                 id="bringtobackAction"
                 image="icons/obj16/bringtoback.png"
                 name="%bringtobackAction.label">
+          </editAction>
+       </editActionGroup>
+       <editActionGroup
+             acceptable="net.refractions.udig.printing.model.impl.RectangleEllipseBoxPrinter">
+          <editAction
+                class="net.refractions.udig.printing.ui.internal.editor.SimpleStyleAction"
+                id="simplestyleAction"
+                name="%simplestyle.label">
           </editAction>
        </editActionGroup>
      </extension>
