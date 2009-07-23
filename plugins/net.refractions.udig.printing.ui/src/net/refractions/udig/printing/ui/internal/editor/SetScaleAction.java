@@ -107,6 +107,8 @@ public class SetScaleAction implements IBoxEditAction {
         
         if( result == Window.OK ){
             this.scale = dialog.getScale();
+        }else{
+            this.scale = scaleDenominator;
         }
         
         

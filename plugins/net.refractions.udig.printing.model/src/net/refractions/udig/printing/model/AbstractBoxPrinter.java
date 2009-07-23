@@ -41,7 +41,6 @@ public abstract class AbstractBoxPrinter implements BoxPrinter {
     private Stroke borderStroke;
     private Color fillColor;
     
-    
     private PropertyListener listener=new PropertyListener(){
         @Override
         protected void locationChanged() {

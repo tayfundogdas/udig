@@ -42,34 +42,32 @@ import org.eclipse.swt.graphics.Rectangle;
 public abstract class AbstractTemplate implements Template {
 
     protected List<Box> boxes;
-	
-	protected double scaleDenomHint;
-	protected boolean zoomToSelectionHint;
-	protected int numPages = 1;
-	private int activePage = 0; //zero indexed
-	
-	/**
-	 * Create a basic AbstractTemplate. Initializes the boxes list.
-	 */
-	public AbstractTemplate() {
-		boxes = new ArrayList<Box>();
-		scaleDenomHint = AbstractTemplate.SCALE_UNSPECIFIED;
-		zoomToSelectionHint = false;
-	}
 
-	
-	
-	/** (non-Javadoc)
-	 * @see net.refractions.udig.printing.ui.Template#iterator()
-	 */
-	public Iterator<Box> iterator() {
-		return boxes.iterator();
-	}
+    protected double scaleDenomHint;
+    protected boolean zoomToSelectionHint;
+    protected int numPages = 1;
+    private int activePage = 0; // zero indexed
+
+    /**
+     * Create a basic AbstractTemplate. Initializes the boxes list.
+     */
+    public AbstractTemplate() {
+        boxes = new ArrayList<Box>();
+        scaleDenomHint = AbstractTemplate.SCALE_UNSPECIFIED;
+        zoomToSelectionHint = false;
+    }
+
+    /** (non-Javadoc)
+     * @see net.refractions.udig.printing.ui.Template#iterator()
+     */
+    public Iterator<Box> iterator() {
+        return boxes.iterator();
+    }
 
     public String toString() {
-	    return getName();
-	}
-    
+        return getName();
+    }
+
     public Template clone() {
         try {
             return (Template) super.clone();
@@ -78,49 +76,48 @@ public abstract class AbstractTemplate implements Template {
             return null;
         }
     }
-    
+
     public int getPreferredOrientation() {
         return ORIENTATION_UNSPECIFIED;
     }
-    
-    
-    public void setMapScaleHint(double scaleDenom) {
+
+    public void setMapScaleHint( double scaleDenom ) {
         this.scaleDenomHint = scaleDenom;
     }
-    
+
     public double getMapScaleHint() {
         return scaleDenomHint;
     }
-    
-    public void setZoomToSelectionHint(boolean hint) {
+
+    public void setZoomToSelectionHint( boolean hint ) {
         this.zoomToSelectionHint = hint;
     }
 
     public boolean getZoomToSelectionHint() {
         return zoomToSelectionHint;
     }
-    
+
     public Rectangle getMapBounds() throws IllegalStateException {
         Rectangle bounds = null;
-        for( Box box : boxes ){
-           if( box.getBoxPrinter() instanceof MapBoxPrinter ){
-               Dimension size = box.getSize();
-               Point location = box.getLocation();
-               bounds = new Rectangle(location.x,location.y,size.width,size.height);
-           }
+        for( Box box : boxes ) {
+            if (box.getBoxPrinter() instanceof MapBoxPrinter) {
+                Dimension size = box.getSize();
+                Point location = box.getLocation();
+                bounds = new Rectangle(location.x, location.y, size.width, size.height);
+            }
         }
         return bounds;
     }
-    
-    protected Font getFont(int size, int style) {
+
+    protected Font getFont( int size, int style ) {
         try {
-            
+
             String face = "PLAIN";
             if (style == SWT.BOLD) {
                 face = "BOLD";
             }
-                
-            Font font = Font.decode("Arial-"+face+"-"+size);
+
+            Font font = Font.decode("Arial-" + face + "-" + size);
             return font;
 
         } catch (Exception e) {
@@ -132,11 +129,11 @@ public abstract class AbstractTemplate implements Template {
     public int getNumPages() {
         return 1;
     }
-    
-    public void setActivePage(int page) {
+
+    public void setActivePage( int page ) {
         this.activePage = page;
     }
-    
+
     public int getActivePage() {
         return activePage;
     }
@@ -144,8 +141,17 @@ public abstract class AbstractTemplate implements Template {
     protected void setPageSizeFromPaperSize( Page page, Dimension paperSize ) {
         float factor = (float) paperSize.width / (float) paperSize.height;
         Dimension pageSize = page.getSize();
-        int h = pageSize.height - 5;
+        int h = pageSize.height;
         int w = (int) ((float) h * factor);
         page.setSize(new Dimension(w, h));
+    }
+
+    protected float scaleValue( Page page, Dimension paperSize, float previousValue ) {
+        float factor = (float) page.getSize().width / (float) paperSize.height;
+        int resizedValue = (int) ((float) previousValue * factor);
+        if (resizedValue < 4) {
+            resizedValue = 4;
+        }
+        return resizedValue;
     }
 }

@@ -8,65 +8,65 @@
 
    <extension
          point="net.refractions.udig.printing.ui.templateFactories">
-      <template
+            <template
             class="net.refractions.udig.printing.ui.internal.template.A4LandscapeTemplate"
             id="net.refractions.udig.printing.ui.internal.template.A4LandscapeTemplate"
-            name="A4 landscape template">
+            name="%A4.landscape.template">
       </template>
       <template
             class="net.refractions.udig.printing.ui.internal.template.A3LandscapeTemplate"
             id="net.refractions.udig.printing.ui.internal.template.A3LandscapeTemplate"
-            name="A3 landscape template">
+            name="%A3.landscape.template">
       </template>
       <template
             class="net.refractions.udig.printing.ui.internal.template.A1LandscapeTemplate"
             id="net.refractions.udig.printing.ui.internal.template.A1LandscapeTemplate"
-            name="A1 landscape template">
+            name="%A1.landscape.template">
       </template>
       <template
             class="net.refractions.udig.printing.ui.internal.template.A0LandscapeTemplate"
             id="net.refractions.udig.printing.ui.internal.template.A0LandscapeTemplate"
-            name="A0 landscape template">
+            name="%A0.landscape.template">
       </template>
       <template
             class="net.refractions.udig.printing.ui.internal.template.A4PortraitTemplate"
             id="net.refractions.udig.printing.ui.internal.template.A4PortraitTemplate"
-            name="A4 portrait template">
+            name="%A4.portrait.template">
       </template>
       <template
             class="net.refractions.udig.printing.ui.internal.template.A3PortraitTemplate"
             id="net.refractions.udig.printing.ui.internal.template.A3PortraitTemplate"
-            name="A3 portrait template">
+            name="%A3.portrait.template">
       </template>
       <template
             class="net.refractions.udig.printing.ui.internal.template.A1PortraitTemplate"
             id="net.refractions.udig.printing.ui.internal.template.A1PortraitTemplate"
-            name="A1 portrait template">
+            name="%A1.portrait.template">
       </template>
       <template
             class="net.refractions.udig.printing.ui.internal.template.A0PortraitTemplate"
             id="net.refractions.udig.printing.ui.internal.template.A0PortraitTemplate"
-            name="A0 portrait template">
+            name="%A0.portrait.template">
       </template>
     	<template
             class="net.refractions.udig.printing.ui.internal.template.LetterLandscapeTemplate"
             id="net.refractions.udig.printing.ui.internal.template.LetterLandscapeTemplate"
-            name="Letter landscape template">
+            name="%Letter.landscape.template">
       </template>
     	<template
             class="net.refractions.udig.printing.ui.internal.template.LegalLandscapeTemplate"
             id="net.refractions.udig.printing.ui.internal.template.LegalLandscapeTemplate"
-            name="Legal landscape template">
+            name="%Legal.landscape.template">
       </template>
       <template
             class="net.refractions.udig.printing.ui.internal.template.LetterPortraitTemplate"
             id="net.refractions.udig.printing.ui.internal.template.LetterPortraitTemplate"
-            name="Letter portrait template">
+            name="%Letter.portrait.template">
       </template>
       <template
             class="net.refractions.udig.printing.ui.internal.template.LegalPortraitTemplate"
             id="net.refractions.udig.printing.ui.internal.template.LegalPortraitTemplate"
-            name="Legal portrait template">
+            name="%Legal.portrait.template">
       </template>
    </extension>
    

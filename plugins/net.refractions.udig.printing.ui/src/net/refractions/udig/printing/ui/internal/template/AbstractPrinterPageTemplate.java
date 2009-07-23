@@ -39,6 +39,8 @@ import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
 
+import com.lowagie.text.PageSize;
+
 /**
  * Implementation of a Template at its most basic. Contains a title bar and a map.
  * 
@@ -63,7 +65,10 @@ public abstract class AbstractPrinterPageTemplate extends AbstractTemplate {
 
     protected static final float SPACING_PERCENT = 2;
 
+    protected static final int BASEFONT_SIZE = 18;
+
     protected Rectangle mapBounds;
+    private Page page;
 
     /**
      * Constructs the BasicTemplate and populates its two boxes with a title and a map.
@@ -79,6 +84,7 @@ public abstract class AbstractPrinterPageTemplate extends AbstractTemplate {
      * @param map the Map to be drawn
      */
     public void init( Page page, Map map ) {
+        this.page = page;
         com.lowagie.text.Rectangle paperRectangle = getPaperSize();
         Dimension paperSize = new Dimension((int) paperRectangle.width(), (int) paperRectangle
                 .height());
@@ -94,7 +100,10 @@ public abstract class AbstractPrinterPageTemplate extends AbstractTemplate {
         int yPos = getPercentagePieceOf(height, UPPER_MARGIN_PERCENT);
         int w = getPercentagePieceOf(width, TITLE_WIDTH_PERCENT);
         int h = getPercentagePieceOf(height, TITLE_HEIGHT_PERCENT);
-        addLabelBox(formatName(map.getName()), xPos, yPos, w, h);
+        // the base font size is good for the A4 size, scale every other proportional
+        float scaledSize = (float) BASEFONT_SIZE * (float) paperSize.height / PageSize.A4.height();
+        // float scaledFontSize = scaleValue(page, paperSize, scaledSize);
+        addLabelBox(formatName(map.getName()), xPos, yPos, w, h, (int) scaledSize);
 
         xPos = getPercentagePieceOf(width, LEFT_MARGIN_PERCENT);
         yPos = getPercentagePieceOf(height, UPPER_MARGIN_PERCENT + TITLE_HEIGHT_PERCENT);
@@ -138,15 +147,16 @@ public abstract class AbstractPrinterPageTemplate extends AbstractTemplate {
      */
     protected abstract com.lowagie.text.Rectangle getPaperSize();
 
-    protected int addLabelBox( String text, int xPos, int yPos, int labelWidth, int labelHeight ) {
+    protected int addLabelBox( String text, int xPos, int yPos, int labelWidth, int labelHeight,
+            int fontSize ) {
         Box labelBox = ModelFactory.eINSTANCE.createBox();
-        LabelBoxPrinter labelBoxPrinter = new LabelBoxPrinter();
+        LabelBoxPrinter labelBoxPrinter = new LabelBoxPrinter(page);
         labelBoxPrinter.setText(text);
         labelBoxPrinter.setHorizontalAlignment(SWT.CENTER);
         try {
             FontData data = Display.getDefault().getSystemFont().getFontData()[0];
 
-            data.setHeight(18);
+            data.setHeight(fontSize);
             data.setStyle(SWT.BOLD);
 
             Font font = AWTSWTImageUtils.swtFontToAwt(data);
