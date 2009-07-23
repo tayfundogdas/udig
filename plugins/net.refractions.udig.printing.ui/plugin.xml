@@ -19,6 +19,11 @@
             name="%A3.landscape.template">
       </template>
       <template
+            class="net.refractions.udig.printing.ui.internal.template.A2LandscapeTemplate"
+            id="net.refractions.udig.printing.ui.internal.template.A2LandscapeTemplate"
+            name="%A2.landscape.template">
+      </template>
+      <template
             class="net.refractions.udig.printing.ui.internal.template.A1LandscapeTemplate"
             id="net.refractions.udig.printing.ui.internal.template.A1LandscapeTemplate"
             name="%A1.landscape.template">
@@ -37,6 +42,11 @@
             class="net.refractions.udig.printing.ui.internal.template.A3PortraitTemplate"
             id="net.refractions.udig.printing.ui.internal.template.A3PortraitTemplate"
             name="%A3.portrait.template">
+      </template>
+      <template
+            class="net.refractions.udig.printing.ui.internal.template.A2PortraitTemplate"
+            id="net.refractions.udig.printing.ui.internal.template.A2PortraitTemplate"
+            name="%A2.portrait.template">
       </template>
       <template
             class="net.refractions.udig.printing.ui.internal.template.A1PortraitTemplate"
