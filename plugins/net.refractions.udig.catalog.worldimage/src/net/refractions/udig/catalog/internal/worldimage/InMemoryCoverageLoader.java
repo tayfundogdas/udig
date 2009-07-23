@@ -179,15 +179,18 @@ public class InMemoryCoverageLoader extends GridCoverageLoader {
 
     private double size( RenderedImage bi ) {
 
-    	double colorData = 0;
+    	double bitPerPixel = 0;
         for( int elem : bi.getColorModel().getComponentSize() ) {
-            colorData += elem;
+            bitPerPixel += elem;
         }
 
         double width = (double)bi.getWidth();
 		double height = (double)bi.getHeight();
-		double meg = (double)1024*8;
-		return (width * height * colorData) / meg;
+		double pixelNum = width*height;
+		double bitsNum = pixelNum*bitPerPixel;
+		double bytesNum = bitsNum/8.0;
+		double megNum = bytesNum/1024.0;
+		return megNum;
     }
 
 }

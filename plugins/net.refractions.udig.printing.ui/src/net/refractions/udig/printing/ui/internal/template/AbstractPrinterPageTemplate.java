@@ -133,7 +133,7 @@ public abstract class AbstractPrinterPageTemplate extends AbstractTemplate {
 
     protected void addScale( int xPos, int yPos, int scaleWidth, int scaleHeight ) {
         Box scaleBox = ModelFactory.eINSTANCE.createBox();
-        MapGraphicBoxPrinter scale = new MapGraphicBoxPrinter();
+        MapGraphicBoxPrinter scale = new MapGraphicBoxPrinter(page);
         scale.setMapGraphic(MapGraphicChooserDialog.findResource(ScalebarMapGraphic.class));
         scaleBox.setBoxPrinter(scale);
         scaleBox.setID("Scalebar Box"); //$NON-NLS-1$
@@ -209,7 +209,7 @@ public abstract class AbstractPrinterPageTemplate extends AbstractTemplate {
 
     protected void addLegendBox( int xPos, int yPos, int legendWidth, int legendHeight ) {
         Box legendBox = ModelFactory.eINSTANCE.createBox();
-        MapGraphicBoxPrinter legend = new MapGraphicBoxPrinter();
+        MapGraphicBoxPrinter legend = new MapGraphicBoxPrinter(page);
         legend.setMapGraphic(MapGraphicChooserDialog.findResource(LegendGraphic.class));
         legendBox.setBoxPrinter(legend);
         legendBox.setID("Legend Box"); //$NON-NLS-1$

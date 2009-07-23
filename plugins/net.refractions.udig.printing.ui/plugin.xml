@@ -107,7 +107,6 @@
          point="org.eclipse.ui.editors">
          <editor
                class="net.refractions.udig.printing.ui.internal.editor.PageEditor"
-               contributorClass="net.refractions.udig.printing.ui.internal.editor.PageEditorActionBarContributor"
                default="true"
                icon="icons/obj16/page_obj.gif"
                id="net.refractions.udig.printing.ui.internal.editor.pageEditor"
