@@ -62,11 +62,19 @@ public class RectangleEllipseBoxPrinter extends AbstractBoxPrinter {
     public RectangleEllipseBoxPrinter() {
         super();
     }
+    
+    public RectangleEllipseBoxPrinter( float scaleFactor ) {
+        super();
+        this.scaleFactor = scaleFactor;
+    }
 
     private float getScaleFactor() {
-        Page page = getBox().getPage();
-        if (page != null) {
-            scaleFactor = (float) page.getSize().width / (float) page.getPaperSize().height;
+        if (Float.isNaN(scaleFactor)) {
+            // try to get it from the page
+            Page page = getBox().getPage();
+            if (page != null) {
+                scaleFactor = (float) page.getSize().width / (float) page.getPaperSize().height;
+            }
         }
         return scaleFactor;
     }

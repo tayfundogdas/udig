@@ -92,6 +92,8 @@ public abstract class AbstractPrinterPageTemplate extends AbstractTemplate {
         page.setPaperSize(paperSize);
         // then apply the ratio of the papersize also to the page size.
         setPageSizeFromPaperSize(page, paperSize);
+        
+        float scaleFactor = (float) page.getSize().width / (float) page.getPaperSize().height;
 
         int height = page.getSize().height;
         int width = page.getSize().width;
@@ -103,7 +105,7 @@ public abstract class AbstractPrinterPageTemplate extends AbstractTemplate {
         // the base font size is good for the A4 size, scale every other proportional
         float scaledSize = (float) BASEFONT_SIZE * (float) paperSize.height / PageSize.A4.getHeight();
         // float scaledFontSize = scaleValue(page, paperSize, scaledSize);
-        addLabelBox(formatName(map.getName()), xPos, yPos, w, h, (int) scaledSize);
+        addLabelBox(formatName(map.getName()), xPos, yPos, w, h, (int) scaledSize, scaleFactor);
 
         xPos = getPercentagePieceOf(width, LEFT_MARGIN_PERCENT);
         yPos = getPercentagePieceOf(height, UPPER_MARGIN_PERCENT + TITLE_HEIGHT_PERCENT);
@@ -126,6 +128,7 @@ public abstract class AbstractPrinterPageTemplate extends AbstractTemplate {
         h = getPercentagePieceOf(height, SCALE_HEIGHT_PERCENT);
         addScale(xPos, yPos, w, h);
     }
+    
     private int getPercentagePieceOf( int width, float percent ) {
         int res = (int) ((float) width * percent / 100f);
         return res;
@@ -148,11 +151,11 @@ public abstract class AbstractPrinterPageTemplate extends AbstractTemplate {
     protected abstract com.lowagie.text.Rectangle getPaperSize();
 
     protected int addLabelBox( String text, int xPos, int yPos, int labelWidth, int labelHeight,
-            int fontSize ) {
+            int fontSize, float scaleFactor ) {
         Box labelBox = ModelFactory.eINSTANCE.createBox();
         labelBox.setSize(new Dimension(labelWidth, labelHeight));
         labelBox.setLocation(new Point(xPos, yPos));
-        LabelBoxPrinter labelBoxPrinter = new LabelBoxPrinter();
+        LabelBoxPrinter labelBoxPrinter = new LabelBoxPrinter(scaleFactor);
         labelBox.setBoxPrinter(labelBoxPrinter);
 
         labelBox.setID("Standard Label"); //$NON-NLS-1$
