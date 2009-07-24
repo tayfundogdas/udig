@@ -150,7 +150,12 @@ public abstract class AbstractPrinterPageTemplate extends AbstractTemplate {
     protected int addLabelBox( String text, int xPos, int yPos, int labelWidth, int labelHeight,
             int fontSize ) {
         Box labelBox = ModelFactory.eINSTANCE.createBox();
-        LabelBoxPrinter labelBoxPrinter = new LabelBoxPrinter(page);
+        labelBox.setSize(new Dimension(labelWidth, labelHeight));
+        labelBox.setLocation(new Point(xPos, yPos));
+        LabelBoxPrinter labelBoxPrinter = new LabelBoxPrinter();
+        labelBox.setBoxPrinter(labelBoxPrinter);
+
+        labelBox.setID("Standard Label"); //$NON-NLS-1$
         labelBoxPrinter.setText(text);
         labelBoxPrinter.setHorizontalAlignment(SWT.CENTER);
         try {
@@ -165,12 +170,6 @@ public abstract class AbstractPrinterPageTemplate extends AbstractTemplate {
         } catch (Exception e) {
             // oh well don't have that font type
         }
-        labelBox.setBoxPrinter(labelBoxPrinter);
-        labelBox.setID("Standard Label"); //$NON-NLS-1$
-        // TODO base it on the font
-        // int labelHeight = 30 + LabelBoxPrinter.INSET * 2;
-        labelBox.setSize(new Dimension(labelWidth, labelHeight));
-        labelBox.setLocation(new Point(xPos, yPos));
         boxes.add(labelBox);
         return labelHeight;
     }

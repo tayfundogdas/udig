@@ -59,30 +59,20 @@ public class RectangleEllipseBoxPrinter extends AbstractBoxPrinter {
 
     private float scaleFactor = Float.NaN;
 
-    private boolean inPreviewMode = false;
-
     public RectangleEllipseBoxPrinter() {
         super();
-        Page page = getPage();
+    }
+
+    private float getScaleFactor() {
+        Page page = getBox().getPage();
         if (page != null) {
             scaleFactor = (float) page.getSize().width / (float) page.getPaperSize().height;
         }
+        return scaleFactor;
     }
 
-    private Page getPage() {
-        IWorkbenchWindow workbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-        UDIGEditorInput editorInput = (UDIGEditorInput) workbenchWindow.getActivePage()
-                .getActiveEditor().getEditorInput();
-        IProjectElement projectElement = editorInput.getProjectElement();
-        if (projectElement instanceof Page) {
-            return (Page) projectElement;
-        }
-        return null;
-    }
-
-    public RectangleEllipseBoxPrinter( Page page ) {
-        super();
-        scaleFactor = (float) page.getSize().width / (float) page.getPaperSize().height;
+    private void setScaleFactor( float scaleFactor ) {
+        this.scaleFactor = scaleFactor;
     }
 
     public void draw( Graphics2D graphics, IProgressMonitor monitor ) {
@@ -118,10 +108,8 @@ public class RectangleEllipseBoxPrinter extends AbstractBoxPrinter {
     }
 
     public void createPreview( Graphics2D graphics, IProgressMonitor monitor ) {
-        inPreviewMode = true;
         draw(graphics, monitor);
         setDirty(false);
-        inPreviewMode = false;
     }
 
     public void save( IMemento memento ) {
@@ -131,7 +119,7 @@ public class RectangleEllipseBoxPrinter extends AbstractBoxPrinter {
         memento.putString(FILLCOLOR_KEY, color2String(fillColor));
         memento.putInteger(FILLALPHA_KEY, fillAlpha);
         memento.putInteger(SHAPETYPE_KEY, type);
-        memento.putFloat(SCALEFACTOR_KEY, scaleFactor);
+        memento.putFloat(SCALEFACTOR_KEY, getScaleFactor());
     }
 
     public void load( IMemento memento ) {
@@ -141,7 +129,7 @@ public class RectangleEllipseBoxPrinter extends AbstractBoxPrinter {
         fillColor = string2Color(memento.getString(FILLCOLOR_KEY));
         fillAlpha = memento.getInteger(FILLALPHA_KEY);
         type = memento.getInteger(SHAPETYPE_KEY);
-        scaleFactor = memento.getFloat(SCALEFACTOR_KEY);
+        setScaleFactor(memento.getFloat(SCALEFACTOR_KEY));
     }
 
     private String color2String( Color color ) {

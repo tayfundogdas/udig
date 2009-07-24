@@ -61,8 +61,6 @@ public class LabelBoxPrinter extends AbstractBoxPrinter {
     private boolean wrap;
     private Color fontColor = Color.BLACK;
 
-    private float scaleFactor = Float.NaN;
-
     /**
      * The font used to draw on paper. The one set by the user and expected to be the real size.
      */
@@ -75,43 +73,30 @@ public class LabelBoxPrinter extends AbstractBoxPrinter {
 
     private boolean inPreviewMode = false;
 
+    private float scaleFactor = Float.NaN;
+
     public LabelBoxPrinter() {
         super();
 
-        Page page = getPage();
-        if (page != null) {
-            scaleFactor = (float) page.getSize().width / (float) page.getPaperSize().height;
-        }
-
         this.padding = 0;
-        fontColor = Color.BLACK;
     }
 
     public LabelBoxPrinter( int padding ) {
         super();
-        Page page = getPage();
+
+        this.padding = padding;
+    }
+
+    private float getScaleFactor() {
+        Page page = getBox().getPage();
         if (page != null) {
             scaleFactor = (float) page.getSize().width / (float) page.getPaperSize().height;
         }
-
-        this.padding = padding;
-        fontColor = Color.BLACK;
+        return scaleFactor;
     }
 
-    private Page getPage() {
-        IWorkbenchWindow workbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-        UDIGEditorInput editorInput = (UDIGEditorInput) workbenchWindow.getActivePage()
-                .getActiveEditor().getEditorInput();
-        IProjectElement projectElement = editorInput.getProjectElement();
-        if (projectElement instanceof Page) {
-            return (Page) projectElement;
-        }
-        return null;
-    }
-
-    public LabelBoxPrinter( Page page ) {
-        super();
-        scaleFactor = (float) page.getSize().width / (float) page.getPaperSize().height;
+    private void setScaleFactor( float scaleFactor ) {
+        this.scaleFactor = scaleFactor;
     }
 
     public int getPadding() {
@@ -279,7 +264,7 @@ public class LabelBoxPrinter extends AbstractBoxPrinter {
             memento.putString(FONT_NAME_KEY, originalFont.getFamily());
             memento.putInteger(STYLE_KEY, originalFont.getStyle());
             memento.putInteger(SIZE_KEY, originalFont.getSize());
-            memento.putFloat(FONT_SCALE_FACTOR, scaleFactor);
+            memento.putFloat(FONT_SCALE_FACTOR, getScaleFactor());
         }
         if (fontColor != null) {
             StringBuilder clrString = new StringBuilder();
@@ -295,13 +280,13 @@ public class LabelBoxPrinter extends AbstractBoxPrinter {
     public void load( IMemento memento ) {
         text = memento.getString(LABEL_KEY);
         horizontalAlignment = memento.getInteger(HORIZ_ALIGN_KEY);
-        scaleFactor = memento.getFloat(FONT_SCALE_FACTOR);
+        setScaleFactor(memento.getFloat(FONT_SCALE_FACTOR));
         String family = memento.getString(FONT_NAME_KEY);
         if (family != null) {
             int size = memento.getInteger(SIZE_KEY);
             int style = memento.getInteger(STYLE_KEY);
             originalFont = new Font(family, style, size);
-            int resizedValue = (int) ((float) size * scaleFactor);
+            int resizedValue = (int) ((float) size * getScaleFactor());
             if (resizedValue < 4) {
                 resizedValue = 4;
             }
@@ -337,7 +322,7 @@ public class LabelBoxPrinter extends AbstractBoxPrinter {
      */
     public void setFont( Font newFont ) {
         originalFont = newFont;
-        int resizedValue = (int) ((float) originalFont.getSize() * scaleFactor);
+        int resizedValue = (int) ((float) originalFont.getSize() * getScaleFactor());
         if (resizedValue < 4) {
             resizedValue = 4;
         }
