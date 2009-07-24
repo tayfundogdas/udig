@@ -88,8 +88,8 @@ public class RectangleEllipseBoxPrinter extends AbstractBoxPrinter {
     public void draw( Graphics2D graphics, IProgressMonitor monitor ) {
         super.draw(graphics, monitor);
 
-        int boxWidth = getBox().getSize().width -(int) lineWidth/2;
-        int boxHeight = getBox().getSize().height - (int) lineWidth/2;
+        int boxWidth = getBox().getSize().width - (int) lineWidth / 2;
+        int boxHeight = getBox().getSize().height - (int) lineWidth / 2;
         int roundedEgde = 50;
         // if (inPreviewMode) {
         // boxWidth = (int) ((float) boxWidth * scaleFactor);
@@ -149,8 +149,9 @@ public class RectangleEllipseBoxPrinter extends AbstractBoxPrinter {
     }
     private Color string2Color( String string ) {
         String[] split = string.split(",");
-        return new Color(Integer.parseInt(split[0], Integer.parseInt(split[1], Integer
-                .parseInt(split[2]))));
+        Color color = new Color(Integer.parseInt(split[0].trim()), Integer
+                .parseInt(split[1].trim()), Integer.parseInt(split[2].trim()));
+        return color;
     }
 
     public String getExtensionPointID() {
