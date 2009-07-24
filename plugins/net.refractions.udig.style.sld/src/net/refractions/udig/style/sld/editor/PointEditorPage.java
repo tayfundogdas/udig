@@ -192,8 +192,7 @@ public class PointEditorPage extends StyleEditorPage {
         label.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, false));
         label.setToolTipText(Messages.StylingConstants_tooltip_opacity);
         opacityViewer = new ComboExpressionViewer(graphicComposite, SWT.SINGLE);
-        //FIXME it doesn't compile 
-        // opacityViewer.setOptions(getOpacityList());
+        opacityViewer.setOptions(getOpacityList());
         opacityViewer.getControl().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
         opacityViewer.getControl().setToolTipText(Messages.StylingConstants_label_opacity);
         
