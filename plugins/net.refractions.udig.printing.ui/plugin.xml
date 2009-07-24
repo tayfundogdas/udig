@@ -97,13 +97,14 @@
             visible="true"/>
       <boxprinter
             class="net.refractions.udig.printing.model.impl.MapGraphicBoxPrinter"
-            defaultAction="net.refractions.udig.printing.ui.simpleStyleAction"
+            defaultAction="net.refractions.udig.printing.ui.styleAction"
             description="A dynamic graphic such as a scalebar"
             name="%graphic.label"
             visible="true">
       </boxprinter>
       <boxprinter
             class="net.refractions.udig.printing.model.impl.RectangleEllipseBoxPrinter"
+            defaultAction="net.refractions.udig.printing.ui.simpleStyleAction"
             description="%box.box.printer.description"
             name="%box.box.printer"
             visible="true">
@@ -159,8 +160,9 @@
                class="net.refractions.udig.printing.ui.internal.PrintAction"
                disabledIcon="icons/etool16/pdf.png"
                icon="icons/etool16/pdf.png"
-               id="net.refractions.udig.printing.ui.printAction"
+               id="net.refractions.udig.printing.ui.printPdfAction"
                label="%printing.ui.action.printFromPage.label"
+               menubarPath="file/print.ext"
                style="push"
                toolbarPath="global/additions"
                tooltip="%printing.ui.action.printFromPage.label">
