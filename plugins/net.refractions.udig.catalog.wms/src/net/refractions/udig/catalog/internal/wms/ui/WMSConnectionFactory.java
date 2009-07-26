@@ -191,7 +191,9 @@ public class WMSConnectionFactory extends UDIGConnectionFactory {
     }
     
 	public URL createConnectionURL(Object context) {
-		// TODO Auto-generated method stub
+	    if( context instanceof URL ){
+	        return (URL) context;
+	    }
 		return null;
 	}
 
