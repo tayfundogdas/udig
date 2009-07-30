@@ -232,7 +232,7 @@ public class EndConnectionState extends State {
             Set<IService> results = new HashSet<IService>(sFactory.createService(params));
             for( IService service : results ) {
                 Collection<IService> searchResult = searchLocalCatalog(service.getIdentifier(), monitor);
-                if (searchResult == null ) {
+                if (searchResult.isEmpty() ) {
                     services.add(service);
                 } else {
                     services.addAll(searchResult);

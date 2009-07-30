@@ -131,13 +131,13 @@ public class WFSConnectionFactory extends UDIGConnectionFactory {
             return null;
 
         }
-        if (query != null && query.indexOf("service=wfs") != -1) { //$NON-NLS-1$
+        if (query != null && query.toLowerCase().indexOf("service=wfs") != -1) { //$NON-NLS-1$
             return checkedURL( url );
         }
-        if (path != null && path.indexOf("geoserver/wfs") != -1) { //$NON-NLS-1$
+        if (path != null && path.toLowerCase().indexOf("geoserver/wfs") != -1) { //$NON-NLS-1$
             return checkedURL( url );
         }
-        if (url.toExternalForm().indexOf("WFS") != -1) { //$NON-NLS-1$
+        if (url.toExternalForm().toLowerCase().indexOf("WFS") != -1) { //$NON-NLS-1$
             return checkedURL( url );
         }
         return null;

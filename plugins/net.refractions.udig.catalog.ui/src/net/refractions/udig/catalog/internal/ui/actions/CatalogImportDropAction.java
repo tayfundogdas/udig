@@ -5,8 +5,9 @@ import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLDecoder;
-import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -265,7 +266,7 @@ public class CatalogImportDropAction extends IDropAction {
     static class PageProcessor implements ExtensionPointProcessor {
 
         Object data;
-        List<String> ids = new ArrayList<String>();
+        Set<String> ids = new LinkedHashSet<String>();
 
         PageProcessor( Object data ) {
             this.data = data;
@@ -283,10 +284,9 @@ public class CatalogImportDropAction extends IDropAction {
                     // get the id
                     IConfigurationElement[] elements = extension.getConfigurationElements();
                     for( int i = 0; i < elements.length; i++ ) {
-                        // if ("wizardPage".equals(elements[i].getName())) { //$NON-NLS-1$
-                        ids.add(elements[i].getAttribute("id")); //$NON-NLS-1$
-                        // break;
-                        // }
+                    	if( elements[i].getAttribute("id") != null){
+                    		ids.add(elements[i].getAttribute("id")); //$NON-NLS-1$
+                    	}
                     }
                 }
             } catch (Throwable t) {
