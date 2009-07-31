@@ -180,7 +180,7 @@ public class FeatureTypeEditor {
     public void createTable( Composite parent, Object layoutData, SimpleFeatureType featureType,
             boolean editable ) {
 
-        viewer = new TreeViewer(parent, SWT.MULTI|SWT.FULL_SELECTION);
+        viewer = new TreeViewer(parent, SWT.FULL_SELECTION);
 
         Tree tree = viewer.getTree();
         if (layoutData == null)
