@@ -17,14 +17,13 @@ public class IDTest {
         String str = idFile.toString();
         
         assertTrue( idFile.hashCode() != 0 );
-        assertEquals( str.hashCode(), idFile.hashCode() );
+        assertEquals( str.hashCode(), idFile.toString().hashCode() );
     }
 
     @Test
     public void testIDFile() {
         File file = new File("foo.txt");
         ID idFile = new ID( file );
-        String str = idFile.toString();
         
         assertEquals( file, idFile.toFile() );
     }

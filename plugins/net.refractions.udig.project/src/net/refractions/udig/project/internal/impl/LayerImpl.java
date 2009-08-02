@@ -7,6 +7,7 @@ import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -531,19 +532,20 @@ public class LayerImpl extends EObjectImpl implements Layer {
         }
         String rid = getID().toString();
         String[] parts = rid.split(DIVIDER);
-
+        String qualifier = null;
+        if( parts.length==2){
+            qualifier = parts[1];
+        }
         ID id;
         if( parts[0].startsWith("file") ){ //$NON-NLS-1$
             String[] fileParts = parts[0].split("#",2); //$NON-NLS-1$
             File file = URLUtils.urlToFile(CorePlugin.createSafeURL(fileParts[0]));
-            id=new ID(file.getPath()+"#"+fileParts[1], CorePlugin.createSafeURL(parts[0]), file); //$NON-NLS-1$
-        }else{
+            URL url = CorePlugin.createSafeURL( parts[0]);
+            URI uri = CorePlugin.createSafeURI( parts[0]);
+            id=new ID(file.getPath()+"#"+fileParts[1], url, file, uri, qualifier); //$NON-NLS-1$
+        } else {
             id = new ID(CorePlugin.createSafeURL(parts[0]));
-        }
-        
-        if( parts.length==2){
-            id.setTypeQualifier(parts[1]);
-        }
+        }       
         
         return id;
     }

@@ -23,6 +23,7 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.refractions.udig.catalog.ID;
 import net.refractions.udig.catalog.IService;
 import net.refractions.udig.catalog.ServiceExtension2;
 import net.refractions.udig.catalog.geotiff.internal.Messages;
@@ -140,7 +141,8 @@ public class GeoTiffServiceExtension implements ServiceExtension2 {
         
         File file = null;
         try {
-            file = new File(url.getFile());
+            ID id = new ID( url );
+            file = id.toFile();
         } catch (IllegalArgumentException ex) {
             return url.toExternalForm()+Messages.GeoTiffServiceExtension_notFile;
         }

@@ -110,17 +110,17 @@ public class ServiceParameterPersister {
         try {
         	String decodeId = URLDecoder.decode(encodedId, ENCODING);
         	String[] parts = decodeId.split(TYPE_QUALIFIER);
+        	String qualifier = null;
+        	if( parts.length==2){
+        	    qualifier = parts[1];
+        	}
         	try {
         		URL url = new URL(null, parts[0], CorePlugin.RELAXED_HANDLER);
-        		id= new ID(url);
+        		id= new ID(url, qualifier);
         	} catch (MalformedURLException e) {
         		String path = parts[0].replaceAll(COLON_ENCODING, ":");
-				id = new ID(new File(path));
-        	}
-        	
-        	if(parts.length==2){
-        	    id.setTypeQualifier(parts[1]);
-        	}
+				id = new ID(new File(path), qualifier);
+        	}        
         	
         } catch (UnsupportedEncodingException e) {
         	CatalogPlugin.log("Could not code preferences URL", e); //$NON-NLS-1$

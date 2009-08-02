@@ -67,8 +67,7 @@ public abstract class AbstractRasterService extends IService {
      * @param factory
      */
     public AbstractRasterService( URL url, String typeQualifier, GridFormatFactorySpi factory ) {
-        this.id = new ID( url );
-        id.setTypeQualifier(typeQualifier);
+        this.id = new ID( url, typeQualifier );
         this.factory = factory;
     }
 

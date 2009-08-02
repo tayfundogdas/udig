@@ -8,13 +8,16 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 
+import org.geotools.data.DataUtilities;
+
 import net.refractions.udig.core.internal.CorePlugin;
 
 /**
  * Identifier used to lookup entries in an local IRespository or remote ISearch.
  * <p>
  * While an identifier is often defined by URL or URI this class has constructors to 
- * help remove any possibility ambiguity.
+ * help remove any possibility ambiguity. These objects are considered immutable
+ * and are very careful to have a fast hashCode function etc...
  * </p>
  * @author Jody Garnett
  * @since pending
@@ -27,8 +30,17 @@ public class ID implements Serializable {
     private File file;
     private URL url;
     private URI uri;
-    private String typeQualifier;
     
+    /**
+     * Used to distinguish type of connection represented
+     */
+    private String typeQualifier;
+
+    public ID( File file, String qualifier ) {
+        this( file );
+        this.typeQualifier = qualifier;
+    }
+
     public ID( File file ) {
         this.file = file;        
         try {
@@ -49,28 +61,38 @@ public class ID implements Serializable {
     }
     
     /**
-     * Fully defined id.  this shouldn't normally be required
+     * Fully defined id.  this shouldn't normally be required (but is useful for test cases)
      */
-    public ID(String id, URL url, File file){
+    public ID(String id, URL url, File file, URI uri, String qualifier){
         this.id=id;
         this.url=url;
+        this.uri=uri;
         this.file=file;
+        this.typeQualifier = qualifier;
     }
     
+    public ID( URL url, String qualifier ) {
+        this( url );
+        this.typeQualifier = qualifier;
+    }
+
     public ID( URL url ){
         this.url = url;
         try {
             this.uri = url.toURI();
         } catch (URISyntaxException e) {            
         }
-        if( uri != null && uri.isAbsolute() && "file".equals( uri.getScheme())){ //$NON-NLS-1$
-            try {
-                file = new File(uri);
-            }
-            catch( Throwable t ){
-                file = null;
-                if( CatalogPlugin.getDefault().isDebugging()){
-                    t.printStackTrace();
+        file = DataUtilities.urlToFile( url );
+        if( file != null ){
+            if( uri != null && uri.isAbsolute() && "file".equals( uri.getScheme())){ //$NON-NLS-1$
+                try {
+                    file = new File(uri);
+                }
+                catch( Throwable t ){
+                    file = null;
+                    if( CatalogPlugin.getDefault().isDebugging()){
+                        t.printStackTrace();
+                    }
                 }
             }
         }
@@ -90,6 +112,10 @@ public class ID implements Serializable {
         }        
     }
     
+    public ID( URI uri, String qualifier ) throws IOException {
+        this( uri );
+        this.typeQualifier = qualifier;
+    }
     public ID( URI uri ) throws IOException {
         this.uri = uri;
         if( uri.isAbsolute() ){
@@ -154,11 +180,7 @@ public class ID implements Serializable {
         this.file = parent.file;        
         typeQualifier = parent.getTypeQualifier();
     }
-    
-    public void setTypeQualifier( String typeQualifier ) {
-        this.typeQualifier = typeQualifier;
-    }
-    
+        
     public String getTypeQualifier() {
         return typeQualifier;
     }
