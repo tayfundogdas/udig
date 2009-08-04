@@ -74,6 +74,8 @@ public abstract class AbstractRasterGeoResource extends IGeoResource {
 
 	protected Lock lock = new UDIGDisplaySafeLock();
 
+	final protected ID id;
+
 	/**
 	 * Construct <code>AbstractRasterGeoResource</code>.
 	 * 
@@ -96,6 +98,7 @@ public abstract class AbstractRasterGeoResource extends IGeoResource {
 
 		}
 		this.fileName = name;
+		this.id = new ID(service.getID(), fileName);
 	}
 
 	public Status getStatus() {
@@ -181,7 +184,7 @@ public abstract class AbstractRasterGeoResource extends IGeoResource {
 
     @Override
     public ID getID() {
-        return  new ID (service.getID(), fileName);
+        return id;
     }
     
 	public URL getIdentifier() {

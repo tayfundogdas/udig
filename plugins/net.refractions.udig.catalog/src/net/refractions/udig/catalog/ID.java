@@ -166,8 +166,7 @@ public class ID implements Serializable {
             extension = "/"+child; //$NON-NLS-1$
         }else{
             extension = "#"+child; //$NON-NLS-1$
-        }
-        
+        }        
         this.id = parent.id+extension;
         try {
             this.url = new URL( null, parent.toURL().toString()+extension, CorePlugin.RELAXED_HANDLER );

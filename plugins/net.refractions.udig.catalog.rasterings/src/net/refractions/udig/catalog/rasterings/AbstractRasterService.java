@@ -154,8 +154,10 @@ public abstract class AbstractRasterService extends IService {
 
     /** Retrieves a relatively human readable title for this service. */     
     public String getHandle(){
-        File file = URLUtils.urlToFile(getIdentifier());
-        return file.getAbsolutePath();
+    	// we should check the Reader in order to reveal any internal content
+    	// or assume "raster" to agree with Symbology encoding specification
+    	// for now we will use the filename.    	
+    	return getID().toBaseFile();
     }
 
     @Override
