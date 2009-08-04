@@ -249,7 +249,4 @@ public class IGeoResourceInfo {
         return getBounds().getCoordinateReferenceSystem();
     }
 
-    public String getShortTitle() {
-        return getTitle();
-    }
 }

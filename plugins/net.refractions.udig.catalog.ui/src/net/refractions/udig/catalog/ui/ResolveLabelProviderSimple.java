@@ -89,11 +89,12 @@ public class ResolveLabelProviderSimple extends LabelProvider implements IResolv
         		IGeoResource resource = (IGeoResource) element;
         		String title = resource.getTitle();
         		if( title == null ){
-                    title = resource.getInfo(new NullProgressMonitor()).getTitle();
+                    IGeoResourceInfo info = resource.getInfo(new NullProgressMonitor());
+                    title = info.getTitle();
         		}
         		if( title == null ){
         		    // we are going to fake something here
-        			String name = resource.getID().toFile().getName();
+        		    String name = resource.getID().toBaseFile();
         			name = name.substring(0,name.lastIndexOf(".")); //$NON-NLS-1$
         			name = name.replace('_', ' ');
 					return name;

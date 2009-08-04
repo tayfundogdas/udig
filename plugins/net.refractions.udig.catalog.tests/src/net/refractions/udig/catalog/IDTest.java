@@ -13,7 +13,7 @@ public class IDTest {
     
     @Test
     public void testHashCode() {
-        ID idFile = new ID( new File("foo.txt") );
+        ID idFile = new ID( new File("foo.txt"), "txt" );
         String str = idFile.toString();
         
         assertTrue( idFile.hashCode() != 0 );
@@ -23,7 +23,7 @@ public class IDTest {
     @Test
     public void testIDFile() {
         File file = new File("foo.txt");
-        ID idFile = new ID( file );
+        ID idFile = new ID( file, "txt" );
         
         assertEquals( file, idFile.toFile() );
     }
@@ -48,7 +48,7 @@ public class IDTest {
 
     @Test
     public void testIDIDString() {
-        ID id1 = new ID( new File("foo.txt") );
+        ID id1 = new ID( new File("foo.txt"), "txt" );
         ID id2 = new ID( id1, "anchor" );
         
         assertTrue( id2.toString().endsWith("#anchor") );

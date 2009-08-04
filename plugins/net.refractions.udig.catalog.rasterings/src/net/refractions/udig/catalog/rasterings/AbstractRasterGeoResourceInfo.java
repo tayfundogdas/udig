@@ -25,19 +25,18 @@ public class AbstractRasterGeoResourceInfo extends IGeoResourceInfo {
         
         super.keywords = keywords;
     }
-    
+
+    /**
+     * @return base name if available followed by the qualifier if supplied
+     */
     @Override
     public String getTitle() {
-        ID id = resource.getID();
-        return id.getTypeQualifier()+"://"+id.toURL().getRef(); //$NON-NLS-1$
-    }
-
-    @Override
-    public String getShortTitle() {
-        String typeQualifier = resource.getID().getTypeQualifier();
-        String title2 = getTitle();
-        String name = title2.substring(title2.lastIndexOf(File.separator)+1);
-        return name+" ("+typeQualifier+")"; //$NON-NLS-1$ //$NON-NLS-2$
+        String name = resource.getID().toBaseFile();
+        String qualifier = resource.getID().getTypeQualifier();
+        if( qualifier != null ){
+            return name+" ("+qualifier+")"; //$NON-NLS-1$ //$NON-NLS-2$
+        }
+        return name;
     }
     
     @Override

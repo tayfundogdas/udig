@@ -20,7 +20,7 @@ import net.refractions.udig.core.internal.CorePlugin;
  * and are very careful to have a fast hashCode function etc...
  * </p>
  * @author Jody Garnett
- * @since pending
+ * @since 1.2
  */
 public class ID implements Serializable {
     /** long serialVersionUID field */
@@ -36,12 +36,29 @@ public class ID implements Serializable {
      */
     private String typeQualifier;
 
-    public ID( File file, String qualifier ) {
-        this( file );
-        this.typeQualifier = qualifier;
+    public ID( String txt, String qualifier ){
+    	this.id = txt;
+    	try {
+			this.url = new URL( null, txt, CorePlugin.RELAXED_HANDLER );
+		} catch (MalformedURLException e) {
+		}
+    	try {
+			this.uri = url.toURI();
+		} catch (URISyntaxException e) {
+		}
+    	this.file = DataUtilities.urlToFile( url );
+    	this.typeQualifier = qualifier;
     }
-
-    public ID( File file ) {
+    /**
+     * Create an identifier for the provided File.
+     * <p>
+     * The file will be used to determine id, url and uri.
+     * 
+     * @param file File
+     * @param qualifier Often used to indicate format
+     */
+    public ID( File file, String qualifier ) {
+        this.typeQualifier = qualifier;
         this.file = file;        
         try {
             this.id = file.getCanonicalPath();
@@ -71,12 +88,19 @@ public class ID implements Serializable {
         this.typeQualifier = qualifier;
     }
     
-    public ID( URL url, String qualifier ) {
-        this( url );
-        this.typeQualifier = qualifier;
-    }
-
     public ID( URL url ){
+    	this( url, null );
+    }
+    /**
+     * Create an identifier for the provided URL.
+     * <p>
+     * The URL will be used to determine id, file, and uri.
+     * 
+     * @param url URL
+     * @param qualifier Often used to indicate protocol like "wms", or "wfs"
+     */
+    public ID( URL url, String qualifier ) {
+        this.typeQualifier = qualifier;
         this.url = url;
         try {
             this.uri = url.toURI();

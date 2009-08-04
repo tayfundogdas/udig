@@ -143,7 +143,11 @@ public final class MapGraphicChooserDialog extends TitleAreaDialog {
 
                 String title = null;
                 try {
-                    title = ((IGeoResource) s.getFirstElement()).getInfo(null).getTitle();
+                    IGeoResource resource = (IGeoResource) s.getFirstElement();
+                    title = resource.getTitle();
+                    if( title == null ){
+                        title = resource.getInfo(null).getTitle();
+                    }
                 } catch (IOException e) {
                     MapGraphicPlugin.log("", e); //$NON-NLS-1$
                 }
