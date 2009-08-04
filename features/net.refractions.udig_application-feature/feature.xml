@@ -23,25 +23,25 @@
 
    <requires>
       <import plugin="org.eclipse.ui"/>
-      <import plugin="org.eclipse.ui.views"/>
-      <import plugin="net.refractions.udig.libs"/>
+      <import plugin="org.eclipse.core.runtime"/>
       <import plugin="net.refractions.udig.catalog"/>
       <import plugin="net.refractions.udig.ui"/>
       <import plugin="net.refractions.udig.catalog.ui"/>
       <import plugin="org.eclipse.emf.ecore"/>
+      <import plugin="net.refractions.udig.libs"/>
       <import plugin="org.eclipse.jface"/>
       <import plugin="net.refractions.udig.core"/>
       <import plugin="org.eclipse.emf.ecore.xmi"/>
       <import plugin="org.eclipse.emf.edit.ui"/>
       <import plugin="org.eclipse.gef"/>
-      <import plugin="org.eclipse.help"/>
-      <import feature="net.refractions.udig_platform" version="1.1.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.core.runtime"/>
       <import plugin="org.eclipse.ui.cheatsheets"/>
       <import plugin="org.eclipse.core.expressions"/>
       <import plugin="net.refractions.udig.catalog.wms"/>
-      <import plugin="net.refractions.udig.catalog.wfs"/>
-      <import plugin="net.refractions.udig.catalog.postgis"/>
+      <import plugin="org.eclipse.help"/>
+      <import plugin="org.eclipse.ui.views"/>
+      <import plugin="net.refractions.udig.catalog.rasterings"/>
+      <import feature="net.refractions.udig_platform" version="1.2.0"/>
+      <import plugin="org.eclipse.ui.forms"/>
    </requires>
 
    <plugin
