@@ -134,7 +134,7 @@
                      class="net.refractions.udig.tools.internal.FixedScalePan"
                      icon="icons/etool16/pan_mode.gif"
                      id="net.refractions.udig.tools.FixedScalePan"
-                     name="Fixed Scale Pan"
+                     name="Fixed Scale Pan (tiling)"
                      onToolbar="true"
                      toolCursorId="move"
                      tooltip="Fixed Scale Pan">
@@ -144,7 +144,7 @@
                      class="net.refractions.udig.tools.internal.ScrollPanTool"
                      icon="icons/etool16/pan_mode.gif"
                      id="net.refractions.udig.tools.ScrollPan"
-                     name="Scroll Pan Tool"
+                     name="Scroll Pan Tool (tiling)"
                      onToolbar="true"
                      toolCursorId="move"
                      tooltip="Pan using SWT Scroll">

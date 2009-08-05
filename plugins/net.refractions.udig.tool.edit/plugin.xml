@@ -50,6 +50,7 @@
                      </and>
                   </enablement>
                </modalTool>
+               <!-- 
                <modalTool
                      categoryId="net.refractions.udig.tool.edit.create"
                      class="net.refractions.udig.tools.edit.impl.FreeHandTool"
@@ -74,7 +75,8 @@
 	                     </or>
                      </and>
                   </enablement>
-               </modalTool>
+               </modalTool> 
+               -->
                <modalTool
                      categoryId="net.refractions.udig.tool.edit.create"
                      class="net.refractions.udig.tools.edit.impl.PointTool"
