@@ -217,22 +217,37 @@ public class ResolveTitlesDecorator implements ILabelDecorator, IColorDecorator,
 
     public String decorateText( String text, Object element ) {
         if( disposed ) return null;
-        if (!(element instanceof IResolve))
+        if (!(element instanceof IResolve)){
             return null;
-        if (decorated.containsKey(element)) {
-            LabelData data = decorated.get(element);
-            if (data == null)
-                return null;
-            return data.text;
         }
 
         IResolve resolve = (IResolve) element;
+        
+        if (decorated.containsKey(element)) {
+            LabelData data = decorated.get(element);
+            if (data == null){
+                return null;
+            }
+            if( resolve.getID().getTypeQualifier() != null ){
+                return data.text + " ("+resolve.getID().getTypeQualifier() +")";
+            }
+            else {
+                return data.text;
+            }
+        }
+
         decorated.put(resolve, null);
         if (resolve.getTitle() != null) {
             LabelData data = new LabelData();
             data.text = resolve.getTitle();
             decorated.put(resolve, data);
-            return data.text;
+            
+            if( resolve.getID().getTypeQualifier() != null ){
+                return data.text + " ("+resolve.getID().getTypeQualifier() +")";
+            }
+            else {
+                return data.text;
+            }
         }
         toDecorate.offer(resolve);
         textWorker.schedule();

@@ -21,22 +21,23 @@ public class AbstractRasterGeoResourceInfo extends IGeoResourceInfo {
     
     
     public AbstractRasterGeoResourceInfo( AbstractRasterGeoResource resource, String... keywords ) {
-        this.resource = resource;
-        
+        this.resource = resource;        
         super.keywords = keywords;
     }
 
     /**
-     * @return base name if available followed by the qualifier if supplied
+     * Title to use for this raster (human readable).
+     * <p>
+     * For formats that have internal structure with multiple internal rasters
+     * this title should be determined from the metdata about each raster.
+     * </p>
+     * @return base name if available
      */
     @Override
     public String getTitle() {
-        String name = resource.getID().toBaseFile();
-        String qualifier = resource.getID().getTypeQualifier();
-        if( qualifier != null ){
-            return name+" ("+qualifier+")"; //$NON-NLS-1$ //$NON-NLS-2$
-        }
-        return name;
+        ID id = resource.getID();
+        
+        return id.toBaseFile();
     }
     
     @Override

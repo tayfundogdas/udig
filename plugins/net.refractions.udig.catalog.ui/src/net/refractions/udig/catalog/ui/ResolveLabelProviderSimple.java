@@ -92,16 +92,25 @@ public class ResolveLabelProviderSimple extends LabelProvider implements IResolv
                     IGeoResourceInfo info = resource.getInfo(new NullProgressMonitor());
                     title = info.getTitle();
         		}
+        		ID id = resource.getID();
         		if( title == null ){
         		    // we are going to fake something here
-        		    String name = resource.getID().toBaseFile();
-        			name = name.substring(0,name.lastIndexOf(".")); //$NON-NLS-1$
-        			name = name.replace('_', ' ');
-					return name;
+        		    String name = id.toBaseFile();
+        			if( name == null ){
+        		        name = id.toString();
+        			}
+        		    name = name.substring(0,name.lastIndexOf(".")); //$NON-NLS-1$                        
+        		    title = name.replace('_',' ');
 				}
-        		return title;
+        		if( id.getTypeQualifier() != null ){
+        		    return title + "("+id.getTypeQualifier()+")";
+        		}
+        		else {
+        		    return title;
+        		}
         	} else if(element instanceof IService) {
         		IService service = (IService) element;
+        		ID id = service.getID();
         		
         		String title = service.getTitle();
         		if( title == null ){
@@ -110,12 +119,17 @@ public class ResolveLabelProviderSimple extends LabelProvider implements IResolv
         		}
         		if( title == null ){
         		    // we are going to fake something here
-                    String name = service.getID().toString();
+                    String name = id.toString();
                     name = name.replace('_', ' ');
                     name = name.replace("%20"," "); //$NON-NLS-1$ //$NON-NLS-2$
                     return name;
         		}
-        		return title;
+        		if( id.getTypeQualifier() != null ){
+                    return title + "("+id.getTypeQualifier()+")";
+                }
+                else {
+                    return title;
+                }
         	} else if(element instanceof IProcess) {
         		IProcess proc = (IProcess) element;
         		return proc.getInfo(new NullProgressMonitor()).getTitle();

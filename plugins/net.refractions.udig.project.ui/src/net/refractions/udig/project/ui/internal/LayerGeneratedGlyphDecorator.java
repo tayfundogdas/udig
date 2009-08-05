@@ -338,6 +338,11 @@ public class LayerGeneratedGlyphDecorator implements ILabelDecorator {
         if( layerName == null ){
             layerName = resource.getID().toBaseFile();
         }
+        // Add qualifier if present        
+        //String qualifier = resource.getID().getTypeQualifier();
+        //if( qualifier != null ){
+        //    layerName += "("+qualifier+")";
+        //}
         // Side note: Original label, made by item provider uses,
         // resource.getIdentifier() which is non blocking
         //

@@ -15,16 +15,13 @@ public class AbstractRasterServiceInfo extends IServiceInfo {
     @Override
     public String getTitle() {
         ID id = service.getID();
-        String qualifier = id.getTypeQualifier();
+        
         String title;
         if( id.isFile() ){
             title = id.toFile().getAbsolutePath();            
         }
         else {
             title = id.toString();
-        }
-        if( qualifier != null ){
-            title += " ("+qualifier+")";
         }
         return title;
     }
