@@ -143,6 +143,7 @@
             name="Scale Denominator">
       </mapGraphic>
    </extension>
+   <!--
    <extension
          point="net.refractions.udig.project.ui.tool">
       <modalTool
@@ -153,5 +154,5 @@
             onToolbar="true">
       </modalTool>
    </extension>
-   
+   -->
 </plugin>
