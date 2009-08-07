@@ -41,12 +41,6 @@ public final class ProjectPlugin extends EMFPlugin {
     public final static String ID = "net.refractions.udig.project"; //$NON-NLS-1$
 
     /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * @generated
-     */
-    public static final String copyright = "uDig - User Friendly Desktop Internet GIS client http://udig.refractions.net (C) 2004, Refractions Research Inc. This library is free software; you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation; version 2.1 of the License. This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details."; //$NON-NLS-1$
-
-    /**
      * Keep track of the singleton.
      * <!-- begin-user-doc --> <!-- end-user-doc -->
      * @generated
@@ -76,6 +70,7 @@ public final class ProjectPlugin extends EMFPlugin {
      * @return the singleton instance.
      * @generated
      */
+    @Override
     public ResourceLocator getPluginResourceLocator() {
         return plugin;
     }
@@ -89,7 +84,7 @@ public final class ProjectPlugin extends EMFPlugin {
     public static Collection<String> saveProjects( Collection<Project> projects ) {
         ArrayList<String> errors = new ArrayList<String>();
         for( Project project : projects ) {
-            try{
+            try {
                 Resource eResource = project.eResource();
                 Map<String, String> saveOptions = getPlugin().saveOptions;
                 eResource.save(saveOptions);
@@ -97,13 +92,13 @@ public final class ProjectPlugin extends EMFPlugin {
                 for( ProjectElement projectElement : elementsInternal ) {
                     projectElement.eResource().save(saveOptions);
                 }
-            }catch (Exception e) {
+            } catch (Exception e) {
                 log("Error while saving resource", e);
-                String msg = "Error occurred while saving project: "+ project.getID().toString(); //$NON-NLS-1$
+                String msg = "Error occurred while saving project: " + project.getID().toString(); //$NON-NLS-1$
                 errors.add(msg);
             }
         }
-        
+
         return errors;
     }
 
@@ -160,7 +155,8 @@ public final class ProjectPlugin extends EMFPlugin {
             ShutdownTaskList.instance().addPostShutdownTask(new PostShutdownTask(){
 
                 public int getProgressMonitorSteps() {
-                    List<Resource> resources = getProjectRegistry().eResource().getResourceSet().getResources();
+                    List<Resource> resources = getProjectRegistry().eResource().getResourceSet()
+                            .getResources();
                     return resources.size();
                 }
 
@@ -172,7 +168,8 @@ public final class ProjectPlugin extends EMFPlugin {
                         throws Exception {
                     monitor.beginTask(Messages.ProjectPlugin_saving_task_name, 0);
                     turnOffEvents();
-                    List<Resource> resources = getProjectRegistry().eResource().getResourceSet().getResources();
+                    List<Resource> resources = getProjectRegistry().eResource().getResourceSet()
+                            .getResources();
                     for( Iterator<Resource> iter = resources.iterator(); iter.hasNext(); ) {
                         Resource resource = (Resource) iter.next();
                         if (resource.getContents().isEmpty())
@@ -182,7 +179,7 @@ public final class ProjectPlugin extends EMFPlugin {
                             try {
                                 resource.save(saveOptions);
                             } catch (Exception e) {
-                                ProjectPlugin.log("Error saving "+resource.getURI(), e); //$NON-NLS-1$
+                                ProjectPlugin.log("Error saving " + resource.getURI(), e); //$NON-NLS-1$
                             }
                         }
                         monitor.worked(1);

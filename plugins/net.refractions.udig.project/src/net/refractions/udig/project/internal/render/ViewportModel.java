@@ -10,6 +10,8 @@ package net.refractions.udig.project.internal.render;
 
 import java.awt.Point;
 import java.awt.geom.AffineTransform;
+import java.util.Date;
+import java.util.List;
 import java.util.SortedSet;
 
 import net.refractions.udig.project.internal.Map;
@@ -37,13 +39,6 @@ import com.vividsolutions.jts.geom.Envelope;
 public interface ViewportModel extends EObject, IMapDisplayListener, IViewportModel {
 
     /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
-     * @generated
-     */
-    String copyright = "uDig - User Friendly Desktop Internet GIS client http://udig.refractions.net (C) 2004, Refractions Research Inc. This library is free software; you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation; version 2.1 of the License. This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details."; //$NON-NLS-1$
-
-    /**
      * The CRS used if the preferences indicate an illegal EPSG code
      */
     CoordinateReferenceSystem BAD_DEFAULT = DefaultEngineeringCRS.GENERIC_2D;
@@ -56,8 +51,8 @@ public interface ViewportModel extends EObject, IMapDisplayListener, IViewportMo
     /**
      * A Default setting to use for the viewport screen size.
      */
-    public static final ReferencedEnvelope NIL_BBOX = new ReferencedEnvelope(0, 0, 0, 0, DEFAULT_CRS);
-
+    public static final ReferencedEnvelope NIL_BBOX = new ReferencedEnvelope(0, 0, 0, 0,
+            DEFAULT_CRS);
 
     /**
      * Returns the local coordinate system. The local coordinate system is the CRS that all the
@@ -71,9 +66,8 @@ public interface ViewportModel extends EObject, IMapDisplayListener, IViewportMo
     public CoordinateReferenceSystem getCRS();
 
     /**
-     * Sets the value of the '{@link net.refractions.udig.project.internal.render.ViewportModel#getCRS <em>CRS</em>}'
-     * attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
+     * Sets the value of the '{@link net.refractions.udig.project.internal.render.ViewportModel#getCRS <em>CRS</em>}' attribute.
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
      * @param value the new value of the '<em>CRS</em>' attribute.
      * @see #isSetCRS()
      * @see #unsetCRS()
@@ -81,7 +75,7 @@ public interface ViewportModel extends EObject, IMapDisplayListener, IViewportMo
      * @generated
      */
     void setCRS( CoordinateReferenceSystem value );
-    
+
     /**
      * List of preferred scale denominators for the map.
      * <p>
@@ -92,12 +86,21 @@ public interface ViewportModel extends EObject, IMapDisplayListener, IViewportMo
      * @return List of preferred scale denominator values for the map
      * @model 
      */
-    public SortedSet<Double> getPreferredScaleDenominators();    
+    public SortedSet<Double> getPreferredScaleDenominators();
 
     /**
-     * Unsets the value of the '{@link net.refractions.udig.project.internal.render.ViewportModel#getCRS <em>CRS</em>}'
-     * attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
+     * Sets the value of the '{@link net.refractions.udig.project.internal.render.ViewportModel#getPreferredScaleDenominators <em>Preferred Scale Denominators</em>}' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @param value the new value of the '<em>Preferred Scale Denominators</em>' attribute.
+     * @see #getPreferredScaleDenominators()
+     * @generated
+     */
+    void setPreferredScaleDenominators( SortedSet<Double> value );
+
+    /**
+     * Unsets the value of the '{@link net.refractions.udig.project.internal.render.ViewportModel#getCRS <em>CRS</em>}' attribute.
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
      * @see #isSetCRS()
      * @see #getCRS()
      * @see #setCRS(CoordinateReferenceSystem)
@@ -106,9 +109,8 @@ public interface ViewportModel extends EObject, IMapDisplayListener, IViewportMo
     void unsetCRS();
 
     /**
-     * Returns whether the value of the '{@link net.refractions.udig.project.internal.render.ViewportModel#getCRS <em>CRS</em>}'
-     * attribute is set. <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
+     * Returns whether the value of the '{@link net.refractions.udig.project.internal.render.ViewportModel#getCRS <em>CRS</em>}' attribute is set.
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
      * @return whether the value of the '<em>CRS</em>' attribute is set.
      * @see #unsetCRS()
      * @see #getCRS()
@@ -129,6 +131,16 @@ public interface ViewportModel extends EObject, IMapDisplayListener, IViewportMo
      * @model default=""
      */
     public ReferencedEnvelope getBounds();
+
+    /**
+     * Sets the value of the '{@link net.refractions.udig.project.internal.render.ViewportModel#getBounds <em>Bounds</em>}' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @param value the new value of the '<em>Bounds</em>' attribute.
+     * @see #getBounds()
+     * @generated
+     */
+    void setBounds( ReferencedEnvelope value );
 
     /**
      * Sets the value of the '{@link net.refractions.udig.project.internal.render.ViewportModel#getBounds <em>Bounds</em>}'
@@ -173,9 +185,8 @@ public interface ViewportModel extends EObject, IMapDisplayListener, IViewportMo
     public Coordinate getCenter();
 
     /**
-     * Sets the value of the '{@link net.refractions.udig.project.internal.render.ViewportModel#getCenter <em>Center</em>}'
-     * attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
+     * Sets the value of the '{@link net.refractions.udig.project.internal.render.ViewportModel#getCenter <em>Center</em>}' attribute.
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
      * @param value the new value of the '<em>Center</em>' attribute.
      * @see #getCenter()
      * @generated
@@ -192,9 +203,8 @@ public interface ViewportModel extends EObject, IMapDisplayListener, IViewportMo
     public double getHeight();
 
     /**
-     * Sets the value of the '{@link net.refractions.udig.project.internal.render.ViewportModel#getHeight <em>Height</em>}'
-     * attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
+     * Sets the value of the '{@link net.refractions.udig.project.internal.render.ViewportModel#getHeight <em>Height</em>}' attribute.
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
      * @param value the new value of the '<em>Height</em>' attribute.
      * @see #getHeight()
      * @generated
@@ -211,9 +221,8 @@ public interface ViewportModel extends EObject, IMapDisplayListener, IViewportMo
     public double getWidth();
 
     /**
-     * Sets the value of the '{@link net.refractions.udig.project.internal.render.ViewportModel#getWidth <em>Width</em>}'
-     * attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
+     * Sets the value of the '{@link net.refractions.udig.project.internal.render.ViewportModel#getWidth <em>Width</em>}' attribute.
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
      * @param value the new value of the '<em>Width</em>' attribute.
      * @see #getWidth()
      * @generated
@@ -237,9 +246,8 @@ public interface ViewportModel extends EObject, IMapDisplayListener, IViewportMo
     public Map getMapInternal();
 
     /**
-     * Sets the value of the '{@link net.refractions.udig.project.internal.render.ViewportModel#getMapInternal <em>Map Internal</em>}'
-     * container reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
+     * Sets the value of the '{@link net.refractions.udig.project.internal.render.ViewportModel#getMapInternal <em>Map Internal</em>}' container reference.
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
      * @param value the new value of the '<em>Map Internal</em>' container reference.
      * @see #getMapInternal()
      * @generated
@@ -247,15 +255,14 @@ public interface ViewportModel extends EObject, IMapDisplayListener, IViewportMo
     void setMapInternal( Map value );
 
     /**
-     * Returns the value of the '<em><b>Render Manager Internal</b></em>' reference. It is
-     * bidirectional and its opposite is '{@link net.refractions.udig.project.internal.render.RenderManager#getViewportModelInternal <em>Viewport Model Internal</em>}'.
+     * Returns the value of the '<em><b>Render Manager Internal</b></em>' reference.
+     * It is bidirectional and its opposite is '{@link net.refractions.udig.project.internal.render.RenderManager#getViewportModelInternal <em>Viewport Model Internal</em>}'.
      * <!-- begin-user-doc -->
      * <p>
      * If the meaning of the '<em>Render Manager</em>' reference isn't clear, there really
      * should be more of a description here...
      * </p>
      * <!-- end-user-doc -->
-     * 
      * @return the value of the '<em>Render Manager Internal</em>' reference.
      * @see #setRenderManagerInternal(RenderManager)
      * @see net.refractions.udig.project.internal.render.RenderPackage#getViewportModel_RenderManagerInternal()
@@ -266,9 +273,8 @@ public interface ViewportModel extends EObject, IMapDisplayListener, IViewportMo
     RenderManager getRenderManagerInternal();
 
     /**
-     * Sets the value of the '{@link net.refractions.udig.project.internal.render.ViewportModel#getRenderManagerInternal <em>Render Manager Internal</em>}'
-     * reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
+     * Sets the value of the '{@link net.refractions.udig.project.internal.render.ViewportModel#getRenderManagerInternal <em>Render Manager Internal</em>}' reference.
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
      * @param value the new value of the '<em>Render Manager Internal</em>' reference.
      * @see #getRenderManagerInternal()
      * @generated
@@ -381,14 +387,6 @@ public interface ViewportModel extends EObject, IMapDisplayListener, IViewportMo
      * @uml.property name="initialized"
      */
     public void setInitialized( boolean initialized );
-    
-    /**
-     * Sets the zoom level of the viewport so that the scale denominator will be equal to
-     * scale
-     *
-     * @param scaleDenominator desired scale denominator 
-     */
-    public void setScale(double scaleDenominator);
 
     /**
      * Sets the zoom level of the viewport so that the scale denominator will be equal to
@@ -396,14 +394,69 @@ public interface ViewportModel extends EObject, IMapDisplayListener, IViewportMo
      *
      * @param scaleDenominator desired scale denominator 
      */
-    public void setScale(double scaleDenominator, int dpi, int displayWidth, int displayHeight);
- 
-    
+    public void setScale( double scaleDenominator );
+
+    /**
+     * Sets the zoom level of the viewport so that the scale denominator will be equal to
+     * scale
+     *
+     * @param scaleDenominator desired scale denominator 
+     */
+    public void setScale( double scaleDenominator, int dpi, int displayWidth, int displayHeight );
+
     /**
      * The attribute indicates that any upcoming changes to the value
      * of the model should be consider a single event.
      *
      * @param changing
      */
-    public void setIsBoundsChanging(boolean changing);
+    public void setIsBoundsChanging( boolean changing );
+
+    /**
+     * Returns the available list of timesteps or null, if no time is defined. 
+     * 
+     * @model
+     */
+    public List<Date> getAvailableTimesteps();
+
+    /**
+     * Returns the current timestep or null if no time has been defined. 
+     * 
+     * @model
+     */
+    public Date getCurrentTimestep();
+
+    /**
+     * Sets the value of the '{@link net.refractions.udig.project.internal.render.ViewportModel#getCurrentTimestep <em>Current Timestep</em>}' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @param value the new value of the '<em>Current Timestep</em>' attribute.
+     * @see #getCurrentTimestep()
+     * @generated
+     */
+    void setCurrentTimestep( Date value );
+
+    /**
+     * Returns the available list of elevations or null if no elevation has been defined. 
+     * 
+     * @model
+     */
+    public List<Double> getAvailableElevation();
+
+    /**
+     * Returns the current elevation or null if no time has been defined. 
+     * 
+     * @model
+     */
+    public Double getCurrentElevation();
+
+    /**
+     * Sets the value of the '{@link net.refractions.udig.project.internal.render.ViewportModel#getCurrentElevation <em>Current Elevation</em>}' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @param value the new value of the '<em>Current Elevation</em>' attribute.
+     * @see #getCurrentElevation()
+     * @generated
+     */
+    void setCurrentElevation( Double value );
 }

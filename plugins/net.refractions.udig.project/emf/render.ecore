@@ -82,6 +82,17 @@
         transient="true" eOpposite="internal.ecore#//Map/viewportModelInternal"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="renderManagerInternal"
         eType="#//RenderManager" transient="true" resolveProxies="false" eOpposite="#//RenderManager/viewportModelInternal"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="preferredScaleDenominators">
+      <eGenericType eClassifier="#//SortedSet">
+        <eTypeArguments eClassifier="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDoubleObject"/>
+      </eGenericType>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="availableTimesteps" upperBound="-1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDate"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="currentTimestep" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDate"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="availableElevation" upperBound="-1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDoubleObject"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="currentElevation" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDoubleObject"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Comparable" instanceTypeName="Comparable"
       abstract="true" interface="true"/>
@@ -112,5 +123,8 @@
   <eClassifiers xsi:type="ecore:EDataType" name="RenderException" instanceClassName="net.refractions.udig.project.render.RenderException"/>
   <eClassifiers xsi:type="ecore:EClass" name="IRenderContext" instanceClassName="net.refractions.udig.project.render.IRenderContext"
       abstract="true" interface="true"/>
+  <eClassifiers xsi:type="ecore:EDataType" name="SortedSet" instanceClassName="java.util.SortedSet">
+    <eTypeParameters name="T"/>
+  </eClassifiers>
   <eClassifiers xsi:type="ecore:EDataType" name="ReferencedEnvelope" instanceClassName="org.geotools.geometry.jts.ReferencedEnvelope"/>
 </ecore:EPackage>
