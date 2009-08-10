@@ -53,7 +53,7 @@
 			<dependency groupId="org.geotools" artifactId="gt-arcgrid" version="${geotools.version}" />
 			<dependency groupId="org.geotools" artifactId="gt-arcsde-common" version="${geotools.version}" />
 			<dependency groupId="org.geotools" artifactId="gt-arcsde" version="${geotools.version}" />
-			<dependency groupId="org.geotools" artifactId="gt-db2" version="${geotools.version}" />
+			<dependency groupId="org.geotools" artifactId="gt-jdbc-db2" version="${geotools.version}" />
 			<dependency groupId="org.geotools" artifactId="gt-epsg-h2" version="${geotools.version}" />
 			<dependency groupId="org.geotools" artifactId="gt-geotiff" version="${geotools.version}" />
 			<dependency groupId="org.geotools" artifactId="gt-image" version="${geotools.version}" />

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
+	<classpathentry exported="true" kind="lib" path="lib/gt-jdbc-db2-2.6-SNAPSHOT.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/batik-awt-util-1.6.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/batik-bridge-1.6.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/batik-css-1.6.jar"/>
@@ -34,7 +35,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/gt-coverage-2.6-SNAPSHOT.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/gt-cql-2.6-SNAPSHOT.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/gt-data-2.6-SNAPSHOT.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/gt-db2-2.6-SNAPSHOT.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/gt-epsg-h2-2.6-SNAPSHOT.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/gt-geotiff-2.6-SNAPSHOT.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/gt-graph-2.6-SNAPSHOT.jar"/>

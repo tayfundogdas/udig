@@ -17,6 +17,7 @@
  */
 package net.refractions.udig.catalog.internal.db2.ui;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
@@ -29,6 +30,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.sql.DataSource;
+
 import net.refractions.udig.catalog.IService;
 import net.refractions.udig.catalog.db2.DB2Plugin;
 import net.refractions.udig.catalog.db2.internal.Messages;
@@ -38,13 +41,16 @@ import net.refractions.udig.catalog.ui.preferences.AbstractProprietaryJarPrefere
 import net.refractions.udig.catalog.ui.wizard.DataBaseConnInfo;
 import net.refractions.udig.ui.PlatformGIS;
 
+import org.apache.commons.dbcp.BasicDataSource;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Composite;
 import org.geotools.data.DataStoreFactorySpi;
 import org.geotools.data.DataAccessFactory.Param;
-import org.geotools.data.db2.DB2ConnectionFactory;
-import org.geotools.data.db2.DB2DataStoreFactory;
+import org.geotools.data.db2.DB2NGDataStoreFactory;
+import org.geotools.data.jdbc.datasource.DBCPDataSource;
+import org.geotools.jdbc.PreparedStatementSQLDialect;
+import org.geotools.jdbc.SQLDialect;
 
 /**
  * Specify DB2 database connection parameters.
@@ -69,8 +75,8 @@ public class DB2WizardPage extends AbstractProprietaryDatastoreWizardPage {
     //CONNECTION 
     // TODO: doesn't db2 use 446 as in "http://publib.boulder.ibm.com/infocenter/dzichelp/v2r2/index.jsp?topic=/com.ibm.db29.doc.inst/tcpip.htm" ?
     private static final DataBaseConnInfo DEFAULT_DB2_CONN_INFO = 
-        new DataBaseConnInfo("","50000","","","","");                                //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
-    private static DB2DataStoreFactory factory = new DB2DataStoreFactory();
+        new DataBaseConnInfo("","50000","","","","");     //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+    private static DB2NGDataStoreFactory factory = DB2ServiceExtension.getFactory();
 
     //TO UNDERSTAND
     ArrayList<DataBaseConnInfo> dbData;
@@ -191,14 +197,14 @@ public class DB2WizardPage extends AbstractProprietaryDatastoreWizardPage {
                                                 // it's dead anyhow
                                             }
         
-                                        DB2ConnectionFactory connFac = 
-                                            new DB2ConnectionFactory(hostText, 
-                                                                     portText,
-                                                                     db);
-                                        connFac.setLogin(userText, passText);
                                         DriverManager.setLoginTimeout(3);
                                         try {
-                                            realConnection = connFac.getConnectionPool().getConnection();
+                                            Map<String,Serializable> params
+                                             	= new HashMap<String,Serializable>();
+                                            params.put( factory.USER.key, userText );
+                                            params.put( factory.PASSWD.key, passText );
+                                            // TODO Add more Params
+											realConnection = createDataSource( params ).getConnection();
                                             
                                             //TODO:Not sure what this was for but we can probably blow it away
 //                                            if (realConnection != null) {
@@ -213,6 +219,9 @@ public class DB2WizardPage extends AbstractProprietaryDatastoreWizardPage {
                                         } catch (SQLException e) {
                                             throw new InvocationTargetException(e, e.getLocalizedMessage());
                                         }
+                                        catch (IOException e) {
+                                     	   throw new InvocationTargetException(e, e.getLocalizedMessage());
+ 										}
                                         //TODO: Here the Postgis db has:
 //                                        if( monitor.isCanceled() )
 //                                            realConnection=null;
@@ -233,6 +242,93 @@ public class DB2WizardPage extends AbstractProprietaryDatastoreWizardPage {
 
         return realConnection;
     }
+    
+    /** This is cut and pasted from JDBCDataStoreFactory where the method is now protected */
+    protected String getJDBCUrl(Map params) throws IOException {
+        // jdbc url
+    	String host=null;
+    	Integer port = null;
+    	try {
+    		host = (String) factory.HOST.lookUp(params);
+    		port = (Integer) factory.PORT.lookUp(params);
+    	} catch (IOException ex) {
+    		// do nothing
+    	}
+    	
+        String db = (String) factory.DATABASE.lookUp(params);
+        
+        if (host==null && port== null && db !=null)
+        	return "jdbc:"+"db2"+":"+db;
+
+        // jdbc url
+        host = (String) factory.HOST.lookUp(params);
+        port = (Integer) factory.PORT.lookUp(params);
+        db = (String) factory.DATABASE.lookUp(params);
+        
+        String url = "jdbc:" + "db2" + "://" + host;
+        if ( port != null ) {
+            url += ":" + port;
+        }
+        
+        if ( db != null ) {
+            url += "/" + db; 
+        }
+        return url;
+    }
+    
+    /** This is cut and pasted from JDBCDataStoreFactory where the method is now protected */
+    protected DataSource createDataSource(Map params) throws IOException {
+        //create a datasource
+        BasicDataSource dataSource = new BasicDataSource();
+
+        // some default data source behaviour
+        dataSource.setPoolPreparedStatements(false);
+
+        // driver
+        dataSource.setDriverClassName("com.ibm.db2.jcc.DB2Driver");
+
+        // url
+        dataSource.setUrl(getJDBCUrl(params));
+
+        // username
+        String user = (String) factory.USER.lookUp(params);
+        dataSource.setUsername(user);
+
+        // password
+        String passwd = (String) factory.PASSWD.lookUp(params);
+        if (passwd != null) {
+            dataSource.setPassword(passwd);
+        }
+        
+        // max wait
+        Integer maxWait = (Integer) factory.MAXWAIT.lookUp(params);
+        if (maxWait != null && maxWait != -1) {
+            dataSource.setMaxWait(maxWait * 1000);
+        }
+        
+        // connection pooling options
+        Integer minConn = (Integer) factory.MINCONN.lookUp(params);
+        if ( minConn != null ) {
+            dataSource.setMinIdle(minConn);    
+        }
+        
+        Integer maxConn = (Integer) factory.MAXCONN.lookUp(params);
+        if ( maxConn != null ) {
+            dataSource.setMaxActive(maxConn);
+        }
+        
+        Boolean validate = (Boolean) factory.VALIDATECONN.lookUp(params);
+        if(validate != null && validate ) {
+            dataSource.setTestOnBorrow(true);
+            dataSource.setValidationQuery("select current date from sysibm.sysdummy1");
+        }
+        
+        // some datastores might need this
+        dataSource.setAccessToUnderlyingConnectionAllowed(true);
+
+        return new DBCPDataSource(dataSource);
+    }
+    
     /**
      * Returns the DB2DataStoreFactory.
      * 

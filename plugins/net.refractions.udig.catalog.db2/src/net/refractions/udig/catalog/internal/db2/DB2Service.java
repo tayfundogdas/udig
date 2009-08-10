@@ -23,10 +23,8 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.locks.Lock;
 
 import net.refractions.udig.catalog.CatalogPlugin;
@@ -42,8 +40,8 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.geotools.data.DataStore;
-import org.geotools.data.db2.DB2DataStore;
-import org.geotools.data.db2.DB2DataStoreFactory;
+import org.geotools.data.db2.DB2NGDataStoreFactory;
+import org.geotools.jdbc.JDBCDataStore;
 
 /**
  * Service handle for the DB2 Universal Database.
@@ -52,10 +50,10 @@ import org.geotools.data.db2.DB2DataStoreFactory;
  */
 public class DB2Service extends IService {
 
-    /** underlying datastore * */
-    private volatile DB2DataStore ds;
+    /** underlying datastore */
+	private volatile JDBCDataStore ds;
 
-    /** members (tables) * */
+    /** members (tables) */
     private volatile List<DB2GeoResource> members;
 
     /** service url * */
@@ -115,7 +113,7 @@ public class DB2Service extends IService {
     public List<DB2GeoResource> resources( IProgressMonitor monitor ) throws IOException {
 
         if (members == null) {
-            DB2DataStore ds = getDataStore( monitor );
+        	JDBCDataStore ds = getDataStore( monitor );
             if (ds == null)
                 return null;
 
@@ -162,7 +160,7 @@ public class DB2Service extends IService {
     @Override
 	protected IServiceInfo createInfo( IProgressMonitor monitor ) throws IOException {
         if (this.info == null) {
-            DB2DataStore ds = getDataStore( monitor);
+        	JDBCDataStore ds = getDataStore( monitor);
             if (ds == null)
                 return null;
 
@@ -180,14 +178,18 @@ public class DB2Service extends IService {
         }
         return info;
     }
-    DB2DataStore getDataStore(IProgressMonitor monitor) throws IOException {
+    JDBCDataStore getDataStore(IProgressMonitor monitor) throws IOException {
         if( monitor == null ) monitor = new NullProgressMonitor();
         
         if (this.ds == null) {
             dsInstantiationLock.lock();
             try {
                 if (ds == null) {
-                    DB2DataStoreFactory dsf = new DB2DataStoreFactory();
+                	// We are using DB2NGDataStoreFactory as we do not need to look up in
+                	// a JNDI context for a shared connection pool - we will end up using a
+                	// an internal connection pool supplied by GeoTools DBCPDataSource.
+                	//
+                	DB2NGDataStoreFactory dsf = new DB2NGDataStoreFactory();
                     try {
                         // We expect the port value (key '3') to be a String but some of the
                         // extensions (ArcServiceExtension)
@@ -199,16 +201,12 @@ public class DB2Service extends IService {
                         // Integer or
                         // String as valid for port.
                         Map<String, Serializable> paramsLocal = new HashMap<String, Serializable>();
-                        Set keys = this.params.keySet();
-                        Iterator it = keys.iterator();
-                        while( it.hasNext() ) {
-                            String key = (String) it.next();
-                            String value = this.params.get(key).toString();
+                        for( String key : this.params.keySet() ){
+                        	String value = this.params.get(key).toString();
                             paramsLocal.put(key, value);
                         }
-
                         if (dsf.canProcess(paramsLocal)) {
-                            this.ds = (DB2DataStore) dsf.createDataStore(paramsLocal);
+                            this.ds = (JDBCDataStore) dsf.createDataStore(paramsLocal);
                         }
                     } catch (IOException e) {
                         msg = e;

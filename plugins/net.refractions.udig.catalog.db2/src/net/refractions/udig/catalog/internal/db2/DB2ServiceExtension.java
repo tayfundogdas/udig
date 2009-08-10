@@ -30,8 +30,10 @@ import net.refractions.udig.catalog.IService;
 import net.refractions.udig.catalog.ServiceExtension;
 import net.refractions.udig.catalog.db2.internal.Messages;
 
+import org.geotools.data.DataAccessFactory;
+import org.geotools.data.DataAccessFinder;
 import org.geotools.data.DataStoreFactorySpi;
-import org.geotools.data.db2.DB2DataStoreFactory;
+import org.geotools.data.db2.DB2NGDataStoreFactory;
 
 /**
  * DB2 service extension implementation
@@ -40,15 +42,27 @@ import org.geotools.data.db2.DB2DataStoreFactory;
  * @since 1.0.1
  */
 public class DB2ServiceExtension extends AbstractDataStoreServiceExtension implements ServiceExtension {
-    private static DB2DataStoreFactory factory = null;
+    private static DB2NGDataStoreFactory factory = null;
+    private static boolean avaialble = true;
     
     /**
      * Factory describing connection parameters.
      * @return factory describing DB2 connection parameters
      */
-    public static DB2DataStoreFactory getFactory() {
-        if (factory == null) {
-            factory = new DB2DataStoreFactory();
+    public synchronized static DB2NGDataStoreFactory getFactory() {
+        if (avaialble && factory == null ) {
+        	// factory = new DB2NGDataStoreFactory(); // this was a bad idea
+        	Iterator<DataAccessFactory> available = DataAccessFinder.getAvailableDataStores();
+        	while( available.hasNext() ){
+        		DataAccessFactory access = available.next();
+        		if( access instanceof DB2NGDataStoreFactory){
+        			factory = (DB2NGDataStoreFactory) access;
+        			break;
+        		}
+        	}
+        	if( factory == null ){
+        		avaialble = false; // not available! oh no!        		
+        	}
         }
         return factory;
     }
