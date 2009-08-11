@@ -142,6 +142,8 @@
 			<dependency groupId="org.eclipse.emf" artifactId="common" version="2.2.1" scope="provided" />
 			<dependency groupId="junit" artifactId="junit" version="3.8.1" scope="provided" />
 			<dependency groupId="velocity" artifactId="velocity" version="1.4" scope="provided" />
+			
+			<dependency groupId="joda-time" artifactId="joda-time" version="1.6" scope="provided"/> 
 		</artifact:dependencies>
 
 	</target>
