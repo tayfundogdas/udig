@@ -218,6 +218,7 @@
       <genTypeParameters ecoreTypeParameter="render.ecore#//SortedSet/T"/>
     </genDataTypes>
     <genDataTypes ecoreDataType="render.ecore#//ReferencedEnvelope"/>
+    <genDataTypes ecoreDataType="render.ecore#//DateTime"/>
     <genClasses ecoreClass="render.ecore#//IRenderManager"/>
     <genClasses ecoreClass="render.ecore#//IViewportModel"/>
     <genClasses ecoreClass="render.ecore#//IMultiLayerRenderer"/>

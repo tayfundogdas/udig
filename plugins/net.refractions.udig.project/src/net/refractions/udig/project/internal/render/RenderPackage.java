@@ -699,6 +699,16 @@ public interface RenderPackage extends EPackage {
     int REFERENCED_ENVELOPE = 28;
 
     /**
+     * The meta object id for the '<em>Date Time</em>' data type.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see org.joda.time.DateTime
+     * @see net.refractions.udig.project.internal.render.impl.RenderPackageImpl#getDateTime()
+     * @generated
+     */
+    int DATE_TIME = 29;
+
+    /**
      * The meta object id for the '<em>Info List</em>' data type. <!-- begin-user-doc --> <!--
      * end-user-doc -->
      * 
@@ -1230,6 +1240,17 @@ public interface RenderPackage extends EPackage {
     EDataType getReferencedEnvelope();
 
     /**
+     * Returns the meta object for data type '{@link org.joda.time.DateTime <em>Date Time</em>}'.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return the meta object for data type '<em>Date Time</em>'.
+     * @see org.joda.time.DateTime
+     * @model instanceClass="org.joda.time.DateTime"
+     * @generated
+     */
+    EDataType getDateTime();
+
+    /**
      * Returns the factory that creates the instances of the model.
      * <!-- begin-user-doc --> <!--
      * end-user-doc -->
@@ -1722,6 +1743,16 @@ public interface RenderPackage extends EPackage {
          * @generated
          */
         EDataType REFERENCED_ENVELOPE = eINSTANCE.getReferencedEnvelope();
+
+        /**
+         * The meta object literal for the '<em>Date Time</em>' data type.
+         * <!-- begin-user-doc -->
+         * <!-- end-user-doc -->
+         * @see org.joda.time.DateTime
+         * @see net.refractions.udig.project.internal.render.impl.RenderPackageImpl#getDateTime()
+         * @generated
+         */
+        EDataType DATE_TIME = eINSTANCE.getDateTime();
 
     }
 

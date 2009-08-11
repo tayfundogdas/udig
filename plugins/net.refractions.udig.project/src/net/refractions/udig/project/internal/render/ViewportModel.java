@@ -22,6 +22,7 @@ import net.refractions.udig.project.render.displayAdapter.IMapDisplayListener;
 import org.eclipse.emf.ecore.EObject;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.crs.DefaultEngineeringCRS;
+import org.joda.time.DateTime;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -417,14 +418,14 @@ public interface ViewportModel extends EObject, IMapDisplayListener, IViewportMo
      * 
      * @model
      */
-    public List<Date> getAvailableTimesteps();
+    public List<DateTime> getAvailableTimesteps();
 
     /**
      * Returns the current timestep or null if no time has been defined. 
      * 
      * @model
      */
-    public Date getCurrentTimestep();
+    public DateTime getCurrentTimestep();
 
     /**
      * Sets the value of the '{@link net.refractions.udig.project.internal.render.ViewportModel#getCurrentTimestep <em>Current Timestep</em>}' attribute.
@@ -434,7 +435,7 @@ public interface ViewportModel extends EObject, IMapDisplayListener, IViewportMo
      * @see #getCurrentTimestep()
      * @generated
      */
-    void setCurrentTimestep( Date value );
+    void setCurrentTimestep( DateTime value );
 
     /**
      * Returns the available list of elevations or null if no elevation has been defined. 

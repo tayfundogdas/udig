@@ -47,6 +47,7 @@ import org.eclipse.swt.widgets.Display;
 import org.geotools.geometry.DirectPosition2D;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.joda.time.DateTime;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultEngineeringCRS;
 import org.opengis.geometry.DirectPosition;
@@ -194,7 +195,7 @@ public class ViewportModelImpl extends EObjectImpl implements ViewportModel {
      * @generated
      * @ordered
      */
-    protected EList<Date> availableTimesteps;
+    protected EList<DateTime> availableTimesteps;
 
     /**
      * The default value of the '{@link #getCurrentTimestep() <em>Current Timestep</em>}' attribute.
@@ -204,7 +205,7 @@ public class ViewportModelImpl extends EObjectImpl implements ViewportModel {
      * @generated
      * @ordered
      */
-    protected static final Date CURRENT_TIMESTEP_EDEFAULT = null;
+    protected static final DateTime CURRENT_TIMESTEP_EDEFAULT = null;
 
     /**
      * The cached value of the '{@link #getCurrentTimestep() <em>Current Timestep</em>}' attribute.
@@ -214,7 +215,7 @@ public class ViewportModelImpl extends EObjectImpl implements ViewportModel {
      * @generated
      * @ordered
      */
-    protected Date currentTimestep = CURRENT_TIMESTEP_EDEFAULT;
+    protected DateTime currentTimestep = CURRENT_TIMESTEP_EDEFAULT;
 
     /**
      * The cached value of the '{@link #getAvailableElevation() <em>Available Elevation</em>}' attribute list.
@@ -1028,10 +1029,10 @@ public class ViewportModelImpl extends EObjectImpl implements ViewportModel {
             return;
         case RenderPackage.VIEWPORT_MODEL__AVAILABLE_TIMESTEPS:
             getAvailableTimesteps().clear();
-            getAvailableTimesteps().addAll((Collection< ? extends Date>) newValue);
+            getAvailableTimesteps().addAll((Collection< ? extends DateTime>) newValue);
             return;
         case RenderPackage.VIEWPORT_MODEL__CURRENT_TIMESTEP:
-            setCurrentTimestep((Date) newValue);
+            setCurrentTimestep((DateTime) newValue);
             return;
         case RenderPackage.VIEWPORT_MODEL__AVAILABLE_ELEVATION:
             getAvailableElevation().clear();
@@ -1237,9 +1238,9 @@ public class ViewportModelImpl extends EObjectImpl implements ViewportModel {
      * <!-- end-user-doc -->
      * @generated
      */
-    public List<Date> getAvailableTimesteps() {
+    public List<DateTime> getAvailableTimesteps() {
         if (availableTimesteps == null) {
-            availableTimesteps = new EDataTypeUniqueEList<Date>(Date.class, this,
+            availableTimesteps = new EDataTypeUniqueEList<DateTime>(DateTime.class, this,
                     RenderPackage.VIEWPORT_MODEL__AVAILABLE_TIMESTEPS);
         }
         return availableTimesteps;
@@ -1250,7 +1251,7 @@ public class ViewportModelImpl extends EObjectImpl implements ViewportModel {
      * <!-- end-user-doc -->
      * @generated
      */
-    public Date getCurrentTimestep() {
+    public DateTime getCurrentTimestep() {
         return currentTimestep;
     }
 
@@ -1259,8 +1260,8 @@ public class ViewportModelImpl extends EObjectImpl implements ViewportModel {
      * <!-- end-user-doc -->
      * @generated
      */
-    public void setCurrentTimestep( Date newCurrentTimestep ) {
-        Date oldCurrentTimestep = currentTimestep;
+    public void setCurrentTimestep( DateTime newCurrentTimestep ) {
+        DateTime oldCurrentTimestep = currentTimestep;
         currentTimestep = newCurrentTimestep;
         if (eNotificationRequired())
             eNotify(new ENotificationImpl(this, Notification.SET,

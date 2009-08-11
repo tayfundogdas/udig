@@ -44,6 +44,7 @@ import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.impl.EPackageImpl;
 import org.geotools.data.Query;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.joda.time.DateTime;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -232,6 +233,13 @@ public class RenderPackageImpl extends EPackageImpl implements RenderPackage {
      * @generated
      */
     private EDataType referencedEnvelopeEDataType = null;
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    private EDataType dateTimeEDataType = null;
 
     /**
      * Creates an instance of the model <b>Package</b>, registered with
@@ -725,6 +733,15 @@ public class RenderPackageImpl extends EPackageImpl implements RenderPackage {
     }
 
     /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public EDataType getDateTime() {
+        return dateTimeEDataType;
+    }
+
+    /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
      * 
      * @generated public EDataType getInfoList() { return infoListEDataType; }
@@ -821,6 +838,7 @@ public class RenderPackageImpl extends EPackageImpl implements RenderPackage {
         renderExceptionEDataType = createEDataType(RENDER_EXCEPTION);
         sortedSetEDataType = createEDataType(SORTED_SET);
         referencedEnvelopeEDataType = createEDataType(REFERENCED_ENVELOPE);
+        dateTimeEDataType = createEDataType(DATE_TIME);
     }
 
     /**
@@ -971,11 +989,11 @@ public class RenderPackageImpl extends EPackageImpl implements RenderPackage {
                 "preferredScaleDenominators", null, 0, 1, ViewportModel.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
         initEAttribute(
                 getViewportModel_AvailableTimesteps(),
-                ecorePackage.getEDate(),
+                this.getDateTime(),
                 "availableTimesteps", null, 0, -1, ViewportModel.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
         initEAttribute(
                 getViewportModel_CurrentTimestep(),
-                ecorePackage.getEDate(),
+                this.getDateTime(),
                 "currentTimestep", null, 0, 1, ViewportModel.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
         initEAttribute(
                 getViewportModel_AvailableElevation(),
@@ -991,7 +1009,7 @@ public class RenderPackageImpl extends EPackageImpl implements RenderPackage {
         addEParameter(op, ecorePackage.getEDouble(), "maxx", 0, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
         addEParameter(op, ecorePackage.getEDouble(), "miny", 0, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
         addEParameter(op, ecorePackage.getEDouble(), "maxy", 0, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
-        // addEException(op, theProjectPackage.getIllegalArgumentException());
+        //addEException(op, theProjectPackage.getIllegalArgumentException());
 
         addEOperation(viewportModelEClass, this.getAffineTransform(),
                 "worldToScreenTransform", 0, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
@@ -1084,6 +1102,8 @@ public class RenderPackageImpl extends EPackageImpl implements RenderPackage {
                 "SortedSet", IS_SERIALIZABLE, !IS_GENERATED_INSTANCE_CLASS); //$NON-NLS-1$
         initEDataType(referencedEnvelopeEDataType, ReferencedEnvelope.class,
                 "ReferencedEnvelope", IS_SERIALIZABLE, !IS_GENERATED_INSTANCE_CLASS); //$NON-NLS-1$
+        initEDataType(dateTimeEDataType, DateTime.class,
+                "DateTime", IS_SERIALIZABLE, !IS_GENERATED_INSTANCE_CLASS); //$NON-NLS-1$
 
         // Create resource
         createResource(eNS_URI);

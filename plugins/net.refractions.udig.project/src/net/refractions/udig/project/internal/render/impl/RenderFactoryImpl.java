@@ -43,6 +43,7 @@ import org.eclipse.emf.ecore.impl.EFactoryImpl;
 import org.eclipse.emf.ecore.plugin.EcorePlugin;
 import org.geotools.data.Query;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.joda.time.DateTime;
 import org.geotools.referencing.ReferencingFactoryFinder;
 import org.geotools.referencing.crs.DefaultEngineeringCRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
@@ -157,6 +158,8 @@ public class RenderFactoryImpl extends EFactoryImpl implements RenderFactory {
             return createSortedSetFromString(eDataType, initialValue);
         case RenderPackage.REFERENCED_ENVELOPE:
             return createReferencedEnvelopeFromString(eDataType, initialValue);
+        case RenderPackage.DATE_TIME:
+            return createDateTimeFromString(eDataType, initialValue);
         default:
             throw new IllegalArgumentException(
                     "The datatype '" + eDataType.getName() + "' is not a valid classifier"); //$NON-NLS-1$ //$NON-NLS-2$
@@ -202,6 +205,8 @@ public class RenderFactoryImpl extends EFactoryImpl implements RenderFactory {
             return convertSortedSetToString(eDataType, instanceValue);
         case RenderPackage.REFERENCED_ENVELOPE:
             return convertReferencedEnvelopeToString(eDataType, instanceValue);
+        case RenderPackage.DATE_TIME:
+            return convertDateTimeToString(eDataType, instanceValue);
         default:
             throw new IllegalArgumentException(
                     "The datatype '" + eDataType.getName() + "' is not a valid classifier"); //$NON-NLS-1$ //$NON-NLS-2$
@@ -632,6 +637,24 @@ public class RenderFactoryImpl extends EFactoryImpl implements RenderFactory {
     public String convertReferencedEnvelopeToString( EDataType eDataType, Object instanceValue ) {
         return ProjectFactory.eINSTANCE.convertToString(ProjectPackage.eINSTANCE
                 .getReferencedEnvelope(), instanceValue);
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public DateTime createDateTimeFromString( EDataType eDataType, String initialValue ) {
+        return (DateTime) super.createFromString(eDataType, initialValue);
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public String convertDateTimeToString( EDataType eDataType, Object instanceValue ) {
+        return super.convertToString(eDataType, instanceValue);
     }
 
     /**
