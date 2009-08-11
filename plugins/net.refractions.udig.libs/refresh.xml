@@ -130,8 +130,13 @@
 			<dependency groupId="xerces" artifactId="xercesImpl" version="2.7.1" scope="provided" />
 			<dependency groupId="xml-apis" artifactId="xml-apis-xerces" version="2.7.1" scope="provided" />
 			<dependency groupId="xml-apis" artifactId="xml-apis" version="1.0.b2" scope="provided" />
-				
-			<dependency groupId="log4j" artifactId="log4j" version="1.2.12" scope="provided" />
+		    
+			<dependency groupId="commons-codec" artifactid="commons-codec" version="1.2" scope="provided" />
+			<dependency groupId="commons-httpclient" artifactid="commons-httpclient" version="3.1" scope="provided" />
+			<dependency groupId="commons-lang" artifactid="commons-lang" version="2.1" scope="provided" />
+			<dependency groupId="commons-logging" artifactid="commons-logging" version="1.0.3" scope="provided" />
+						
+			<dependency groupId="log4j" artifactId="log4j" version="1.2" scope="provided" />
 			<dependency groupId="org.eclipse.xsd" artifactId="xsd" version="2.2.2" scope="provided" />
 			<dependency groupId="org.eclipse.emf" artifactId="ecore" version="2.2.2" scope="provided" />
 			<dependency groupId="org.eclipse.emf" artifactId="common" version="2.2.1" scope="provided" />

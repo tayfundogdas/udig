@@ -37,9 +37,9 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.geotools.data.DataStore;
 import org.geotools.data.FeatureSource;
 import org.osgi.framework.BundleContext;
-import org.picocontainer.Disposable;
-import org.picocontainer.MutablePicoContainer;
-import org.picocontainer.Startable;
+//import org.picocontainer.Disposable;
+//import org.picocontainer.MutablePicoContainer;
+//import org.picocontainer.Startable;
 
 /**
  * Lifecycle & Resource management for RegistryUI.
@@ -90,7 +90,7 @@ public class CatalogUIPlugin extends AbstractUIPlugin {
 
     /** Managed Images instance */
     private Images images = new Images();
-    private volatile static MutablePicoContainer pluginContainer;
+    //private volatile static MutablePicoContainer pluginContainer;
 
     /**
      * The constructor.
@@ -270,7 +270,7 @@ public class CatalogUIPlugin extends AbstractUIPlugin {
      * </p>
      * 
      * @return Container assocaited with the catalog ui
-     */
+     *
     public static MutablePicoContainer getContainer() {
         if (pluginContainer == null) {
             synchronized (CatalogUIPlugin.class) {
@@ -282,7 +282,8 @@ public class CatalogUIPlugin extends AbstractUIPlugin {
             }
         }
         return pluginContainer;
-    }
+    }*/
+    
     /**
      * Gets a container associated with this handle.
      * <p>
@@ -291,7 +292,7 @@ public class CatalogUIPlugin extends AbstractUIPlugin {
      * 
      * @param handle
      * @return Container associated with display of resolve
-     */
+     *
     public static MutablePicoContainer getContainer( IResolve handle ) {
         Object instance = getContainer().getComponentInstance(handle);
         if (instance != null) {
@@ -309,6 +310,7 @@ public class CatalogUIPlugin extends AbstractUIPlugin {
             return holder.getContainer();
         }
     }
+    */
 
     /**
      * Quick and dirty image generated based on ID, this image is shared and should not be disposed.
@@ -499,12 +501,12 @@ public class CatalogUIPlugin extends AbstractUIPlugin {
     }
 }
 
-class HandleLifecycle implements Startable, Disposable {
+class HandleLifecycle /*implements Startable, Disposable */ {
     HandleListener listener;
-    volatile MutablePicoContainer container;
+    //volatile MutablePicoContainer container;
 
     HandleLifecycle( IResolve resolveHandle ) {
-        container = null; // until used by getContainer();
+        // container = null; // until used by getContainer();
         listener = new HandleListener(resolveHandle){
             public void stop( IResolve handle ) {
                 HandleLifecycle.this.stop();
@@ -541,7 +543,7 @@ class HandleLifecycle implements Startable, Disposable {
      * A container for collaboration, or null if handle is out of scope.
      * 
      * @return The container associated with handle
-     */
+     *
     public MutablePicoContainer getContainer() {
         IResolve resolve = listener.getHandle();
         if (resolve == null)
@@ -558,17 +560,20 @@ class HandleLifecycle implements Startable, Disposable {
         }
         return container;
     }
+    */
+    
     /**
      * Create container, must only be called once
      * 
      * @return created container
-     */
+     *
     protected MutablePicoContainer makeChildContainer() {
         if (container != null) {
             throw new IllegalStateException(Messages.CatalogUIPlugin_childContainerException); 
         }
         return CatalogUIPlugin.getContainer().makeChildContainer();
     }
+    */
     /** We have just been created, lets listen to the catalog */
     public void start() {
         CatalogPlugin.addListener(listener);
@@ -580,10 +585,10 @@ class HandleLifecycle implements Startable, Disposable {
             listener.dispose();
             listener = null;
         }
-        if (container != null) {
-            container.dispose();
-            container = null;
-        }
+//        if (container != null) {
+//            container.dispose();
+//            container = null;
+//        }
     }
 
     /** Stop listening, fee references, and turn off the lights */
@@ -593,9 +598,9 @@ class HandleLifecycle implements Startable, Disposable {
             listener.dispose();
             listener = null;
         }
-        if (container != null) {
-            container.dispose();
-            container = null;
-        }
+//        if (container != null) {
+//            container.dispose();
+//            container = null;
+//        }
     }
 }
