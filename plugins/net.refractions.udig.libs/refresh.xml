@@ -153,11 +153,11 @@
 		
 		<echo message="Jars = ${myjars}" />
         	
-		<propertyregex property="listjars"
+		<!--propertyregex property="listjars"
 		              input="${myjars}"
 		              regexp="\;"
 		              select="{$line.seperator}"
-		              casesensitive="false" />
+		              casesensitive="false" /-->
 		
         <echo message="Jars = ${myjars}" />
 		

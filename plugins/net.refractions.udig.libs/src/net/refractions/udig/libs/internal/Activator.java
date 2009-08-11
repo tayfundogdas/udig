@@ -28,7 +28,6 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.Constants;
 
 /**
  * The Activator for net.refractions.udig.libs provides global settings
@@ -52,7 +51,11 @@ public class Activator implements BundleActivator {
 	    // not so sure about the geotools global hints
 	    //
 	    System.setProperty("org.geotools.referencing.forceXY", "true"); //$NON-NLS-1$ //$NON-NLS-2$
-
+	    URL epsgInternal = context.getBundle().getEntry("epsg");
+	    URL epsgUrl = FileLocator.toFileURL( epsgInternal );
+	    File epsgDB = new File( epsgUrl.toURI() );
+	    System.setProperty("EPSG-H2.directory", epsgDB.getPath() );
+	    		
 		if( Platform.getOS().equals(Platform.OS_WIN32) ){
 		    try {
 		        // PNG native support is not very good .. this turns it off
@@ -141,13 +144,13 @@ public class Activator implements BundleActivator {
 		    ReferencingFactoryFinder.addAuthorityFactory(factory);
 		}
 		ReferencingFactoryFinder.scanForPlugins();
-		if( false ){ // how to do debug check with OSGi bundles?
+		if( Platform.inDevelopmentMode() ){ // how to do debug check with OSGi bundles?
             CRS.main(new String[]{"-dependencies"}); //$NON-NLS-1$
         }
-        
-		verifyReferencingEpsg();
-		verifyReferencingOperation();	
-		
+		if( Platform.inDevelopmentMode() ){
+			verifyReferencingEpsg();
+			verifyReferencingOperation();
+		}		
 	}
     /**
      * If this method fails it's because, the epsg jar is either 
