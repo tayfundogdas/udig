@@ -80,6 +80,7 @@ public class Activator implements BundleActivator {
 	    map.put( Hints.LENIENT_DATUM_SHIFT, true );		
 		Hints global = new Hints(map);
 		GeoTools.init( global );
+		
 		// WARNING - the above hints are recommended to us by GeoServer
 		//           but they cause epsg-wkt not to work because the
 		//           various wrapper classes trip up over a CRSAuthorityFactory
@@ -88,25 +89,20 @@ public class Activator implements BundleActivator {
 		
 		// prime the pump - ensure EPSG factory is found
 		// (we need to do this in a separate thread if the database needs to be unpacked)
-	    if( ThreadedH2EpsgFactory.isUnpacked() ){
-	    	configureEPSG(context.getBundle(), new NullProgressMonitor());	
-	    }
-	    else {
-	    	final Bundle bundle = context.getBundle();
-	    	Job configure  = new Job("configure epsg"){
-				protected IStatus run(IProgressMonitor monitor) {
-					try {
-						configureEPSG(bundle, monitor);
-					}
-					catch( Exception eek ){
-						return new Status(IStatus.ERROR,"net.refractions.udig.libs", "Difficulty configuring epsg database:"+eek, eek );
-					}
-					return Status.OK_STATUS;
-				}	    		
-	    	};
-	    	//configure.setUser(true);
-	    	configure.schedule();
-	    }
+        final Bundle bundle = context.getBundle();
+    	Job configure  = new Job("configure epsg"){
+			protected IStatus run(IProgressMonitor monitor) {
+				try {
+					configureEPSG(bundle, monitor);
+				}
+				catch( Exception eek ){
+					return new Status(IStatus.ERROR,"net.refractions.udig.libs", "Difficulty configuring epsg database:"+eek, eek );
+				}
+				return Status.OK_STATUS;
+			}	    		
+    	};
+    	//configure.setUser(true);
+    	configure.schedule();
 	}
 	
 	public void configureEPSG(Bundle bundle, IProgressMonitor monitor) throws Exception {
