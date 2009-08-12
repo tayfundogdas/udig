@@ -16,7 +16,6 @@
  */
 package net.refractions.udig.catalog;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.URI;
@@ -38,8 +37,8 @@ import net.refractions.udig.ui.UDIGDisplaySafeLock;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.SubProgressMonitor;
-import org.geotools.data.mysql.MySQLDataStore;
 import org.geotools.data.mysql.MySQLDataStoreFactory;
+import org.geotools.jdbc.JDBCDataStore;
 
 /**
  * Provides an ISerivce so that MySQL can show up in service lists
@@ -81,7 +80,7 @@ public class MySQLServiceImpl extends IService {
         if (adaptee == null) {
             throw new NullPointerException("No adaptor specified"); //$NON-NLS-1$
         }
-        if (adaptee.isAssignableFrom(MySQLDataStore.class))
+        if (adaptee.isAssignableFrom(JDBCDataStore.class))
             return adaptee.cast(getDS());
         /* if (adaptee.isAssignab6leFrom(Connection.class)){
                  Connection connection;
@@ -100,7 +99,7 @@ public class MySQLServiceImpl extends IService {
     public <T> boolean canResolve( Class<T> adaptee ) {
         if (adaptee == null)
             return false;
-        return adaptee.isAssignableFrom(MySQLDataStore.class)
+        return adaptee.isAssignableFrom(JDBCDataStore.class)
                 || adaptee.isAssignableFrom(Connection.class) || super.canResolve(adaptee);
     }
 
@@ -126,7 +125,7 @@ public class MySQLServiceImpl extends IService {
      */
     public List<MySQLGeoResource> resources( IProgressMonitor monitor ) throws IOException {
 
-        MySQLDataStore ds = getDS();
+        JDBCDataStore ds = getDS();
         rLock.lock();
         try {
             if (members == null) {
@@ -171,19 +170,19 @@ public class MySQLServiceImpl extends IService {
         return params;
     }
     private Throwable msg = null;
-    private volatile MySQLDataStore ds = null;
+    private volatile JDBCDataStore ds = null;
     private Lock dsInstantiationLock = new UDIGDisplaySafeLock();
     
-    MySQLDataStore getDS() throws IOException {
+    JDBCDataStore getDS() throws IOException {
         boolean changed = false;
         dsInstantiationLock.lock();
         try {
             if (ds == null) {
                 changed = true;
-                MySQLDataStoreFactory dsf = new MySQLDataStoreFactory();
+                MySQLDataStoreFactory dsf = MySQLServiceExtension.getFactory();
                 if (dsf.canProcess(params)) {
                     try {
-                        ds = (MySQLDataStore) dsf.createDataStore(params);
+                        ds = dsf.createDataStore(params);
                     } catch (IOException e) {
                         msg = e;
                         throw e;
@@ -224,7 +223,7 @@ public class MySQLServiceImpl extends IService {
 
     private class IServiceMySQLInfo extends IServiceInfo {
 
-        IServiceMySQLInfo( MySQLDataStore resource ) {
+        IServiceMySQLInfo( JDBCDataStore resource ) {
             super();
             String[] tns = null;
             try {

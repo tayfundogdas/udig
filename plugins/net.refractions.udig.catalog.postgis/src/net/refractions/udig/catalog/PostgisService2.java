@@ -14,12 +14,13 @@
  */
 package net.refractions.udig.catalog;
 
-import static org.geotools.data.postgis.PostgisDataStoreFactory.DATABASE;
-import static org.geotools.data.postgis.PostgisDataStoreFactory.HOST;
-import static org.geotools.data.postgis.PostgisDataStoreFactory.PASSWD;
-import static org.geotools.data.postgis.PostgisDataStoreFactory.PORT;
-import static org.geotools.data.postgis.PostgisDataStoreFactory.SCHEMA;
-import static org.geotools.data.postgis.PostgisDataStoreFactory.USER;
+import static org.geotools.data.postgis.PostgisNGDataStoreFactory.PORT;
+import static org.geotools.data.postgis.PostgisNGDataStoreFactory.SCHEMA;
+import static org.geotools.data.postgis.PostgisNGDataStoreFactory.LOOSEBBOX;
+import static org.geotools.jdbc.JDBCDataStoreFactory.DATABASE;
+import static org.geotools.jdbc.JDBCDataStoreFactory.HOST;
+import static org.geotools.jdbc.JDBCDataStoreFactory.PASSWD;
+import static org.geotools.jdbc.JDBCDataStoreFactory.USER;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -41,7 +42,6 @@ import net.refractions.udig.ui.UDIGDisplaySafeLock;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.SubMonitor;
-import org.geotools.data.postgis.PostgisDataStoreFactory;
 
 /**
  * A postgis service that represents the database. Its children are "folders" that each resolve to a
@@ -92,7 +92,7 @@ public class PostgisService2 extends IService {
         // for wkt for a moment!
         // params.put( PostgisDataStoreFactory.WKBENABLED.key, Boolean.FALSE );
         
-        params.put( PostgisDataStoreFactory.LOOSEBBOX.key, Boolean.TRUE );
+        params.put( LOOSEBBOX.key, Boolean.TRUE );
         return params;
     }
 
@@ -126,7 +126,7 @@ public class PostgisService2 extends IService {
                         "looking up schemas", 1));
                 if (schemas == null) {
                     // couldn't look up schema so...
-                    String commaSeperated = (String) params.get(PostgisDataStoreFactory.SCHEMA.key);
+                    String commaSeperated = (String) params.get(SCHEMA.key);
                     schemas = commaSeperated.split(","); //$NON-NLS-1$
                 }
                 createSchemaFolder(schemas);

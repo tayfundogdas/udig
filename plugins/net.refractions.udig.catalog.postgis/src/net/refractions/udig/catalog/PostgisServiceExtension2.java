@@ -17,13 +17,6 @@
 package net.refractions.udig.catalog;
 
 import static java.text.MessageFormat.format;
-import static org.geotools.data.postgis.PostgisDataStoreFactory.DATABASE;
-import static org.geotools.data.postgis.PostgisDataStoreFactory.DBTYPE;
-import static org.geotools.data.postgis.PostgisDataStoreFactory.HOST;
-import static org.geotools.data.postgis.PostgisDataStoreFactory.PASSWD;
-import static org.geotools.data.postgis.PostgisDataStoreFactory.PORT;
-import static org.geotools.data.postgis.PostgisDataStoreFactory.SCHEMA;
-import static org.geotools.data.postgis.PostgisDataStoreFactory.USER;
 
 import java.io.Serializable;
 import java.net.MalformedURLException;
@@ -38,8 +31,10 @@ import net.refractions.udig.catalog.internal.postgis.ui.PostgisServiceDialect;
 import net.refractions.udig.catalog.postgis.internal.Messages;
 import net.refractions.udig.core.Pair;
 
+import org.eclipse.core.runtime.Platform;
 import org.geotools.data.DataStoreFactorySpi;
-import org.geotools.data.postgis.PostgisDataStoreFactory;
+import org.geotools.data.postgis.PostgisNGDataStoreFactory;
+import static org.geotools.data.postgis.PostgisNGDataStoreFactory.*;
 
 /**
  * PostGis ServiceExtension that has a hierarchy. It represents a Database and has folders within it.
@@ -56,7 +51,22 @@ public class PostgisServiceExtension2 extends AbstractDataStoreServiceExtension
     private static final String IN_TESTING = "testing"; //$NON-NLS-1$
     public static final PostgisServiceDialect DIALECT = new PostgisServiceDialect();
 
-    public IService createService( URL id, Map<String, Serializable> params ) {
+    public PostgisService2 createService( URL id, Map<String, Serializable> params ) {
+        try {
+            if( getFactory() == null || !getFactory().isAvailable() ){
+                return null; // factory not available
+            }
+            if (!getFactory().canProcess(params)) {
+                return null; // the factory cannot use these parameters
+            }
+        } catch (Exception unexpected) {
+            if (Platform.inDevelopmentMode()) {
+                // this should never happen
+                PostgisPlugin.log("PostGISExtension canProcess errored out with: "
+                        + unexpected, unexpected);
+            }
+            return null; // the factory cannot really use these parameters
+        }
         if( reasonForFailure(params)!=null ){
             return null;
         }
@@ -109,11 +119,13 @@ public class PostgisServiceExtension2 extends AbstractDataStoreServiceExtension
         return postGISParams;
     }
 
-    private static PostgisDataStoreFactory factory;
+    private static PostgisNGDataStoreFactory factory;
 
-    public static PostgisDataStoreFactory getFactory() {
+    public synchronized static PostgisNGDataStoreFactory getFactory() {
     	if( factory == null ){
-    		factory = new PostgisDataStoreFactory();
+    		factory = new PostgisNGDataStoreFactory();
+    		// TODO look up in factory SPI in order to avoid
+    		// duplicate instances
     	}
         return factory;
     }

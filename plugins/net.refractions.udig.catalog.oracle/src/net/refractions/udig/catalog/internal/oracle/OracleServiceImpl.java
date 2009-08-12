@@ -42,14 +42,12 @@ import net.refractions.udig.ui.UDIGDisplaySafeLock;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.SubProgressMonitor;
-import org.geotools.data.oracle.OracleDataStore;
-import org.geotools.data.oracle.OracleDataStoreFactory;
+import org.geotools.data.oracle.OracleNGDataStoreFactory;
+import org.geotools.jdbc.JDBCDataStore;
 
 /**
- * Provides ...TODO summary sentence
- * <p>
- * TODO Description
- * </p>
+ * Service handle representing an oracle database.
+ * 
  * @author David Zwiers, Refractions Research
  * @since 0.6
  */
@@ -80,7 +78,7 @@ public class OracleServiceImpl extends IService {
             throw new NullPointerException("No adaptor specified"); //$NON-NLS-1$
         }
         
-        if(adaptee.isAssignableFrom(OracleDataStore.class)){
+        if(adaptee.isAssignableFrom(JDBCDataStore.class)){
             return adaptee.cast( getDS(monitor));
         }
         return super.resolve(adaptee, monitor);
@@ -91,7 +89,7 @@ public class OracleServiceImpl extends IService {
     public <T> boolean canResolve( Class<T> adaptee ) {
         if(adaptee == null)
             return false;
-        return (adaptee.isAssignableFrom(OracleDataStore.class))||
+        return (adaptee.isAssignableFrom(JDBCDataStore.class))||
                 super.canResolve(adaptee);
     }
     public void dispose( IProgressMonitor monitor ) {
@@ -162,21 +160,21 @@ public class OracleServiceImpl extends IService {
         return params;
     }
     private Throwable msg = null;
-    private volatile OracleDataStore ds = null;
+    private volatile JDBCDataStore ds = null;
     protected Lock rLock=new UDIGDisplaySafeLock();
     private static final Lock dsLock = new UDIGDisplaySafeLock();
 
-    OracleDataStore getDS(IProgressMonitor monitor ) throws IOException{
+     JDBCDataStore getDS(IProgressMonitor monitor ) throws IOException{
         if (ds == null) {
             dsLock.lock();
             try {
                 if (ds == null) {
-                    OracleDataStoreFactory dsf = new OracleDataStoreFactory();
+                    OracleNGDataStoreFactory dsf = new OracleNGDataStoreFactory();
                     checkPort(params);
                     assert params.get("port") instanceof String; //$NON-NLS-1$
                     if(dsf.canProcess(params)){
                         try {
-                            ds = (OracleDataStore) dsf.createDataStore(params);
+                            ds = dsf.createDataStore(params);
                         } catch (IOException e) {
                             msg = e;
                             throw e;
@@ -212,7 +210,7 @@ public class OracleServiceImpl extends IService {
 
     private class IServiceOracleInfo extends IServiceInfo {
     
-        IServiceOracleInfo( OracleDataStore resource ){
+        IServiceOracleInfo( JDBCDataStore resource ){
             super();
                 String[] tns = null;
                 try {
@@ -256,7 +254,7 @@ public class OracleServiceImpl extends IService {
      * @param params Parameters object
      */
     private void checkPort(Map<String,Serializable> params) {
-        String portKey = OracleServiceExtension.getFactory().getParametersInfo()[2].key;
+        String portKey = OracleNGDataStoreFactory.PORT.key;
         if (params!=null && params.containsKey(portKey) && params.get(portKey) instanceof Integer){
             Integer val = (Integer) params.get(portKey);
             params.remove(portKey);

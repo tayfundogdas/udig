@@ -28,7 +28,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.geotools.data.DataStore;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.FeatureStore;
-import org.geotools.data.postgis.PostgisDataStore;
+import org.geotools.jdbc.JDBCDataStore;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 
@@ -103,7 +103,7 @@ public class PostgisGeoResource2 extends IGeoResource {
         if (adaptee.isAssignableFrom(IGeoResource.class))
             return adaptee.cast(this);
         
-        PostgisDataStore dataStore = parent.getDataStore();
+        JDBCDataStore dataStore = parent.getDataStore();
         if (adaptee.isAssignableFrom(DataStore.class))
             return adaptee.cast(dataStore);
         if (adaptee.isAssignableFrom(FeatureStore.class)) {

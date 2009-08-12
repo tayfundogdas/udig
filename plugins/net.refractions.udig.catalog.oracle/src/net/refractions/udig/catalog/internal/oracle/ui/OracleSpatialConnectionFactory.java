@@ -24,6 +24,11 @@ import net.refractions.udig.catalog.ServiceExtension2;
 import net.refractions.udig.catalog.internal.oracle.OracleServiceExtension;
 import net.refractions.udig.catalog.ui.AbstractUDIGConnectionFactory;
 
+/**
+ * This appears to be glue code added by Jesse.
+ * 
+ * @since 1.2.0
+ */
 public class OracleSpatialConnectionFactory extends AbstractUDIGConnectionFactory {
 
     @Override

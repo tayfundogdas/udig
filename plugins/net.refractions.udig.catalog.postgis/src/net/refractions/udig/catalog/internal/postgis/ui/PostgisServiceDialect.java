@@ -1,11 +1,5 @@
 package net.refractions.udig.catalog.internal.postgis.ui;
-import static org.geotools.data.postgis.PostgisDataStoreFactory.DATABASE;
-import static org.geotools.data.postgis.PostgisDataStoreFactory.DBTYPE;
-import static org.geotools.data.postgis.PostgisDataStoreFactory.HOST;
-import static org.geotools.data.postgis.PostgisDataStoreFactory.PASSWD;
-import static org.geotools.data.postgis.PostgisDataStoreFactory.PORT;
-import static org.geotools.data.postgis.PostgisDataStoreFactory.SCHEMA;
-import static org.geotools.data.postgis.PostgisDataStoreFactory.USER;
+import static org.geotools.data.postgis.PostgisNGDataStoreFactory.*;
 
 import java.util.Map;
 

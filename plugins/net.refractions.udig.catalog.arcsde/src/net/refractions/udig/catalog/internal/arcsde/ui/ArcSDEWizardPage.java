@@ -18,11 +18,12 @@
 package net.refractions.udig.catalog.internal.arcsde.ui;
 
 import java.io.Serializable;
-import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.sql.DataSource;
 
 import net.refractions.udig.catalog.IService;
 import net.refractions.udig.catalog.arcsde.internal.Messages;
@@ -139,7 +140,7 @@ public class ArcSDEWizardPage extends AbstractProprietaryDatastoreWizardPage {
         return false;
     }
 
-    protected Connection getConnection() {
+    protected DataSource getDataSource() {
         return null;
     }
 

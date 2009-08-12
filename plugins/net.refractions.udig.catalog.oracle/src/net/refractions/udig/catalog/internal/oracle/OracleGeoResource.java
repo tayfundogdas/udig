@@ -99,20 +99,21 @@ public class OracleGeoResource extends IGeoResource {
     public <T> T resolve( Class<T> adaptee, IProgressMonitor monitor ) throws IOException {
         if (adaptee == null)
             return null;
-//        if (adaptee.isAssignableFrom(IService.class))
-//            return adaptee.cast(parent);
+        // if (adaptee.isAssignableFrom(IService.class))
+        // return adaptee.cast(parent);
         if (adaptee.isAssignableFrom(IGeoResourceInfo.class))
             return adaptee.cast(createInfo(monitor));
         if (adaptee.isAssignableFrom(IGeoResource.class))
             return adaptee.cast(this);
         if (adaptee.isAssignableFrom(FeatureStore.class)) {
-            FeatureSource<SimpleFeatureType, SimpleFeature> fs = parent.getDS(monitor).getFeatureSource(typename);
-            if (fs instanceof FeatureStore)
+            FeatureSource<SimpleFeatureType, SimpleFeature> fs = parent.getDS(monitor)
+                    .getFeatureSource(typename);
+            if (fs instanceof FeatureStore< ? , ? >)
                 return adaptee.cast(fs);
             if (adaptee.isAssignableFrom(FeatureSource.class))
                 return adaptee.cast(parent.getDS(monitor).getFeatureSource(typename));
         }
-        return super.resolve(adaptee, monitor);
+  return super.resolve(adaptee, monitor);
     }
     /*
      * @see net.refractions.udig.catalog.IResolve#canResolve(java.lang.Class)
