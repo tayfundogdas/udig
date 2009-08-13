@@ -15,6 +15,7 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.osgi.service.datalocation.Location;
+import org.eclipse.ui.PlatformUI;
 import org.geotools.factory.GeoTools;
 import org.geotools.factory.Hints;
 import org.geotools.factory.Hints.Key;
@@ -54,7 +55,9 @@ import org.osgi.framework.BundleContext;
  */
 public class Activator implements BundleActivator {
 	
-	public void start(final BundleContext context) throws Exception {
+	public static String ID = "net.refractions,udig.libs";
+
+    public void start(final BundleContext context) throws Exception {
 	    if( Platform.getOS().equals(Platform.OS_WIN32) ){
 		    try {
 		        // PNG native support is not very good .. this turns it off
@@ -90,22 +93,30 @@ public class Activator implements BundleActivator {
 		// prime the pump - ensure EPSG factory is found
 		// (we need to do this in a separate thread if the database needs to be unpacked)
         final Bundle bundle = context.getBundle();
-    	Job configure  = new Job("configure epsg"){
-			protected IStatus run(IProgressMonitor monitor) {
-				try {
-					configureEPSG(bundle, monitor);
-				}
-				catch( Exception eek ){
-					return new Status(IStatus.ERROR,"net.refractions.udig.libs", "Difficulty configuring epsg database:"+eek, eek );
-				}
-				return Status.OK_STATUS;
-			}	    		
-    	};
-    	//configure.setUser(true);
-    	configure.schedule();
+        
+        if( isEarlyStartupDisabled() ){
+        	Job configure  = new Job("configure epsg"){
+        	    /**
+        	     * This job will try and configure the GeoTools EPSG authority
+        	     * subsystem. This kind of needs to happen before we work with
+        	     * any of the GeoTools classes - and the *very* first time
+        	     * this is done it may involve a 1-2 min wait as the EPSG
+        	     * database is unpacked into a temporary folder.
+        	     * 
+        	     * We could try using earlyStartup here - but that would involve
+        	     * depending on the workbench which is a bit of a shame.
+        	     */
+    			protected IStatus run(IProgressMonitor monitor) {
+    				configureEPSG(bundle, monitor);
+    				return Status.OK_STATUS;
+    			}	    		
+        	};
+        	configure.setUser(true);
+        	configure.schedule();
+        }
 	}
 	
-	public void configureEPSG(Bundle bundle, IProgressMonitor monitor) throws Exception {
+	public static void configureEPSG(Bundle bundle, IProgressMonitor monitor) {
 		if( monitor == null ) monitor = new NullProgressMonitor();
 		monitor.beginTask("epsg setup", IProgressMonitor.UNKNOWN );
 		try {
@@ -197,9 +208,10 @@ public class Activator implements BundleActivator {
 	
 			    ReferencingFactoryFinder.addAuthorityFactory(factory);
 			    monitor.worked(1);
+			    
+			    monitor.subTask("register "+epsg);
+			    ReferencingFactoryFinder.scanForPlugins(); // hook everything up
 			}
-			monitor.subTask("register "+epsg);
-			ReferencingFactoryFinder.scanForPlugins(); // hook everything up
 			monitor.worked(1);
 			
 			// Show EPSG authority chain if in debug mode
@@ -210,9 +222,15 @@ public class Activator implements BundleActivator {
 			// Verify EPSG authority configured correctly
 			// if we are in development mode
 			if( Platform.inDevelopmentMode() ){
+			    monitor.subTask("verify epsg definitions");
 				verifyReferencingEpsg();
+				monitor.subTask("verify epsg operations");
 				verifyReferencingOperation();
 			}
+		}
+		catch (Throwable t ){
+		    Platform.getLog(bundle).log(
+                    new Status(Status.ERROR, Activator.ID, t.getLocalizedMessage(), t));
 		}
 		finally {
 			monitor.done();
@@ -226,7 +244,7 @@ public class Activator implements BundleActivator {
      * @return true if referencing is working and we get the expected result
      * @throws Exception if we cannot even get that far
      */
-	private void verifyReferencingEpsg() throws Exception {
+	private static void verifyReferencingEpsg() throws Exception {
         CoordinateReferenceSystem WGS84 = CRS.decode("EPSG:4326"); // latlong //$NON-NLS-1$
         CoordinateReferenceSystem BC_ALBERS = CRS.decode("EPSG:3005"); //$NON-NLS-1$
         
@@ -256,7 +274,7 @@ public class Activator implements BundleActivator {
      * @return true if referencing is working and we get the expected result
      * @throws Exception if we cannot even get that far
      */
-	private void verifyReferencingOperation() throws Exception {
+	private static void verifyReferencingOperation() throws Exception {
 	       // ReferencedEnvelope[-0.24291497975705742 : 0.24291497975711265, -0.5056179775280899 : -0.0]
         // ReferencedEnvelope[-0.24291497975705742 : 0.24291497975711265, -0.5056179775280899 : -0.0]
         CoordinateReferenceSystem EPSG4326 = CRS.decode("EPSG:4326"); //$NON-NLS-1$
@@ -272,6 +290,12 @@ public class Activator implements BundleActivator {
 	}
 	
 	public void stop(BundleContext context) throws Exception {
+	}
+	
+	public static boolean isEarlyStartupDisabled(){
+	    // Copy constant from internal Eclipse IPreferenceConstants.PLUGINS_NOT_ACTIVATED_ON_STARTUP
+	    String plugins = PlatformUI.getPreferenceStore().getString("PLUGINS_NOT_ACTIVATED_ON_STARTUP");
+	    return plugins.contains(ID);
 	}
 
 }
