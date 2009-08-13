@@ -20,6 +20,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.text.MessageFormat;
 
 import net.refractions.udig.ui.PlatformGIS;
+import net.refractions.udig.ui.internal.Messages;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
@@ -92,8 +93,7 @@ public class ExceptionDetailsDialog extends Dialog {
                 if (msg == null) {
                     msg = "";
                 }
-                msg = msg
-                        + "\n\nPlease use the details to explain the problem to your administrator.";
+                msg = msg + Messages.ExceptionDetailsEditorMessage;
                 ExceptionDetailsDialog dialog = new ExceptionDetailsDialog(Display.getDefault()
                         .getActiveShell(), title, msg, status, throwable);
                 dialog.open();
