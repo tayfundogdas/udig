@@ -127,7 +127,7 @@ public class Activator implements BundleActivator {
 		    File epsgDB = new File( epsgUrl.toURI() );
 		    System.setProperty("EPSG-H2.directory", epsgDB.getPath() );
 		    */        
-			monitor.subTask("initialize database");
+			monitor.subTask("initialize database; this may take a few minuets the very first time");
 		    CoordinateReferenceSystem wgs84 = CRS.decode("EPSG:4326"); 
 	        if( wgs84 == null){
 	        	String msg = "Unable to locate EPSG authority for EPSG:4326; consider removing temporary 'GeoTools' directory and trying again."; //$NON-NLS-1$
