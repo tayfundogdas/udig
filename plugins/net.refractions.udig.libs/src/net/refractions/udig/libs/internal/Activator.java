@@ -3,19 +3,19 @@ package net.refractions.udig.libs.internal;
 import java.io.File;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 import javax.imageio.spi.ImageReaderSpi;
 
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.osgi.service.datalocation.Location;
-import org.eclipse.ui.PlatformUI;
 import org.geotools.factory.GeoTools;
 import org.geotools.factory.Hints;
 import org.geotools.factory.Hints.Key;
@@ -28,7 +28,6 @@ import org.geotools.referencing.ReferencingFactoryFinder;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.referencing.factory.PropertyAuthorityFactory;
 import org.geotools.referencing.factory.ReferencingFactoryContainer;
-import org.geotools.referencing.factory.epsg.ThreadedH2EpsgFactory;
 import org.geotools.resources.image.ImageUtilities;
 import org.opengis.geometry.DirectPosition;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -84,59 +83,78 @@ public class Activator implements BundleActivator {
 		Hints global = new Hints(map);
 		GeoTools.init( global );
 		
-		// WARNING - the above hints are recommended to us by GeoServer
-		//           but they cause epsg-wkt not to work because the
-		//           various wrapper classes trip up over a CRSAuthorityFactory
-		//           that is not also a OperationAuthorityFactory (I think)
+		// We cannot do this here - it takes too long!
+		// Early startup is too late
+		// functionality moved to the UDIGApplication init method
 		//
-		
-		// prime the pump - ensure EPSG factory is found
-		// (we need to do this in a separate thread if the database needs to be unpacked)
-        final Bundle bundle = context.getBundle();
-        
-        if( isEarlyStartupDisabled() ){
-        	Job configure  = new Job("configure epsg"){
-        	    /**
-        	     * This job will try and configure the GeoTools EPSG authority
-        	     * subsystem. This kind of needs to happen before we work with
-        	     * any of the GeoTools classes - and the *very* first time
-        	     * this is done it may involve a 1-2 min wait as the EPSG
-        	     * database is unpacked into a temporary folder.
-        	     * 
-        	     * We could try using earlyStartup here - but that would involve
-        	     * depending on the workbench which is a bit of a shame.
-        	     */
-    			protected IStatus run(IProgressMonitor monitor) {
-    				configureEPSG(bundle, monitor);
-    				return Status.OK_STATUS;
-    			}	    		
-        	};
-        	configure.setUser(true);
-        	configure.schedule();
-        }
+		// initializeReferencingModule( context.getBundle(), null ); 		
 	}
 	
-	public static void configureEPSG(Bundle bundle, IProgressMonitor monitor) {
-		if( monitor == null ) monitor = new NullProgressMonitor();
-		monitor.beginTask("epsg setup", IProgressMonitor.UNKNOWN );
+    public static void initializeReferencingModule( IProgressMonitor monitor ) {
+        Bundle bundle = Platform.getBundle(ID);
+        if (monitor == null)
+            monitor = new NullProgressMonitor();
+
+        monitor.beginTask("EPSG Database", 100);
+
+        
+        searchEPSGProperties( bundle, new SubProgressMonitor(monitor, 20));
+        
+        loadEPSG(bundle, new SubProgressMonitor(monitor, 60));
+
+        monitor.subTask("coordinate operation definitions");
+        load(ReferencingFactoryFinder.getCoordinateOperationAuthorityFactories(null));
+        monitor.worked(2);
+
+        monitor.subTask("coordinate reference systems");
+        load(ReferencingFactoryFinder.getCRSFactories(null));
+        monitor.worked(8);
+
+        monitor.subTask("coordinate systems");
+        load(ReferencingFactoryFinder.getCSFactories(null));
+        monitor.worked(2);
+
+        monitor.subTask("datum definitions");
+        load(ReferencingFactoryFinder.getDatumAuthorityFactories(null));
+        monitor.worked(2);
+
+        monitor.subTask("datums");
+        load(ReferencingFactoryFinder.getDatumFactories(null));
+        monitor.worked(2);
+
+        monitor.subTask("math transforms");
+        load(ReferencingFactoryFinder.getMathTransformFactories(null));
+        monitor.worked(4);
+    }
+    @SuppressWarnings("unchecked")
+    static private void load( Set coordinateOperationAuthorityFactories ) {
+        for( Iterator iter = coordinateOperationAuthorityFactories.iterator(); iter.hasNext(); ) {
+            iter.next();
+        }
+    }
+    
+    /**
+     * Will load the EPSG database; this will trigger the unpacking of the EPSG
+     * database (which may take several minutes); and check in a few locations
+     * for an epsg.properties file to load: the locations are the data directory;
+     * the configuration directory; and finally the libs plugin bundle itself
+     * (which includes a default epsg.properties file that has a few common
+     * unofficial codes for things like the google projection).
+     * <p>
+     * This method will trigger the geotools referencing module to "scanForPlugins"
+     * and MUST be called prior to using the geotools library for anything real. I
+     * am sorry we could not arrange for this method to be called in an Activator
+     * as it simple takes too long and the Platform get's mad at us.
+     * 
+     * @param bundle
+     * @param monitor
+     */
+	public static void searchEPSGProperties(Bundle bundle, IProgressMonitor monitor) {
+	    if( monitor == null ) monitor = new NullProgressMonitor();
+		
+	    monitor.beginTask("epsg setup", IProgressMonitor.UNKNOWN );
 		try {
-			/*
-		    // To pick up H2 in plugin form
-		    URL epsgInternal = context.getBundle().getEntry("epsg");
-		    URL epsgUrl = FileLocator.toFileURL( epsgInternal );
-		    File epsgDB = new File( epsgUrl.toURI() );
-		    System.setProperty("EPSG-H2.directory", epsgDB.getPath() );
-		    */        
-			monitor.subTask("initialize database; this may take a few minuets the very first time");
-		    CoordinateReferenceSystem wgs84 = CRS.decode("EPSG:4326"); 
-	        if( wgs84 == null){
-	        	String msg = "Unable to locate EPSG authority for EPSG:4326; consider removing temporary 'GeoTools' directory and trying again."; //$NON-NLS-1$
-	        	System.out.println( msg );
-	        	//throw new FactoryException(msg);
-	        }
-	        monitor.worked(1);
-	        
-	        // go through and check a couple of locations
+			// go through and check a couple of locations
 	        // for an "epsg.properties" file full of 
 	        // suplementary codes
 	        //
@@ -184,10 +202,10 @@ public class Activator implements BundleActivator {
 	            }
 			}
 			if (epsg == null ){
-				try {
+                try {
 			        URL internal = bundle.getEntry("epsg.properties");
 			        URL fileUrl = FileLocator.toFileURL( internal );
-			        epsg = fileUrl.toURI().toURL();
+			        epsg = fileUrl.toURI().toURL();                    
 			    }
 			    catch (Throwable t ){
 			    	if( Platform.inDebugMode()){
@@ -211,9 +229,18 @@ public class Activator implements BundleActivator {
 			    
 			    monitor.subTask("register "+epsg);
 			    ReferencingFactoryFinder.scanForPlugins(); // hook everything up
+			    monitor.worked(10);                
 			}
-			monitor.worked(1);
 			
+			monitor.subTask("initialize database; this may take a few minuets the very first time");
+            CoordinateReferenceSystem wgs84 = CRS.decode("EPSG:4326"); 
+            if( wgs84 == null){
+                String msg = "Unable to locate EPSG authority for EPSG:4326; consider removing temporary 'GeoTools' directory and trying again."; //$NON-NLS-1$
+                System.out.println( msg );
+                //throw new FactoryException(msg);
+            }
+            monitor.worked(1);
+            
 			// Show EPSG authority chain if in debug mode
 			//
 			if( Platform.inDebugMode() ){
@@ -236,6 +263,45 @@ public class Activator implements BundleActivator {
 			monitor.done();
 		}
 	}
+	
+	public static void loadEPSG(Bundle bundle, IProgressMonitor monitor) {
+        if( monitor == null ) monitor = new NullProgressMonitor();
+        
+        monitor.beginTask("epsg setup", IProgressMonitor.UNKNOWN );
+        try {
+            monitor.subTask("initialize database; this may take a few minuets the very first time");
+            CoordinateReferenceSystem wgs84 = CRS.decode("EPSG:4326"); 
+            if( wgs84 == null){
+                String msg = "Unable to locate EPSG authority for EPSG:4326; consider removing temporary 'GeoTools' directory and trying again."; //$NON-NLS-1$
+                System.out.println( msg );
+                //throw new FactoryException(msg);
+            }
+            monitor.worked(1);
+            
+            // Show EPSG authority chain if in debug mode
+            //
+            if( Platform.inDebugMode() ){
+                CRS.main(new String[]{"-dependencies"}); //$NON-NLS-1$
+            }
+            // Verify EPSG authority configured correctly
+            // if we are in development mode
+            if( Platform.inDevelopmentMode() ){
+                monitor.subTask("verify epsg definitions");
+                verifyReferencingEpsg();
+                monitor.subTask("verify epsg operations");
+                verifyReferencingOperation();
+            }
+        }
+        catch (Throwable t ){
+            Platform.getLog(bundle).log(
+                    new Status(Status.ERROR, Activator.ID, t.getLocalizedMessage(), t));
+        }
+        finally {
+            monitor.done();
+        }
+    }
+    
+	
     /**
      * If this method fails it's because, the epsg jar is either 
      * not available, or not set up to handle math transforms
@@ -290,12 +356,6 @@ public class Activator implements BundleActivator {
 	}
 	
 	public void stop(BundleContext context) throws Exception {
-	}
-	
-	public static boolean isEarlyStartupDisabled(){
-	    // Copy constant from internal Eclipse IPreferenceConstants.PLUGINS_NOT_ACTIVATED_ON_STARTUP
-	    String plugins = PlatformUI.getPreferenceStore().getString("PLUGINS_NOT_ACTIVATED_ON_STARTUP");
-	    return plugins.contains(ID);
 	}
 
 }
