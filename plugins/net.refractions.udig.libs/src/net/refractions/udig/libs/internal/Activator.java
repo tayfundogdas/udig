@@ -201,7 +201,7 @@ public class Activator implements BundleActivator {
 			    	}
 	            }
 			}
-			if (epsg == null ){
+			if (epsg == null && bundle != null){
                 try {
 			        URL internal = bundle.getEntry("epsg.properties");
 			        URL fileUrl = FileLocator.toFileURL( internal );
