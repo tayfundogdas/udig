@@ -19,6 +19,7 @@ import static org.geotools.jdbc.JDBCDataStoreFactory.DATABASE;
 import static org.geotools.jdbc.JDBCDataStoreFactory.HOST;
 import static org.geotools.jdbc.JDBCDataStoreFactory.PASSWD;
 import static org.geotools.jdbc.JDBCDataStoreFactory.USER;
+import static org.geotools.jdbc.JDBCDataStoreFactory.DBTYPE;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -70,7 +71,8 @@ public class PostgisDatabaseConnectionRunnable implements DatabaseConnectionRunn
         try {
             
             Map<String,Serializable> params = new HashMap<String,Serializable>();
-            params.put( HOST.key, host );
+            params.put( DBTYPE.key, "postgisng" );
+            params.put( HOST.key, host );            
             params.put( PORT.key, port );
             params.put( USER.key, username );
             params.put( PASSWD.key, password );

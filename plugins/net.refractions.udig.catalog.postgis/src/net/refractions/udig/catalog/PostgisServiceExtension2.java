@@ -108,7 +108,7 @@ public class PostgisServiceExtension2 extends AbstractDataStoreServiceExtension
         ParamInfo info = parseParamInfo(url);
 
         Map<String, Serializable> postGISParams = new HashMap<String, Serializable>();
-        postGISParams.put(DBTYPE.key, "postgis"); // dbtype //$NON-NLS-1$
+        postGISParams.put(DBTYPE.key, "postgisng"); // dbtype //$NON-NLS-1$
         postGISParams.put(USER.key, info.username); // user
         postGISParams.put(PASSWD.key, info.password); // pass
         postGISParams.put(HOST.key, info.host); // host

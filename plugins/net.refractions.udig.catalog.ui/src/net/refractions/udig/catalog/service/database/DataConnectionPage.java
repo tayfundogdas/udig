@@ -83,9 +83,12 @@ public class DataConnectionPage extends AbstractUDIGImportPage implements Listen
         
         Either<String, Map<String, Serializable>> result = getActiveTab().getParams(params);
         if( result.isLeft() ){
-            setErrorMessage(result.getLeft());
+            Object msg = result.getLeft();
+            if( msg != null ){
+                setErrorMessage(result.getLeft());
+            }
             return null;
-        }else{
+        } else{
             setErrorMessage(null);
             return result.getRight();
         }

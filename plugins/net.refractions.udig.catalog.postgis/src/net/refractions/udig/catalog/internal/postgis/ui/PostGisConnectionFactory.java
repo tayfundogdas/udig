@@ -236,7 +236,7 @@ public class PostGisConnectionFactory extends UDIGConnectionFactory {
         
         Map<String,Serializable> params2 = new HashMap<String,Serializable>();
         
-        params2.put(DBTYPE.key, "postgis"); //$NON-NLS-1$
+        params2.put(DBTYPE.key, "postgisng"); //$NON-NLS-1$
         params2.put(HOST.key, url.getHost());
         String dbport = ((Integer)url.getPort()).toString();
         try {
