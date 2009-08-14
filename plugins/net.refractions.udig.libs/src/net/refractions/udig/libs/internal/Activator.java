@@ -54,7 +54,7 @@ import org.osgi.framework.BundleContext;
  */
 public class Activator implements BundleActivator {
 	
-	public static String ID = "net.refractions,udig.libs";
+	public static String ID = "net.refractions.udig.libs";
 
     public void start(final BundleContext context) throws Exception {
 	    if( Platform.getOS().equals(Platform.OS_WIN32) ){
@@ -201,7 +201,7 @@ public class Activator implements BundleActivator {
 			    	}
 	            }
 			}
-			if (epsg == null && bundle != null){
+			if (epsg == null){
                 try {
 			        URL internal = bundle.getEntry("epsg.properties");
 			        URL fileUrl = FileLocator.toFileURL( internal );
