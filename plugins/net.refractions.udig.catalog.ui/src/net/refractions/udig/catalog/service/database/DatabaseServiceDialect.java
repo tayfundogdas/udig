@@ -24,8 +24,7 @@ import org.geotools.data.DataAccessFactory.Param;
  * @author jeichar
  */
 public abstract class DatabaseServiceDialect {
-
-	// The parameter information required for creating a Geotools Datastore.
+    // The parameter information required for creating a Geotools Datastore.
 	// Postgis was used as the template
 	/**
 	 * The key of the parameter that (at least in Postgis) identifies the schema

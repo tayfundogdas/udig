@@ -143,8 +143,8 @@ public abstract class AbstractUDIGImportPage extends WorkflowWizardPage implemen
     }
     
     /** 
-     * Does nothing
-     * @deprecated
+     * Gather up connection parameters from the user interface
+     * @return connection parameters from the user interface
      */
     public Map<String, Serializable> getParams() {
         return null;

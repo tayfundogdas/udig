@@ -70,6 +70,9 @@ public class DataConnectionPage extends AbstractUDIGImportPage implements Listen
         return getParams()!=null;
     }
     
+    /**
+     * Gather parameters from the user interface.
+     */
     public Map<String, Serializable> getParams() {
         
         Map<String, Serializable> params = new HashMap<String, Serializable>();

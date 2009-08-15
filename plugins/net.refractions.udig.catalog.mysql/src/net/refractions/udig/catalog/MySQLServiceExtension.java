@@ -28,6 +28,7 @@ import net.refractions.udig.catalog.mysql.internal.Messages;
 import net.refractions.udig.core.internal.CorePlugin;
 
 import org.geotools.data.DataStoreFactorySpi;
+import org.geotools.data.DataAccessFactory.Param;
 import org.geotools.data.mysql.MySQLDataStoreFactory;
 
 
@@ -111,6 +112,21 @@ public class MySQLServiceExtension extends AbstractDataStoreServiceExtension
             factory = new MySQLDataStoreFactory();
         }
         return factory;
+    }
+    /**
+     * Look up Param by key; used to access the correct sample
+     * value for DBTYPE.
+     *
+     * @param key
+     * @return
+     */
+    public static Param getPram( String key ){
+        for( Param param : getFactory().getParametersInfo()){
+            if( key.equals( param.key )){
+                return param;
+            }
+        }
+        return null;
     }
 
     /** A couple quick checks on the url */
