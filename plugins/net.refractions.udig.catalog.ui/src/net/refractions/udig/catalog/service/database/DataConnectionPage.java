@@ -81,7 +81,9 @@ public class DataConnectionPage extends AbstractUDIGImportPage implements Listen
         params.put(dialect().usernameParam.key, userHostPage.getUsername());
         params.put(dialect().passwordParam.key, userHostPage.getPassword());
         params.put(dialect().databaseParam.key, database.getText());
-        params.put(dialect().schemaParam.key, (Serializable) dialect().schemaParam.sample);
+        if ((Serializable)dialect().schemaParam != null){
+        	params.put(dialect().schemaParam.key, (Serializable) dialect().schemaParam.sample);
+        }
         params.put(dialect().typeParam.key, (Serializable) dialect().typeParam.sample);
         
         Either<String, Map<String, Serializable>> result = getActiveTab().getParams(params);
