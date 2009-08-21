@@ -52,7 +52,7 @@
   ;Get installation folder from registry if available - This will check the registry to see if an install directory
   ;is present, and if so, replace the value in InstallDir with it.  If there is no value, the installer will fall
   ;back on InstallDir as the default install directory.
-  InstallDirRegKey HKCU "Software\uDigVersionXXXX" ""
+  InstallDirRegKey HKCU "Software\VersionXXXX" ""
 
 ;--------------------------------
 ;Variables
@@ -75,14 +75,14 @@
   ;Used your udig.ico.  All paths are relative to the location of _this_ file,
   ;which is why it needs to be right next to the eclipse folder. -ch
   
-  !define MUI_ICON "eclipse\icons\32-uDigIcon.ico"
+  !define MUI_ICON "udig\icons\32-uDigIcon.ico"
   ;I tried to use the same windows uninstaller I did, but NSIS doesn't seem
   ;to like icons of different sizes -ch
 
-;  !define MUI_UNICON "eclipse\plugins\net.refractions.udig.ui_0.3.0\icons\udig.ico"
+;  !define MUI_UNICON "udig\plugins\net.refractions.udig.ui_0.3.0\icons\udig.ico"
 
   ;!define MUI_UNICON "${NSISDIR}\Contrib\Graphics\Icons\win-uninstall.ico"
-  !define MUI_UNICON "eclipse\icons\32-uninstallIcon.ico"
+  !define MUI_UNICON "udig\icons\32-uninstallIcon.ico"
   
   !define MUI_ABORTWARNING
   
@@ -118,7 +118,7 @@
   !insertmacro MUI_PAGE_LICENSE "LICENSE.txt"
   
   ;Add a license for ECW?
-  ;!insertmacro MUI_PAGE_LICENSE "LICENSE.txt"
+  !insertmacro MUI_PAGE_LICENSE "ECWEULA.txt"
   
   !insertmacro MUI_PAGE_DIRECTORY
 
@@ -126,7 +126,7 @@
   ;you like the uDig start menu
   ;Start Menu Folder Page Configuration
   !define MUI_STARTMENUPAGE_REGISTRY_ROOT "HKCU" 
-  !define MUI_STARTMENUPAGE_REGISTRY_KEY "Software\uDigVersionXXXX" 
+  !define MUI_STARTMENUPAGE_REGISTRY_KEY "Software\uDig1.2-M6" 
   !define MUI_STARTMENUPAGE_REGISTRY_VALUENAME "Start Menu Folder"
   
   !insertmacro MUI_PAGE_STARTMENU Application $STARTMENU_FOLDER
@@ -161,7 +161,7 @@ Section "uDig Section" SecuDig
   ;uDig is installed in Program Files, with eclipse as a sub folder, and then
   ;it seems to build a bin/ directory in the uDig folder as well. -ch
   ;ADD YOUR OWN FILES HERE...
-  File /r eclipse
+  File /r udig
     
   ;Store installation folderh
   WriteRegStr HKCU "Software\uDigVersionXXXX" "" $INSTDIR
@@ -188,10 +188,10 @@ Section "uDig Section" SecuDig
     !insertmacro CreateInternetShortcut \
         "$SMPROGRAMS\$STARTMENU_FOLDER\uDig Documentation" \
         "http://udig.refractions.net/users" \
-        "$INSTDIR\eclipse\icons\32-uDigIcon.ico" 0
+        "$INSTDIR\udig\icons\32-uDigIcon.ico" 0
 
     ;Set specific out page for uDig
-    ;SetOutPath "$INSTDIR\UDIG\eclipse"
+    ;SetOutPath "$INSTDIR\UDIG\udig"
     ;SetOutPath "$PROFILE\UDIG\workspace"
 
     ;Start-up, using the udig.exe file
@@ -218,9 +218,10 @@ Section "uDig Section" SecuDig
 
 
      DONE:
+    SetOutPath "$INSTDIR\udig\"
     CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\uDig.lnk" \
-                   "$INSTDIR\eclipse\udig.exe" "-data $\"%HOMEDRIVE%%HOMEPATH%\uDig\$\" -configuration $\"%APPDATA%\udig\VersionXXXX\$\" -vm $\"$INSTDIR\eclipse\jre\bin\javaw.exe$\"" \
-                   "$INSTDIR\eclipse\icons\32-uDigIcon.ico" 0 SW_SHOWNORMAL
+                   "$INSTDIR\udig\udig.bat" "-data $\"%HOMEDRIVE%%HOMEPATH%\uDig\$\" -configuration $\"%APPDATA%\udig\VersionXXXX\$\" -vm $\"$INSTDIR\udig\jre\bin\javaw.exe$\"" \
+                   "$INSTDIR\udig\icons\32-uDigIcon.ico" 0 SW_SHOWNORMAL
 
     ;Set path back to normal
     SetOutPath "$INSTDIR"
@@ -228,7 +229,7 @@ Section "uDig Section" SecuDig
 
     CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Uninstall.lnk" \
                    "$INSTDIR\Uninstall.exe" "" \
-                   "$INSTDIR\eclipse\icons\32-uninstallIcon.ico" 0 SW_SHOWNORMAL
+                   "$INSTDIR\udig\icons\32-uninstallIcon.ico" 0 SW_SHOWNORMAL
 
   
   !insertmacro MUI_STARTMENU_WRITE_END
@@ -261,9 +262,9 @@ Section "Uninstall"
   
   ;REMOVE APPLICATION IN A FEW STEPS TO SHOW PROGRESS
   
-  RMDIR /r "$INSTDIR\eclipse\features"
-  RMDIR /r "$INSTDIR\eclipse\jre"
-  RMDIR /r "$INSTDIR\eclipse\plugins"
+  RMDIR /r "$INSTDIR\udig\features"
+  RMDIR /r "$INSTDIR\udig\jre"
+  RMDIR /r "$INSTDIR\udig\plugins"
 
   RMDIR /r "$INSTDIR"
   ;TRY TO REMOVE THE Program Files\uDig Directory... 
@@ -304,7 +305,7 @@ Section "Uninstall"
     
   RMDIR /r "$SMPROGRAMS\$MUI_TEMP"
 
-  DeleteRegKey /ifempty HKCU "Software\uDigVersionXXXX"
+  DeleteRegKey /ifempty HKCU "Software\uDig1.2-M6"
 
 SectionEnd
 
