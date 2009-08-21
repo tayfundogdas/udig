@@ -18,6 +18,7 @@ import java.io.IOException;
 
 import net.refractions.udig.project.ILayer;
 import net.refractions.udig.project.internal.command.navigation.SetViewportBBoxCommand;
+import net.refractions.udig.project.internal.render.impl.ScaleUtils;
 import net.refractions.udig.project.ui.tool.AbstractActionTool;
 import net.refractions.udig.tool.select.SelectPlugin;
 import net.refractions.udig.ui.ProgressManager;
@@ -25,10 +26,9 @@ import net.refractions.udig.ui.ProgressManager;
 import org.geotools.data.DefaultQuery;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.Query;
+import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
-
-import com.vividsolutions.jts.geom.Envelope;
 
 /**
  * Sets the ViewportModel bounds to equal the bounds of the selected features
@@ -51,10 +51,21 @@ public class ZoomSelection extends AbstractActionTool {
             	FeatureSource<SimpleFeatureType, SimpleFeature> resource = featureSource(layer);
                 Query query = new DefaultQuery( resource.getSchema().getTypeName(), layer.getFilter(), 
                         new String[]{resource.getSchema().getGeometryDescriptor().getLocalName()});
-                Envelope bounds = resource.getBounds(query);
+                ReferencedEnvelope bounds = resource.getBounds(query);
                 if( bounds==null ){
-                    bounds=resource.getFeatures(query).getBounds();
+                	ReferencedEnvelope envelope = resource.getFeatures(query).getBounds();
+                	if (envelope != null) {
+                		bounds = new ReferencedEnvelope(envelope, layer.getCRS());
+                	}
                 }
+             // If the selection is a single point the bounds will 
+                // have height == 0 and width == 0. This will break
+                // in ScaleUtils:306. Adding 1 to the extent fixes the problem:
+                if (bounds.getHeight() <= 0 || bounds.getWidth() <= 0) {
+                    bounds.expandBy(1);
+                }
+                bounds = ScaleUtils.fitToMinAndMax(bounds, layer);
+                
                 getContext().sendASyncCommand(new SetViewportBBoxCommand(bounds,
                         layer.getCRS()));
             } catch (IOException e) {
