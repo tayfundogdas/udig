@@ -58,10 +58,10 @@
 			<dependency groupId="org.geotools" artifactId="gt-image" version="${geotools.version}" />
 			<dependency groupId="org.geotools" artifactId="gt-imagemosaic" version="${geotools.version}" />
 			<dependency groupId="org.geotools" artifactId="gt-imageio-ext-gdal" version="${geotools.version}" />
-			<dependency groupId="org.geotools" artifactId="gt-jdbc-db2" version="${geotools.version}" />
+			<dependency groupId="org.geotools.jdbc" artifactId="gt-jdbc-db2" version="${geotools.version}" />
 			<dependency groupId="org.geotools" artifactId="gt-jdbc-mysql" version="${geotools.version}" />
-			<dependency groupId="org.geotools" artifactId="gt-jdbc-oracle" version="${geotools.version}" />
-			<dependency groupId="org.geotools" artifactId="gt-jdbc-postgis" version="${geotools.version}" />
+			<dependency groupId="org.geotools.jdbc" artifactId="gt-jdbc-oracle" version="${geotools.version}" />
+			<dependency groupId="org.geotools.jdbc" artifactId="gt-jdbc-postgis" version="${geotools.version}" />
 			<dependency groupId="org.geotools" artifactId="gt-shapefile" version="${geotools.version}" />
 			<dependency groupId="org.geotools" artifactId="gt-wfs" version="${geotools.version}" />
 			<dependency groupId="org.geotools" artifactId="gt-process" version="${geotools.version}" />
@@ -186,7 +186,8 @@
 			<fileset refid="dependency.fileset" />
 			<mapper type="flatten" />
 		</copy>
-		<antcall target="fix" />
+		<!-- not needed right now --> 
+		<!--<antcall target="fix" /> -->
 		<!--
 		<eclipse.refreshLocal resource="net.refractions.uditype filter textg.libs/lib" depth="infinite"/>
 		-->
@@ -197,6 +198,11 @@
 		<mkdir dir="${lib}" />
 	</target>
 
+	<!-- target to use to "fix" geoapi SNAPSHOT to a consistent format -->
+	<!-- otherwise it appears witha  different name depending on if    -->
+	<!-- it got it locally or from the repmote repository              -->
+	<!-- This is not needed right now as geotools is depending on a    -->
+	<!-- specific GeoAPI tag                                           -->
 	<target name="fix">
 		<move file="${lib}/geoapi-${geoapi.version}.jar" tofile="${lib}/geoapi-2.3-PREVIOUS.jar" verbose="true" failonerror="no" />
 		<move file="${lib}/geoapi-pending-${geoapi.version}.jar" tofile="${lib}/geoapi-pending-2.3-PREVIOUS.jar" verbose="true" failonerror="no" />
