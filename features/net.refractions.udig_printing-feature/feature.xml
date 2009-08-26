@@ -37,10 +37,10 @@
       <import plugin="net.refractions.udig.catalog.ui"/>
       <import plugin="net.refractions.udig.catalog"/>
       <import plugin="net.refractions.udig.style"/>
+      <import feature="net.refractions.udig_application" version="1.0.0"/>
       <import plugin="net.refractions.udig.legend"/>
       <import plugin="net.refractions.udig.style.sld"/>
       <import plugin="com.lowagie.itext"/>
-      <import feature="net.refractions.udig_application" version="1.2.0"/>
    </requires>
 
    <plugin

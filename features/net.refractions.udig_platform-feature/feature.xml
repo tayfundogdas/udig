@@ -168,13 +168,6 @@
          unpack="false"/>
 
    <plugin
-         id="net.refractions.udig.catalog.gml"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="net.refractions.udig.jai.macosx"
          os="macosx"
          download-size="0"
@@ -199,13 +192,6 @@
 
    <plugin
          id="net.refractions.udig.catalog.mysql"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="net.refractions.udig.catalog.mif"
          download-size="0"
          install-size="0"
          version="0.0.0"
