@@ -13,7 +13,8 @@ Export-Package: net.refractions.udig.printing.ui,
  net.refractions.udig.printing.ui.internal.editor.commands,
  net.refractions.udig.printing.ui.internal.editor.figures,
  net.refractions.udig.printing.ui.internal.editor.parts,
- net.refractions.udig.printing.ui.internal.editor.policies
+ net.refractions.udig.printing.ui.internal.editor.policies,
+ net.refractions.udig.printing.ui.internal.template
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.eclipse.gef;visibility:=reexport,
