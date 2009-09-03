@@ -54,7 +54,7 @@ import org.osgi.framework.BundleContext;
  */
 public class Activator implements BundleActivator {
 	
-	public static String ID = "net.refractions.udig.libs";
+	public static String ID = "net.refractions.udig.libs"; //$NON-NLS-1$
 
     public void start(final BundleContext context) throws Exception {
 	    if( Platform.getOS().equals(Platform.OS_WIN32) ){
@@ -95,34 +95,34 @@ public class Activator implements BundleActivator {
         if (monitor == null)
             monitor = new NullProgressMonitor();
 
-        monitor.beginTask("EPSG Database", 100);
+        monitor.beginTask( Messages.Activator_EPSG_DATABASE, 100);
 
         
         searchEPSGProperties( bundle, new SubProgressMonitor(monitor, 20));
         
         loadEPSG(bundle, new SubProgressMonitor(monitor, 60));
 
-        monitor.subTask("coordinate operation definitions");
+        monitor.subTask(Messages.OPERATIONS_DEFINITIONS);
         load(ReferencingFactoryFinder.getCoordinateOperationAuthorityFactories(null));
         monitor.worked(2);
 
-        monitor.subTask("coordinate reference systems");
+        monitor.subTask(Messages.COORDINATE_REFERENCE_SYSTSMS);
         load(ReferencingFactoryFinder.getCRSFactories(null));
         monitor.worked(8);
 
-        monitor.subTask("coordinate systems");
+        monitor.subTask(Messages.COORDINATE_SYSTEMS);
         load(ReferencingFactoryFinder.getCSFactories(null));
         monitor.worked(2);
 
-        monitor.subTask("datum definitions");
+        monitor.subTask(Messages.DATUM_DEFINITIONS);
         load(ReferencingFactoryFinder.getDatumAuthorityFactories(null));
         monitor.worked(2);
 
-        monitor.subTask("datums");
+        monitor.subTask(Messages.DATUMS);
         load(ReferencingFactoryFinder.getDatumFactories(null));
         monitor.worked(2);
 
-        monitor.subTask("math transforms");
+        monitor.subTask(Messages.MATH_TRANSFORMS);
         load(ReferencingFactoryFinder.getMathTransformFactories(null));
         monitor.worked(4);
     }
@@ -152,7 +152,7 @@ public class Activator implements BundleActivator {
 	public static void searchEPSGProperties(Bundle bundle, IProgressMonitor monitor) {
 	    if( monitor == null ) monitor = new NullProgressMonitor();
 		
-	    monitor.beginTask("epsg setup", IProgressMonitor.UNKNOWN );
+	    monitor.beginTask(Messages.EPSG_SETUP, IProgressMonitor.UNKNOWN );
 		try {
 			// go through and check a couple of locations
 	        // for an "epsg.properties" file full of 
@@ -164,9 +164,9 @@ public class Activator implements BundleActivator {
 			if( dataLocation != null ){
 				try {
 	        	    URL url = dataLocation.getURL();
-	        	    URL proposed = new URL( url, "epsg.properties");
-	        	    monitor.subTask("check "+proposed );
-	        	    if( "file".equals(proposed.getProtocol())){
+	        	    URL proposed = new URL( url, "epsg.properties"); //$NON-NLS-1$
+	        	    monitor.subTask(Messages.CHECK+proposed );
+	        	    if( "file".equals(proposed.getProtocol())){ //$NON-NLS-1$
 	        	        File file = new File( proposed.toURI() );
 	        	        if( file.exists() ){
 	        	            epsg = file.toURI().toURL();
@@ -176,7 +176,7 @@ public class Activator implements BundleActivator {
 			    }
 			    catch (Throwable t ){
 			    	if( Platform.inDebugMode()){
-			    		System.out.println( "Could not find data directory epsg.properties");
+			    		System.out.println( "Could not find data directory epsg.properties"); //$NON-NLS-1$
 			    		t.printStackTrace();
 			    	}			        
 			    }
@@ -184,9 +184,9 @@ public class Activator implements BundleActivator {
 			if( epsg == null && configLocaiton != null ){
 	            try {
 	                URL url = configLocaiton.getURL();
-	                URL proposed = new URL( url, "epsg.properties");
-	                monitor.subTask("check "+proposed );
-	                if( "file".equals(proposed.getProtocol())){
+	                URL proposed = new URL( url, "epsg.properties"); //$NON-NLS-1$
+	                monitor.subTask(Messages.Activator_1+proposed );
+	                if( "file".equals(proposed.getProtocol())){ //$NON-NLS-1$
 	                    File file = new File( proposed.toURI() );
 	                    if( file.exists() ){
 	                        epsg = file.toURI().toURL();
@@ -196,44 +196,44 @@ public class Activator implements BundleActivator {
 	            }
 	            catch (Throwable t ){
 	            	if( Platform.inDebugMode()){
-			    		System.out.println( "Could not find configuration epsg.properties");
+			    		System.out.println( "Could not find configuration epsg.properties"); //$NON-NLS-1$
 			    		t.printStackTrace();
 			    	}
 	            }
 			}
 			if (epsg == null){
                 try {
-			        URL internal = bundle.getEntry("epsg.properties");
+			        URL internal = bundle.getEntry("epsg.properties"); //$NON-NLS-1$
 			        URL fileUrl = FileLocator.toFileURL( internal );
 			        epsg = fileUrl.toURI().toURL();                    
 			    }
 			    catch (Throwable t ){
 			    	if( Platform.inDebugMode()){
-			    		System.out.println( "Could not find net.refractions.udig.libs/epsg.properties");
+			    		System.out.println( "Could not find net.refractions.udig.libs/epsg.properties"); //$NON-NLS-1$
 			    		t.printStackTrace();
 			    	}
 	            }		    
 			}
 			
 			if( epsg != null ){
-				monitor.subTask("loading "+epsg);            
+				monitor.subTask(Messages.LOADING+epsg);            
 			    Hints hints = new Hints(Hints.CRS_AUTHORITY_FACTORY, PropertyAuthorityFactory.class);
 			    ReferencingFactoryContainer referencingFactoryContainer = ReferencingFactoryContainer
 	                .instance(hints);
 	
 			    PropertyAuthorityFactory factory = new PropertyAuthorityFactory(
-	                referencingFactoryContainer, Citations.fromName("EPSG"), epsg );
+	                referencingFactoryContainer, Citations.fromName("EPSG"), epsg ); //$NON-NLS-1$
 	
 			    ReferencingFactoryFinder.addAuthorityFactory(factory);
 			    monitor.worked(1);
 			    
-			    monitor.subTask("register "+epsg);
+			    monitor.subTask(Messages.REGISTER+epsg);
 			    ReferencingFactoryFinder.scanForPlugins(); // hook everything up
 			    monitor.worked(10);                
 			}
 			
-			monitor.subTask("initialize database; this may take a few minuets the very first time");
-            CoordinateReferenceSystem wgs84 = CRS.decode("EPSG:4326"); 
+			monitor.subTask(Messages.PLEASE_WAIT);
+            CoordinateReferenceSystem wgs84 = CRS.decode("EPSG:4326");  //$NON-NLS-1$
             if( wgs84 == null){
                 String msg = "Unable to locate EPSG authority for EPSG:4326; consider removing temporary 'GeoTools' directory and trying again."; //$NON-NLS-1$
                 System.out.println( msg );
@@ -249,9 +249,9 @@ public class Activator implements BundleActivator {
 			// Verify EPSG authority configured correctly
 			// if we are in development mode
 			if( Platform.inDevelopmentMode() ){
-			    monitor.subTask("verify epsg definitions");
+			    monitor.subTask("verify epsg definitions"); //$NON-NLS-1$
 				verifyReferencingEpsg();
-				monitor.subTask("verify epsg operations");
+				monitor.subTask("verify epsg operations"); //$NON-NLS-1$
 				verifyReferencingOperation();
 			}
 		}
@@ -267,10 +267,10 @@ public class Activator implements BundleActivator {
 	public static void loadEPSG(Bundle bundle, IProgressMonitor monitor) {
         if( monitor == null ) monitor = new NullProgressMonitor();
         
-        monitor.beginTask("epsg setup", IProgressMonitor.UNKNOWN );
+        monitor.beginTask(Messages.EPSG_SETUP, IProgressMonitor.UNKNOWN );
         try {
-            monitor.subTask("initialize database; this may take a few minuets the very first time");
-            CoordinateReferenceSystem wgs84 = CRS.decode("EPSG:4326"); 
+            monitor.subTask(Messages.PLEASE_WAIT);
+            CoordinateReferenceSystem wgs84 = CRS.decode("EPSG:4326");  //$NON-NLS-1$
             if( wgs84 == null){
                 String msg = "Unable to locate EPSG authority for EPSG:4326; consider removing temporary 'GeoTools' directory and trying again."; //$NON-NLS-1$
                 System.out.println( msg );
@@ -286,9 +286,9 @@ public class Activator implements BundleActivator {
             // Verify EPSG authority configured correctly
             // if we are in development mode
             if( Platform.inDevelopmentMode() ){
-                monitor.subTask("verify epsg definitions");
+                monitor.subTask("verify epsg definitions"); //$NON-NLS-1$
                 verifyReferencingEpsg();
-                monitor.subTask("verify epsg operations");
+                monitor.subTask("verify epsg operations"); //$NON-NLS-1$
                 verifyReferencingOperation();
             }
         }
