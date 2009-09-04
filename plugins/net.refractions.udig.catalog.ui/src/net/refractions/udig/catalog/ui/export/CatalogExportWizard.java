@@ -51,6 +51,7 @@ import org.eclipse.jface.viewers.TreePath;
 import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.ui.IExportWizard;
 import org.eclipse.ui.IViewPart;
@@ -155,7 +156,7 @@ public class CatalogExportWizard extends WorkflowWizard implements IExportWizard
     private boolean exportResource(Data data, IProgressMonitor monitor ) {
         if( monitor == null ) monitor = new NullProgressMonitor();
         
-        WizardDialog wizardDialog = (WizardDialog) getContainer();
+        final WizardDialog wizardDialog = (WizardDialog) getContainer();
         IGeoResource resource = data.getResource();
 
         try {
@@ -208,9 +209,13 @@ public class CatalogExportWizard extends WorkflowWizard implements IExportWizard
                     addToCatalog(file, data);
                 }
                 else {
-                    String msg = "No features were exported; did you select anything?"; //$NON-NLS-1$
-                    CatalogUIPlugin.log(msg, null);
-                    wizardDialog.setErrorMessage(msg);
+                    Display.getDefault().asyncExec(new Runnable(){
+                        public void run() {
+                            String msg = "No features were exported; did you select anything?"; //$NON-NLS-1$
+                            CatalogUIPlugin.log(msg, null);
+                            wizardDialog.setErrorMessage(msg);
+                        }
+                    });
                     return false;
                 }
             }
@@ -609,7 +614,7 @@ public class CatalogExportWizard extends WorkflowWizard implements IExportWizard
         FeatureStore<SimpleFeatureType, SimpleFeature> featureSource = (FeatureStore<SimpleFeatureType, SimpleFeature>) ds.getFeatureSource();        
         List<FeatureId> ids = featureSource.addFeatures(fc);
         count[0] = ids.size();
-        return count[0] > 0;
+        return count[0] >= 0;
     }
 
     private boolean canWrite( File file ) throws IOException {
