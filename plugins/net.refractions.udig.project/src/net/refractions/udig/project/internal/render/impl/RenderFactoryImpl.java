@@ -78,11 +78,6 @@ public class RenderFactoryImpl extends EFactoryImpl implements RenderFactory {
         return new RenderFactoryImpl();
     }
 
-    private static final String CARTESIAN_2D = "CARTESIAN_2D";
-    private static final String CARTESIAN_3D = "CARTESIAN_3D";
-    private static final String GENERIC_2D = "GENERIC_2D";
-    private static final String GENERIC_3D = "GENERIC_3D";
-
     /**
      * Creates an instance of the factory.
      * <!-- begin-user-doc --> <!--
@@ -560,21 +555,9 @@ public class RenderFactoryImpl extends EFactoryImpl implements RenderFactory {
      */
     public CoordinateReferenceSystem createCoordinateReferenceSystemFromString(
             EDataType eDataType, String initialValue ) {
-        if (initialValue == CARTESIAN_2D) {
-            return DefaultEngineeringCRS.CARTESIAN_2D;
-        } else if (initialValue == CARTESIAN_3D) {
-            return DefaultEngineeringCRS.CARTESIAN_3D;
-        } else if (initialValue == GENERIC_2D) {
-            return DefaultEngineeringCRS.GENERIC_2D;
-        } else if (initialValue == GENERIC_3D) {
-            return DefaultEngineeringCRS.GENERIC_3D;
-        }
 
-        try {
-            return ReferencingFactoryFinder.getCRSFactory(null).createFromWKT(initialValue);
-        } catch (Exception e) {
-            return ViewportModelImpl.getDefaultCRS();
-        }
+        return (CoordinateReferenceSystem) ProjectFactory.eINSTANCE.createFromString(
+                ProjectPackage.eINSTANCE.getCoordinateReferenceSystem(), initialValue);
     }
 
     /**
@@ -584,21 +567,8 @@ public class RenderFactoryImpl extends EFactoryImpl implements RenderFactory {
      */
     public String convertCoordinateReferenceSystemToString( EDataType eDataType,
             Object instanceValue ) {
-        try {
-            if (instanceValue == DefaultEngineeringCRS.CARTESIAN_2D) {
-                return CARTESIAN_2D;
-            } else if (instanceValue == DefaultEngineeringCRS.CARTESIAN_3D) {
-                return CARTESIAN_3D;
-            } else if (instanceValue == DefaultEngineeringCRS.GENERIC_2D) {
-                return GENERIC_2D;
-            } else if (instanceValue == DefaultEngineeringCRS.GENERIC_3D) {
-                return GENERIC_3D;
-            }
-            return ((CoordinateReferenceSystem) instanceValue).toWKT().replace("\n", " "); //$NON-NLS-1$ //$NON-NLS-2$
-        } catch (Exception e) {
-            ProjectPlugin.log("Couldn't write crs"); //$NON-NLS-1$
-            return DefaultGeographicCRS.WGS84.toWKT().replace("\n", " "); //$NON-NLS-1$//$NON-NLS-2$
-        }
+        return ProjectFactory.eINSTANCE.convertToString(ProjectPackage.eINSTANCE
+                .getCoordinateReferenceSystem(), instanceValue);
     }
 
     /**
