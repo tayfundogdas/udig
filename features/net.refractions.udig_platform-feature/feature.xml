@@ -149,12 +149,6 @@
          version="0.0.0"/>
 
    <plugin
-         id="net.refractions.udig.libs.postgis"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"/>
-
-   <plugin
          id="net.refractions.udig.libs.oracle"
          download-size="0"
          install-size="0"
