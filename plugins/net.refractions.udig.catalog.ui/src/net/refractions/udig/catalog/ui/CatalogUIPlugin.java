@@ -539,41 +539,6 @@ class HandleLifecycle /*implements Startable, Disposable */ {
         CatalogPlugin.addListener(listener);
     }
 
-    /**
-     * A container for collaboration, or null if handle is out of scope.
-     * 
-     * @return The container associated with handle
-     *
-    public MutablePicoContainer getContainer() {
-        IResolve resolve = listener.getHandle();
-        if (resolve == null)
-            return null;
-
-        if (container == null) {
-            synchronized (resolve) {
-                // check so see that you were not queued for double creation
-                if (container == null) {
-                    // This line does it ... careful to only call it once!
-                    container = makeChildContainer();
-                }
-            }
-        }
-        return container;
-    }
-    */
-    
-    /**
-     * Create container, must only be called once
-     * 
-     * @return created container
-     *
-    protected MutablePicoContainer makeChildContainer() {
-        if (container != null) {
-            throw new IllegalStateException(Messages.CatalogUIPlugin_childContainerException); 
-        }
-        return CatalogUIPlugin.getContainer().makeChildContainer();
-    }
-    */
     /** We have just been created, lets listen to the catalog */
     public void start() {
         CatalogPlugin.addListener(listener);

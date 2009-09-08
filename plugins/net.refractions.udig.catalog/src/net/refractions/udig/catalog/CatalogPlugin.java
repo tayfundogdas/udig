@@ -319,14 +319,13 @@ public class CatalogPlugin extends Plugin {
      * 
      * @param data
      * @return a URL if it can find one, or null otherwise
+     * @deprecated Please use ID.cast( data ).toURL();
      */
     public static URL locateURL( Object data ) {
-        if (data == null)
-            return null;
-
-        return toURL(data);
+        ID id = net.refractions.udig.catalog.ID.cast( data );
+        return id.toURL();
     }
-    
+    /*
     private static URL toURL( Object data ) {
         URL url = null;
         if (data instanceof String) {
@@ -365,6 +364,7 @@ public class CatalogPlugin extends Plugin {
 
         return url;
     }
+    */
 
     /**
      * Logs the Throwable in the plugin's log.
