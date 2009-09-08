@@ -76,13 +76,16 @@ public class DataConnectionPage extends AbstractUDIGImportPage implements Listen
     public Map<String, Serializable> getParams() {
         
         Map<String, Serializable> params = new HashMap<String, Serializable>();
-        params.put(dialect().hostParam.key, userHostPage.getHost());
-        params.put(dialect().portParam.key, userHostPage.getPort());
-        params.put(dialect().usernameParam.key, userHostPage.getUsername());
-        params.put(dialect().passwordParam.key, userHostPage.getPassword());
-        params.put(dialect().databaseParam.key, database.getText());
-        if ((Serializable)dialect().schemaParam != null){
-        	params.put(dialect().schemaParam.key, (Serializable) dialect().schemaParam.sample);
+        DatabaseServiceDialect dialect = dialect();
+        
+        params.put(dialect.hostParam.key, userHostPage.getHost());
+        params.put(dialect.portParam.key, userHostPage.getPort());
+        params.put(dialect.usernameParam.key, userHostPage.getUsername());
+        params.put(dialect.passwordParam.key, userHostPage.getPassword());
+        params.put(dialect.databaseParam.key, database.getText());
+        
+        if( dialect.schemaParam != null && dialect.schemaParam.key != null ){
+        	params.put(dialect().schemaParam.key, (Serializable) dialect.schemaParam.sample);
         }
         params.put(dialect().typeParam.key, (Serializable) dialect().typeParam.sample);
         

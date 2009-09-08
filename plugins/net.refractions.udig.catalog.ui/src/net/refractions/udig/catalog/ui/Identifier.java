@@ -40,6 +40,9 @@ public class Identifier {
         String HOST = url.getHost();
         String PROTOCOL = url.getProtocol();
         String PATH = url.getPath();
+        if ("mapgraphic".equals(PROTOCOL)){
+            return true; // we are hitting some mangled url
+        }
         if (!"http".equals(PROTOCOL))return false; //$NON-NLS-1$
         if (!"localhost".equals(HOST))return false; //$NON-NLS-1$
 
