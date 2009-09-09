@@ -18,6 +18,7 @@ package net.refractions.udig.catalog.internal.oracle;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -36,6 +37,7 @@ import net.refractions.udig.catalog.internal.CatalogImpl;
 import net.refractions.udig.catalog.internal.ResolveChangeEvent;
 import net.refractions.udig.catalog.internal.ResolveDelta;
 import net.refractions.udig.catalog.oracle.internal.Messages;
+import net.refractions.udig.core.internal.CorePlugin;
 import net.refractions.udig.ui.ErrorManager;
 import net.refractions.udig.ui.UDIGDisplaySafeLock;
 
@@ -56,7 +58,17 @@ public class OracleServiceImpl extends IService {
     private URL url = null;
     private Map<String,Serializable> params = null;
     public OracleServiceImpl(URL arg1, Map<String,Serializable> arg2){
-        url = arg1;
+        if( arg1 == null ){
+            String jdbc_url = OracleServiceExtension.getJDBCUrl(arg2);
+            try {
+                url = new URL(null, jdbc_url, CorePlugin.RELAXED_HANDLER);
+            } catch (MalformedURLException e) {
+                throw new NullPointerException("id provided and params could not be used to make one");
+            }            
+        }
+        else {
+            url = arg1;
+        }
         params = arg2;
         checkPort(params);
     }

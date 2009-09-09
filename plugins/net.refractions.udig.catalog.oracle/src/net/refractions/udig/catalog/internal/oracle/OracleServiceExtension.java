@@ -16,7 +16,9 @@
  */
 package net.refractions.udig.catalog.internal.oracle;
 
+import java.io.IOException;
 import java.io.Serializable;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -24,6 +26,7 @@ import java.util.Map;
 import net.refractions.udig.catalog.AbstractDataStoreServiceExtension;
 import net.refractions.udig.catalog.ServiceExtension2;
 import net.refractions.udig.catalog.oracle.internal.Messages;
+import net.refractions.udig.core.internal.CorePlugin;
 
 import org.eclipse.core.runtime.Platform;
 import org.geotools.data.DataStoreFactorySpi;
@@ -68,6 +71,17 @@ public class OracleServiceExtension extends AbstractDataStoreServiceExtension
                         + unexpected, unexpected);
             }
             return null; // the factory cannot really use these parameters
+        }
+        if( id == null ){
+            String jdbc_url = getJDBCUrl( params );
+            if( jdbc_url == null ){
+                return null; // parameters are not sufficent                 
+            }
+            try {
+                id = new URL(null, jdbc_url, CorePlugin.RELAXED_HANDLER);
+            } catch (MalformedURLException e) {
+                return null; // parameters are not sufficent                 
+            }
         }
         /*
         if (id == null) {
@@ -137,6 +151,27 @@ public class OracleServiceExtension extends AbstractDataStoreServiceExtension
         return factory;
     }
 
+    /** Create a "jdbc_url" from the provided parameters */
+    static String getJDBCUrl(Map<String,Serializable> params)  {
+        final String JDBC_PATH = "jdbc:oracle:thin:@";
+        try {
+            String host = (String) OracleNGDataStoreFactory.HOST.lookUp(params);
+            String db = (String) OracleNGDataStoreFactory.DATABASE.lookUp(params);
+            int port = (Integer) OracleNGDataStoreFactory.PORT.lookUp(params);
+            if( db.startsWith("(") ){
+                return JDBC_PATH + db;
+            }
+            else if( db.startsWith("/") ){
+                return JDBC_PATH + "//" + host + ":" + port + db;
+            }
+            else {
+                return JDBC_PATH + host + ":" + port + ":" + db;
+            }
+        } catch (IOException e) {
+            return null; // not for us then
+        }
+    }
+    
     /**
      * A couple quick checks on the url This should perhaps do more, but I can't think of a good
      * test that will tell me without a doubt that the url is an Oracle url.
