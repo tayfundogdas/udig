@@ -333,6 +333,9 @@ public class ID implements Serializable {
         }
         return false;
     }
+    /**
+     * @return true if ID refers to a web feature server
+     */
     public boolean isWFS() {
         if (url == null){
             return false;
@@ -351,14 +354,32 @@ public class ID implements Serializable {
         }
         return false;
     }
+    /**
+     * @return true if ID refers to a database (ie is a jdbc url)
+     */
     public boolean isJDBC() {
-        return id.startsWith("jdbc:"); //$NON-NLS-1$
+        return id.startsWith("jdbc"); //$NON-NLS-1$
         // if( url != null){
         // String PROTOCOL = url.getProtocol();
         // String HOST = url.getHost();
         //            return "http".equals(PROTOCOL) && HOST != null && HOST.indexOf(".jdbc") != -1; //$NON-NLS-1$ //$NON-NLS-2$
         // }
     }
+    /**
+     * @return true url identifies an in memory resource
+     */
+    public boolean isMemory() {
+        String HOST = url.getHost();
+        String PROTOCOL = url.getProtocol();
+        String PATH = url.getPath();
+        if (!"http".equals(PROTOCOL))return false; //$NON-NLS-1$
+        if (!"localhost".equals(HOST))return false; //$NON-NLS-1$
+
+        if (!"/scratch".equals(PATH))return false; //$NON-NLS-1$
+
+        return true;
+    }
+    
     public String labelResource() {
         if (url == null) {
             return id;
