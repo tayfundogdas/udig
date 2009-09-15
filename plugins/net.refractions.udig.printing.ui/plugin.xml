@@ -196,7 +196,7 @@
             <perspectiveExtension targetID="net.refractions.udig.ui.mapPerspective">
                <actionSet id="net.refractions.udig.printing.ui.mapGraphic.action"/>
             </perspectiveExtension>
-            <perspectiveExtension targetID="net.refractions.udig.ui.alternateMapPerspective">
+            <perspectiveExtension targetID="net.refractions.udig.ui.stylePerspective">
                <actionSet id="net.refractions.udig.printing.ui.mapGraphic.action"/>
             </perspectiveExtension>
          </extension>

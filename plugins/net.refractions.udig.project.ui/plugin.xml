@@ -158,7 +158,7 @@
          <actionSet id="net.refractions.udig.project.ui.renameSet"/>
          <actionSet id="net.refractions.udig.project.ui.OpenProjectSet"/>
       </perspectiveExtension>
-      <perspectiveExtension targetID="net.refractions.udig.ui.alternateMapPerspective">
+      <perspectiveExtension targetID="net.refractions.udig.ui.stylePerspective">
          <actionSet id="net.refractions.udig.project.ui.LayerActions"/>
          <actionSet id="net.refractions.udig.project.ui.renameSet"/>
          <actionSet id="net.refractions.udig.project.ui.OpenProjectSet"/>
