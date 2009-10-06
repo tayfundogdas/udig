@@ -17,6 +17,7 @@
 package net.refractions.udig.ui.graphics;
 
 import org.eclipse.swt.graphics.FontData;
+import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.Filters;
 import org.geotools.styling.FeatureTypeStyle;
 import org.geotools.styling.Font;
@@ -25,9 +26,11 @@ import org.geotools.styling.RasterSymbolizer;
 import org.geotools.styling.Rule;
 import org.geotools.styling.SLD;
 import org.geotools.styling.Style;
+import org.geotools.styling.StyleFactory;
 import org.geotools.styling.StyledLayerDescriptor;
 import org.geotools.styling.Symbolizer;
 import org.geotools.styling.TextSymbolizer;
+import org.opengis.filter.FilterFactory;
 import org.opengis.filter.expression.Expression;
 
 /**
@@ -47,6 +50,8 @@ import org.opengis.filter.expression.Expression;
  * @since 0.7.0
  */
 public class SLDs extends SLD {
+    private static StyleFactory sf = CommonFactoryFinder.getStyleFactory(null);
+    private static FilterFactory ff = CommonFactoryFinder.getFilterFactory(null);
 
     public static final double ALIGN_LEFT = 1.0;
     public static final double ALIGN_CENTER = 0.5;
@@ -190,10 +195,6 @@ public class SLDs extends SLD {
         return null;
     }
     
-    public static PointPlacement getPlacement(double horizAlign, double vertAlign, double rotation) {
-        return builder.createPointPlacement(horizAlign, vertAlign, rotation);
-    }
-
     /**
      * The type name that can be used in an SLD in the featuretypestyle that matches all feature types.
      */
