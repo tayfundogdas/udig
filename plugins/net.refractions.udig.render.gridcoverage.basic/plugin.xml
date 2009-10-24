@@ -7,7 +7,7 @@
          name="BasicGridCoverageRenderer"
          point="net.refractions.udig.project.renderer">
       <renderer
-            class="net.refractions.udig.render.internal.gridcoverage.basic.BasicGridCoverageMetricsFactory">
+            class="net.refractions.udig.render.internal.gridcoverage.basic.GridCoverageReaderMetricsFactory">
          <description>
             %renderer.desc
          </description>
