@@ -273,9 +273,9 @@ public class OracleSpatialWizardPage extends AbstractProprietaryDatastoreWizardP
                         params.put(OracleNGDataStoreFactory.PORT.key,
                                 (Integer) OracleNGDataStoreFactory.PORT.parse(portText));
                         params.put(OracleNGDataStoreFactory.DATABASE.key, db);
+                        params.put(OracleNGDataStoreFactory.USER.key, userText );
+                        params.put(OracleNGDataStoreFactory.PASSWD.key, passText );
                         dataSource = OracleServiceExtension.getFactory().createDataSource(params);
-                        dataSource.setUsername(userText);
-                        dataSource.setPassword(passText);
 
                         // Is this needed/useful?
                         DriverManager.setLoginTimeout(3);

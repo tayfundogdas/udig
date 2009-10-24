@@ -119,7 +119,7 @@ public class WMSCConnectionFactory extends UDIGConnectionFactory {
 
    
     /**
-    * Convert "data" to a wmsc capabilities url
+    * Convert "data" to a wmsc capabilities url.
     * <p>
     * Candidates for conversion are:
     * <ul>
@@ -141,15 +141,13 @@ public class WMSCConnectionFactory extends UDIGConnectionFactory {
        if( data instanceof IResolve ){
            return toCapabilitiesURL( (IResolve) data );
        }
-       else if( data instanceof URL ){
-           return toCapabilitiesURL( (URL) data );
-       }
        else if( ID.cast(data) != null ){
-           return toCapabilitiesURL( ID.cast(data) );
+           ID id = ID.cast( data );
+           if( id.toURL() != null ){
+               return toCapabilitiesURL( id.toURL() );
+           }
        }
-       else {
-           return null; // no idea what this should be
-       }
+       return null; // no idea what this should be       
    }
 
    static URL toCapabilitiesURL( IResolve resolve ){

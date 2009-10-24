@@ -16,6 +16,8 @@ package net.refractions.udig.catalog.rasterings;
 
 import java.io.IOException;
 
+import net.refractions.udig.catalog.IGeoResource;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.geotools.coverage.grid.GeneralGridGeometry;
 import org.geotools.coverage.grid.GridCoverage2D;
@@ -28,17 +30,24 @@ import org.opengis.parameter.ParameterValue;
 import org.opengis.parameter.ParameterValueGroup;
 
 /**
- * Flag to indicate that the coverage must be kept in memory.  And time should not be spent reading it from disk for rendering and so on.
+ * Flag to indicate that the coverage must be kept in memory.
+ * And time should not be spent reading it from disk for rendering and so on.
+ * <p>
+ * The IGeoResource should resolve to:
+ * <ul>
+ * <li>ParameterValueGroup - if provided USE_JAI_IMAGEREAD will be added</li>
+ * <li>AbstractGridCoverage2DReader</li>
+ * <ul>
  * 
  * @author jeichar
  * @since 1.1.0
  */
 @SuppressWarnings("deprecation")
 public class GridCoverageLoader {
-    
-    protected AbstractRasterGeoResource resource;
+    /** Resource being loaded ...*/
+    protected IGeoResource resource;
 
-    public GridCoverageLoader(AbstractRasterGeoResource resource) {
+    public GridCoverageLoader(IGeoResource resource) {
         this.resource = resource;
     }
     
@@ -47,7 +56,7 @@ public class GridCoverageLoader {
         ParameterValueGroup group = resource.resolve(ParameterValueGroup.class, monitor);
 
         AbstractGridCoverage2DReader reader = (AbstractGridCoverage2DReader) resource.resolve(
-                GridCoverageReader.class, monitor);
+                AbstractGridCoverage2DReader.class, monitor);
         if (group == null)
             group = reader.getFormat().getReadParameters();
         else {

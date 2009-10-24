@@ -69,7 +69,7 @@ import com.vividsolutions.jts.geom.Envelope;
  * @author Andrea Aime
  * @version $Revision: 1.9 $
  */
-public class BasicGridCoverageRenderer extends RendererImpl {
+public class MemoryGridCoverageRenderer extends RendererImpl {
 
     private GridCoverageRenderer renderer;
 
@@ -110,7 +110,12 @@ public class BasicGridCoverageRenderer extends RendererImpl {
             currentContext.setStatus(ILayer.WORKING);
             setState( STARTING );
             
-            GridCoverage2D coverage = (GridCoverage2D) geoResource.resolve(GridCoverageLoader.class, monitor).load(geom, monitor);
+            GridCoverageLoader loader = geoResource.resolve(GridCoverageLoader.class, monitor);
+            if( loader == null ){
+                // unable to load in memory
+                return;
+            }
+            GridCoverage2D coverage = (GridCoverage2D) loader.load(geom, monitor);
 
             if(coverage!=null)
 			{
@@ -181,7 +186,7 @@ public class BasicGridCoverageRenderer extends RendererImpl {
         
         return style;
     }
-    
+    /*
     public synchronized void render2( Graphics2D graphics, IProgressMonitor monitor )
             throws RenderException {
         State state = null;
@@ -192,7 +197,7 @@ public class BasicGridCoverageRenderer extends RendererImpl {
         }
 
         doRender(renderer, graphics, state);
-    }
+    }*/
     /**
      * Renders a GridCoverage
      * 
