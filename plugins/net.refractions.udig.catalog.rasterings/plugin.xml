@@ -12,9 +12,6 @@
          <resolve
                type="org.geotools.coverage.grid.io.AbstractGridCoverage2DReader">
          </resolve>
-         <resolve
-               type="net.refractions.udig.catalog.rasterings.GridCoverageLoader">
-         </resolve>         
       </factory>
    </extension>
 

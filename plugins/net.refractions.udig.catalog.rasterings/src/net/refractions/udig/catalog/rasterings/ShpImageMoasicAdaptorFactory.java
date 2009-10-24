@@ -41,12 +41,7 @@ public class ShpImageMoasicAdaptorFactory implements IResolveAdapterFactory {
 		
 		if( adapter.isAssignableFrom(ImageMosaicReader.class)){
 			return toGridCoverage2DReader( resolve, monitor);
-		}
-		if( adapter.isAssignableFrom(GridCoverageLoader.class)){
-		    // load it all into memory!
-	        // this may out of memory if it is too big for memory!
-		    return new GridCoverageLoader( (IGeoResource) resolve ); 
-		}
+		}		
 		return null;
 	}
 
@@ -59,10 +54,6 @@ public class ShpImageMoasicAdaptorFactory implements IResolveAdapterFactory {
 	public boolean canAdapt(IResolve resolve, Class<? extends Object> adapter) {
 		if (adapter.isAssignableFrom(ImageMosaicReader.class)) {
 			File file = toShpFile(resolve);
-            return file!=null  && format.accepts(file);
-        }
-		if (adapter.isAssignableFrom(GridCoverageLoader.class)) {
-            File file = toShpFile(resolve);
             return file!=null  && format.accepts(file);
         }
         return false;
