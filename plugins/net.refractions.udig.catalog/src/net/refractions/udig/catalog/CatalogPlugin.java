@@ -323,6 +323,9 @@ public class CatalogPlugin extends Plugin {
      */
     public static URL locateURL( Object data ) {
         ID id = net.refractions.udig.catalog.ID.cast( data );
+        if( id == null ){
+            return null;
+        }
         return id.toURL();
     }
     /*

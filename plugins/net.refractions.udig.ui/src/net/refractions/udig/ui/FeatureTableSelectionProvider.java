@@ -376,9 +376,12 @@ class FeatureTableSelectionProvider implements ISelectionProvider {
             } else {
                 DefaultQuery defaultQuery = new DefaultQuery(source.getSchema().getName().getLocalPart(),
                         filter, new String[0]);
+                // temporary hack to fix shapefile
+                defaultQuery.setPropertyNames( Query.ALL_NAMES );
+                
                 // get features that are just fids no attributes
                 FeatureCollection<SimpleFeatureType, SimpleFeature>  features = source.getFeatures(defaultQuery);
-
+                System.out.println("size:"+features.size());
                 long start=System.currentTimeMillis();
                 
                 FeatureIterator<SimpleFeature> featureIterator = features.features();
