@@ -694,7 +694,13 @@ public class MapEditor extends EditorPart implements IDropTargetProvider, IAdapt
         final ScopedPreferenceStore store = ProjectPlugin.getPlugin().getPreferenceStore();
         if (!PlatformUI.getWorkbench().isClosing()) {
             ShutdownTaskList.instance().removePreShutdownTask(shutdownTask);
-            getRenderManager().dispose();
+            try {
+                // kill rending now - even if it is moving
+                getRenderManager().dispose();
+            }
+            catch (Throwable t ){
+                ProjectUIPlugin.log("Shutting down rendering - "+ t, null );
+            }
             getMap().getEditManagerInternal().setEditFeature(null, null);
             try {
                 PlatformGIS.run(new ISafeRunnable(){
