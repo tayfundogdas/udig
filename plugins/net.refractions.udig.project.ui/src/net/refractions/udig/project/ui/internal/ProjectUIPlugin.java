@@ -299,8 +299,16 @@ public class ProjectUIPlugin extends AbstractUIPlugin {
         return getDefault().isDebugging()
                 && "true".equalsIgnoreCase(Platform.getDebugOption(trace)); //$NON-NLS-1$    
     }
-
+    /**
+     * The delay used to determine double click speed.
+     * <p>
+     * This value is hardcoded to 1000ms right now; we need to make it a preference setting
+     * for those poor no-button macbook users he cannot otherwise double click in the same
+     * location!
+     * </p>
+     * @return 1000 (milliseconds)
+     */
     public int getDoubleClickSpeed() {
-        return 400;
+        return 1000; // TODO: make preference setting
     }
 }

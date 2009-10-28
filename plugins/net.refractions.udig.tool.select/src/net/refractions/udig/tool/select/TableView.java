@@ -197,6 +197,10 @@ public class TableView extends ViewPart implements ISelectionProvider, IUDIGView
             if (!(selection instanceof IStructuredSelection)){
                 return;
             }
+            if( part == getSite().getPart() ){
+                // we are swapping to ourself!
+                return; // ignore
+            }
             
             Object selected = ((IStructuredSelection) selection).getFirstElement();
 
