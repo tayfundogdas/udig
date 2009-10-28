@@ -767,7 +767,7 @@ public class ApplicationGIS {
     	IProgressMonitor monitor = params.monitor;
         final Map map = (Map) EcoreUtil.copy((EObject) params.toDraw);
         
-        map.getBlackboard().addAll(drawMapParams.toDraw.getBlackboard());
+        map.getBlackboard().addAll(drawMapParams.toDraw.getBlackboard());        
         for (int i = 0; i < map.getMapLayers().size(); i++) {
             ILayer source = params.toDraw.getMapLayers().get(i);
             Layer dest = map.getLayersInternal().get(i);

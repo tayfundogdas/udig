@@ -27,11 +27,11 @@
 	<classpathentry exported="true" kind="lib" path="lib/geoapi-pending-2.3-M1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/google-collect-snapshot-20080321.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/gt-api-2.6.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/gt-arcgrid-2.6.0.jar" sourcepath="/Users/jody/java/geotools/2.6.0/modules/library/main"/>
+	<classpathentry exported="true" kind="lib" path="lib/gt-arcgrid-2.6.0.jar" sourcepath="/Users/jody/java/geotools/2.6.x/modules/library/main"/>
 	<classpathentry exported="true" kind="lib" path="lib/gt-arcsde-2.6.0.jar" sourcepath="/Users/jody/java/geotools/2.6.0/modules/library/jdbc"/>
 	<classpathentry exported="true" kind="lib" path="lib/gt-arcsde-common-2.6.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/gt-brewer-2.6.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/gt-charts-2.6.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/gt-charts-2.6.0.jar" sourcepath="/Users/jody/java/geotools/2.6.x/modules/library/render/src/main/java"/>
 	<classpathentry exported="true" kind="lib" path="lib/gt-coverage-2.6.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/gt-cql-2.6.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/gt-data-2.6.0.jar"/>

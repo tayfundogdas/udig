@@ -138,7 +138,7 @@ public class MapGraphicResource extends IGeoResource {
     }
 
     class MapGraphicResourceInfo extends IGeoResourceInfo {
-
+        
         public MapGraphicResourceInfo( IConfigurationElement element ) {
             String iconPath = element.getAttribute("icon"); //$NON-NLS-1$
             if (iconPath != null && iconPath.length() > 0)

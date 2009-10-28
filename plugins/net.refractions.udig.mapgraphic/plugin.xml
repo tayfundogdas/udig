@@ -134,6 +134,7 @@
             name="%mapgraphic.grid.name"/>
       <mapGraphic
             class="net.refractions.udig.mapgraphic.northarrow.NorthArrowMapGraphic"
+            icon="icons/obj16/graphic_obj.gif"
             id="net.refractions.udig.mapgraphic.NorthArrowMapGraphic"
             name="North Arrow">
       </mapGraphic>

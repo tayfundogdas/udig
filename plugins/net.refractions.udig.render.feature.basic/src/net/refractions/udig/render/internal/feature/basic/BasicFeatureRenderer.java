@@ -164,14 +164,14 @@ public class BasicFeatureRenderer extends RendererImpl {
 		boolean transparency = store
 				.getBoolean(PreferenceConstants.P_TRANSPARENCY);
 		try{
-        if (style != null) {
-            DuplicatingStyleVisitor duplicator = new DuplicatingStyleVisitor();
-            style.accept(duplicator);
-            style=(Style)duplicator.getCopy();
-            if (!transparency) {
-                style = removeTransparency(style);
-            }
-        }
+		    if (!transparency) {
+                if (style != null) {
+                    DuplicatingStyleVisitor duplicator = new DuplicatingStyleVisitor();
+                    style.accept(duplicator);
+                    style=(Style) duplicator.getCopy();
+                    style = removeTransparency(style);                    
+                }
+		    }
 		}catch (Throwable e) {
 		    RendererPlugin.log("Error duplicating style for transparency setting", e); //$NON-NLS-1$
         }
