@@ -700,6 +700,12 @@
            class="net.refractions.udig.project.ui.preferences.StylePreferencePage"
            id="net.refractions.udig.project.ui.preferences.style"
            name="%style.preferences.name"/>
+     <page
+           category="net.refractions.udig.project.ui.preferences.tool"
+           class="net.refractions.udig.project.ui.MousePreferences"
+           id="net.refractions.udig.project.ui.preferences.mouse"
+           name="%tool.mouse.preferences.name">
+     </page>
    </extension>
    <extension
         point="org.eclipse.ui.exportWizards">

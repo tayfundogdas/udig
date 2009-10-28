@@ -307,6 +307,9 @@ public class Messages extends NLS {
     public static String MapSelectorPageWithScaleColumn_scale;
     public static String MapSelectorPageWithScaleColumn_scaleColumnText;
     
+    public static String mousePreferences_setvalue;
+    public static String mousePreferences_title;
+
     static {
 		// initialize resource bundle
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);
