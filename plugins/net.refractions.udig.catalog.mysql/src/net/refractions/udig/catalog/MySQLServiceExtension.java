@@ -93,7 +93,7 @@ public class MySQLServiceExtension extends AbstractDataStoreServiceExtension
         ParamInfo info=parseParamInfo(url);
         
         Map<String, Serializable> params = new HashMap<String, Serializable>();
-        params.put(MySQLDataStoreFactory.DBTYPE.key, "mysql");  //$NON-NLS-1$
+        params.put(MySQLDataStoreFactory.DBTYPE.key, (Serializable)MySQLDataStoreFactory.DBTYPE.sample);  //$NON-NLS-1$
         params.put(MySQLDataStoreFactory.HOST.key, info.host); 
         params.put(MySQLDataStoreFactory.PORT.key, info.the_port.toString() ); 
         params.put(MySQLDataStoreFactory.DATABASE.key, info.the_database); 

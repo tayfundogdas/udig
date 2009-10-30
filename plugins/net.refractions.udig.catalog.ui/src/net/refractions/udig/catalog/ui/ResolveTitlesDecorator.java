@@ -141,7 +141,10 @@ public class ResolveTitlesDecorator implements ILabelDecorator, IColorDecorator,
         }
 
     };
-
+    
+    /**
+     * Prevent fetching of remote icons (localhost and files are okay)
+     */
     private boolean decorateImages;
 
     /**
@@ -152,6 +155,10 @@ public class ResolveTitlesDecorator implements ILabelDecorator, IColorDecorator,
     public ResolveTitlesDecorator( ResolveLabelProviderSimple resolveLabelProviderSimple ) {
         this( resolveLabelProviderSimple, false);
     }
+    /**
+     * @param resolveLabelProviderSimple
+     * @param decorateImages
+     */
     public ResolveTitlesDecorator( ResolveLabelProviderSimple resolveLabelProviderSimple, boolean decorateImages ) {
         this.source = resolveLabelProviderSimple;
         this.decorateImages=decorateImages;
@@ -195,10 +202,12 @@ public class ResolveTitlesDecorator implements ILabelDecorator, IColorDecorator,
                 imageRegistry.remove(resolve.getIdentifier().toString());
         }
         
-        // we tried to look up a cached version... If not around and viewer doesn't want decorated images then we'll return. 
-        if( !decorateImages )
+        // we tried to look up a cached version... If not around and viewer doesn't want decorated images then we'll return.
+        
+        if( !resolve.getID().isLocal() && !decorateImages ){
             return null;
-
+        }
+        
         // put an element in the map so that it will not be loaded again.
         images.put(resolve, null);
 

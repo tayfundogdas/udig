@@ -16,21 +16,14 @@
  */
 package net.refractions.udig.catalog.internal.oracle.ui;
 
-import java.io.File;
 import java.io.Serializable;
-import java.net.URI;
 import java.net.URL;
 import java.util.Map;
 
-import org.geotools.data.oracle.OracleNGDataStoreFactory;
-
-import net.refractions.udig.catalog.CatalogPlugin;
 import net.refractions.udig.catalog.ID;
-import net.refractions.udig.catalog.IGeoResource;
-import net.refractions.udig.catalog.IResolve;
-import net.refractions.udig.catalog.IService;
 import net.refractions.udig.catalog.ServiceExtension2;
 import net.refractions.udig.catalog.internal.oracle.OracleServiceExtension;
+import net.refractions.udig.catalog.internal.oracle.OracleServiceImpl;
 import net.refractions.udig.catalog.ui.AbstractUDIGConnectionFactory;
 
 /**
@@ -42,6 +35,10 @@ public class OracleSpatialConnectionFactory extends AbstractUDIGConnectionFactor
 
     @Override
     protected Map<String, Serializable> doCreateConnectionParameters( Object context ) {
+        if( context instanceof OracleServiceImpl ){
+            OracleServiceImpl oracle = (OracleServiceImpl) context;
+            return oracle.getConnectionParams();
+        }
         // we need to check the provided object (probably a URL)
         // and ensure it is ment for us
         ID id = ID.cast( context );

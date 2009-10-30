@@ -209,7 +209,7 @@ public class OracleSpatialWizardPage extends AbstractProprietaryDatastoreWizardP
 
         Map<String, Serializable> params = new HashMap<String, Serializable>();
 
-        params.put(OracleNGDataStoreFactory.DBTYPE.key, "oracle"); //$NON-NLS-1$
+        params.put(OracleNGDataStoreFactory.DBTYPE.key, (Serializable) OracleNGDataStoreFactory.DBTYPE.sample ); //$NON-NLS-1$
         params.put(OracleNGDataStoreFactory.HOST.key, currentDBCI.getHostString());
         try {
             params.put(OracleNGDataStoreFactory.PORT.key, new Integer(currentDBCI.getPortString()));

@@ -84,7 +84,7 @@ public class ArcServiceExtension extends AbstractDataStoreServiceExtension imple
         ParamInfo info = parseParamInfo(url);
 
         Map<String, Serializable> params = new HashMap<String, Serializable>();
-        params.put(DBTYPE_PARAM.key, "arcsde"); // dbtype //$NON-NLS-1$
+        params.put(DBTYPE_PARAM.key, (Serializable)DBTYPE_PARAM.sample); // dbtype //$NON-NLS-1$
         params.put(SERVER_PARAM.key, info.host); // host
         params.put(PORT_PARAM.key, info.the_port); // port
         params.put(INSTANCE_PARAM.key, info.the_database); // database

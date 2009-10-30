@@ -97,7 +97,7 @@ public class PostgisLookUpSchemaRunnable implements LookUpSchemaRunnable {
 
         PostgisNGDataStoreFactory factory = PostgisServiceExtension2.getFactory();
         Map<String, Serializable> params = new HashMap<String, Serializable>();
-        params.put(DBTYPE.key, "postgisng");        
+        params.put(DBTYPE.key, (Serializable)DBTYPE.sample);        
         params.put(HOST.key, host);
         params.put(PORT.key, port);
         params.put(USER.key, username);

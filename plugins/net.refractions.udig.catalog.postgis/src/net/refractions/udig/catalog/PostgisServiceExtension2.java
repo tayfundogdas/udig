@@ -36,6 +36,7 @@ import org.geotools.data.DataStoreFactorySpi;
 import org.geotools.data.DataAccessFactory.Param;
 import org.geotools.data.postgis.PostgisNGDataStoreFactory;
 import static org.geotools.data.postgis.PostgisNGDataStoreFactory.*;
+import static org.geotools.jdbc.JDBCDataStoreFactory.DBTYPE;
 
 /**
  * PostGis ServiceExtension that has a hierarchy. It represents a Database and has folders within
@@ -49,7 +50,7 @@ public class PostgisServiceExtension2 extends AbstractDataStoreServiceExtension
         implements
             ServiceExtension2 {
     /** Constant to use with DBTYPE */
-    public static final String TYPE = "postgisng";
+    public static final String TYPE = (String)DBTYPE.sample;
     /** Key used to test connection */
     private static final String IN_TESTING = "testing"; //$NON-NLS-1$
     /**
@@ -114,7 +115,7 @@ public class PostgisServiceExtension2 extends AbstractDataStoreServiceExtension
         ParamInfo info = parseParamInfo(url);
 
         Map<String, Serializable> postGISParams = new HashMap<String, Serializable>();
-        postGISParams.put(DBTYPE.key, "postgisng"); // dbtype //$NON-NLS-1$
+        postGISParams.put(DBTYPE.key, (Serializable)DBTYPE.sample); // dbtype //$NON-NLS-1$
         postGISParams.put(USER.key, info.username); // user
         postGISParams.put(PASSWD.key, info.password); // pass
         postGISParams.put(HOST.key, info.host); // host

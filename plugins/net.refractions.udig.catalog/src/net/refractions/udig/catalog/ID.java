@@ -280,6 +280,9 @@ public class ID implements Serializable {
         return URLUtils.toRelativePath(baseDirectory, toURL());
     }
 
+    public boolean isLocal(){
+        return id.contains("localhost");
+    }
     /**
      * @return true if ID represents a File
      */

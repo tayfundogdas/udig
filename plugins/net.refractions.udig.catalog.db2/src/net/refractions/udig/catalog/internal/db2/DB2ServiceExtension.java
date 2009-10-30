@@ -33,7 +33,7 @@ import org.geotools.data.DataAccessFactory;
 import org.geotools.data.DataAccessFinder;
 import org.geotools.data.DataStoreFactorySpi;
 import org.geotools.data.db2.DB2NGDataStoreFactory;
-
+import static org.geotools.data.db2.DB2NGDataStoreFactory.*;
 /**
  * DB2 service extension implementation.
  * 
@@ -139,12 +139,12 @@ public class DB2ServiceExtension extends AbstractDataStoreServiceExtension imple
         ParamInfo info = parseParamInfo(url);
         
         Map<String,Serializable> params = new HashMap<String,Serializable>();
-        params.put(DB2NGDataStoreFactory.DBTYPE.key,"db2"); // dbtype //$NON-NLS-1$
-        params.put(DB2NGDataStoreFactory.HOST.key,info.host); // host
-        params.put(DB2NGDataStoreFactory.PORT.key,info.the_port); // port
-        params.put(DB2NGDataStoreFactory.DATABASE.key,info.the_database); // database
-        params.put(DB2NGDataStoreFactory.USER.key,info.username); // user
-        params.put(DB2NGDataStoreFactory.PASSWD.key,info.password); // pass
+        params.put(DBTYPE.key, (Serializable)DBTYPE.sample); // dbtype //$NON-NLS-1$
+        params.put(HOST.key,info.host); // host
+        params.put(PORT.key,info.the_port); // port
+        params.put(DATABASE.key,info.the_database); // database
+        params.put(USER.key,info.username); // user
+        params.put(PASSWD.key,info.password); // pass
         
         return params;
     }

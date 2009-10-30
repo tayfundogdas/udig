@@ -135,8 +135,10 @@ public abstract class AbstractUDIGImportPage extends WorkflowWizardPage implemen
         try {
             getContainer().run(false, true, runnable);
         } catch (InvocationTargetException e) {
+            setErrorMessage( "Could not connect:"+e.getCause().getMessage() );
             throw (RuntimeException) new RuntimeException( ).initCause( e );
         } catch (InterruptedException e) {
+            setErrorMessage( "Canceled");
             throw (RuntimeException) new RuntimeException( ).initCause( e );
         }
         return services;

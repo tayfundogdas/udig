@@ -276,24 +276,24 @@ public class DB2WizardPage extends AbstractProprietaryDatastoreWizardPage {
 
         Map<String, Serializable> params = new HashMap<String, Serializable>();
 
-        params.put(DB2NGDataStoreFactory.DBTYPE.key, "db2"); //$NON-NLS-1$
-        params.put(DB2NGDataStoreFactory.HOST.key, emptyAsNull(currentDBCI.getHostString()));
+        params.put(DBTYPE.key, (Serializable)DBTYPE.sample); //$NON-NLS-1$
+        params.put(HOST.key, emptyAsNull(currentDBCI.getHostString()));
         String dbport = emptyAsNull(currentDBCI.getPortString());
         try {
-            params.put(DB2NGDataStoreFactory.PORT.key, emptyAsNull(dbport));
+            params.put(PORT.key, emptyAsNull(dbport));
         } catch (NumberFormatException e) {
             // use default port
-            params.put(DB2NGDataStoreFactory.DBTYPE.key, "50000"); //$NON-NLS-1$
+            params.put(PORT.key, "50000"); //$NON-NLS-1$
         }
         String db = currentDBCI.getDbString();
-        params.put(DB2NGDataStoreFactory.DATABASE.key, emptyAsNull(db));
+        params.put(DATABASE.key, emptyAsNull(db));
 
         String userName = currentDBCI.getUserString();
-        params.put(DB2NGDataStoreFactory.USER.key, emptyAsNull(userName));
+        params.put(USER.key, emptyAsNull(userName));
         String password = currentDBCI.getPassString();
-        params.put(DB2NGDataStoreFactory.PASSWD.key, emptyAsNull(password));
+        params.put(PASSWD.key, emptyAsNull(password));
 
-        params.put(DB2NGDataStoreFactory.SCHEMA.key, emptyAsNull(currentDBCI.getSchemaString()));
+        params.put(SCHEMA.key, emptyAsNull(currentDBCI.getSchemaString()));
 
         return params;
     }
