@@ -156,6 +156,7 @@ public class Messages extends NLS {
     public static String UDIGApplication_helpstring;
     public static String UDIGWorkbenchWindowAdvisor_classNotFound;
     public static String UDIGWorkbenchWindowAdvisor_specifiedButNotFound;
+	public static String RunntimePreferences_desc;
 	public static String UiPreferences_advancedGraphics_label;
     public static String UiPreferences_charset;
 	public static String UiPreferences_description;

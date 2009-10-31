@@ -13,6 +13,7 @@ package net.refractions.udig.project.ui.wizard.export.project;
 import java.io.File;
 import java.util.List;
 
+import net.refractions.udig.project.internal.Messages;
 import net.refractions.udig.project.internal.Project;
 import net.refractions.udig.project.internal.ProjectPlugin;
 import net.refractions.udig.project.internal.ProjectRegistry;
@@ -29,7 +30,6 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
 
 public class ExportSelectionPage extends WizardPage {
@@ -80,7 +80,8 @@ public class ExportSelectionPage extends WizardPage {
 		Composite projectPanel = new Composite(parent, SWT.NONE);
 		projectPanel.setLayout(new GridLayout(1, false));
 		projectPanel.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-        project = new ComboFieldEditor("projectSelect", "Project:", projects, projectPanel );
+        project = new ComboFieldEditor("projectSelect",
+        		Messages.ExportSelectionPage_Project, projects, projectPanel );
         project.setPage( this ); 
         project.setPropertyChangeListener( new IPropertyChangeListener(){
             public void propertyChange( PropertyChangeEvent event ) {
@@ -94,7 +95,8 @@ public class ExportSelectionPage extends WizardPage {
 		Composite filePanel = new Composite(parent, SWT.NONE);
 		filePanel.setLayout(new GridLayout(1, false));
 		filePanel.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-        editor = new DirectoryFieldEditor("directorySelect", "Destination: ", filePanel){ //$NON-NLS-1$
+        editor = new DirectoryFieldEditor("directorySelect",
+        		Messages.ExportSelectionPage_Destination, filePanel){
             {
                 setValidateStrategy( VALIDATE_ON_KEY_STROKE );
                 setEmptyStringAllowed(false);                
@@ -106,7 +108,7 @@ public class ExportSelectionPage extends WizardPage {
                     return true;
                 }
                 else {
-                    setErrorMessage("Please select a directory to export the project into");
+                    setErrorMessage(Messages.ExportSelectionPage_MissingDir);
                     return false;
                 }
             }
@@ -126,11 +128,11 @@ public class ExportSelectionPage extends WizardPage {
         }
         if( getProject() == null ){
             setPageComplete( false );
-            setErrorMessage("Please select a project to export" );
+            setErrorMessage(Messages.ExportSelectionPage_SelectProject);
             return;
         }
         setPageComplete(true);
-        setMessage("Export the selected project", INFORMATION );
+        setMessage(Messages.ExportSelectionPage_ExportProject, INFORMATION );
     }
     public void selectProject( String uri ){
         ProjectRegistry registery = ProjectPlugin.getPlugin().getProjectRegistry();

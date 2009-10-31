@@ -136,12 +136,12 @@
             class="net.refractions.udig.mapgraphic.northarrow.NorthArrowMapGraphic"
             icon="icons/obj16/graphic_obj.gif"
             id="net.refractions.udig.mapgraphic.NorthArrowMapGraphic"
-            name="North Arrow">
+            name="%mapgraphic.northarrow.name">
       </mapGraphic>
       <mapGraphic
             class="net.refractions.udig.mapgraphic.scalebar.ScaleDenomMapGraphic"
             id="net.refractions.udig.mapgraphic.scalebar.ScaleDenomMapGraphic"
-            name="Scale Denominator">
+            name="%mapgraphic.scale.name">
       </mapGraphic>
    </extension>
    <!--

@@ -11,6 +11,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import net.refractions.udig.project.internal.Messages;
 import net.refractions.udig.project.internal.Project;
 import net.refractions.udig.project.ui.internal.ProjectUIPlugin;
 
@@ -67,9 +68,11 @@ public class ExportProjectWizard extends Wizard implements IExportWizard, IRunna
      * @see org.eclipse.ui.IWorkbenchWizard#init(org.eclipse.ui.IWorkbench, org.eclipse.jface.viewers.IStructuredSelection)
      */
     public void init(IWorkbench workbench, IStructuredSelection selection) {
-        setWindowTitle("Project Export Wizard");
+        setWindowTitle(Messages.ExportProjectWizard_Title);
         setNeedsProgressMonitor(true);
-        selectionPage = new ExportSelectionPage("Destination", "Select the destination to export to", wizardPageIconDescriptor);
+        selectionPage = new ExportSelectionPage(
+        		Messages.ExportSelectionPage_Destination,
+        		Messages.ExportProjectWizard_Destination2, wizardPageIconDescriptor);
         this.selection = selection;
     }
 
@@ -82,7 +85,7 @@ public class ExportProjectWizard extends Wizard implements IExportWizard, IRunna
     public void run( IProgressMonitor monitor ) throws InvocationTargetException,
     InterruptedException {
         Project project = selectionPage.getProject();
-        monitor.beginTask("Exporting project "+project.getName(), 1 );
+        monitor.beginTask(Messages.ExportProjectWizard_Exporting + project.getName(), 1 );
 //        for( Iterator curSelection = selection.iterator(); curSelection.hasNext(); ) {
 //            Project project = (Project) curSelection.next();
             Resource resource = project.eResource();

@@ -1,6 +1,7 @@
 package net.refractions.udig.ui.preferences;
 
 import net.refractions.udig.internal.ui.UiPlugin;
+import net.refractions.udig.ui.internal.Messages;
 
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.ui.IWorkbench;
@@ -13,7 +14,7 @@ public class RunntimePreferences extends FieldEditorPreferencePage
     public RunntimePreferences() {
         super(GRID);
         setPreferenceStore(UiPlugin.getDefault().getPreferenceStore());
-        setDescription("Gives the possibility to set some of the runtime preferences.");
+        setDescription(Messages.RunntimePreferences_desc);
     }
 
     /**

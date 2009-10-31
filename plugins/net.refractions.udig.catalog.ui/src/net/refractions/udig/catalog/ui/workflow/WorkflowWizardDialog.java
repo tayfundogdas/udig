@@ -130,7 +130,7 @@ public class WorkflowWizardDialog extends WizardDialog implements Listener {
         try {
             super.nextPressed();
         } catch (Exception e) {
-            setErrorMessage("An error occurred during page transition.  This is most likely a programming error.  Please report it");
+            setErrorMessage(Messages.WorkflowWizard_PageTransitionError);
             CatalogUIPlugin.log("WorkflowWizardDialog#nextPressedSuper(): Error moving to "+getWorkflowWizard().getWorkflow().getCurrentState().getName(), e); //$NON-NLS-1$
         }
     }

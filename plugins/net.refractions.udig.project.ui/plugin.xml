@@ -731,9 +731,9 @@
            class="net.refractions.udig.project.ui.wizard.export.project.ExportProjectWizard"
            icon="icons/etool16/exportproject_wiz.png"
            id="net.refractions.udig.project.ui.export.project"
-           name="Export Project">
+           name="%exportProject.name">
         <description>
-           Export selected project to specified location
+           %exportProject.desc
         </description>
      </wizard>
    </extension>
@@ -876,7 +876,7 @@
                class="net.refractions.udig.project.ui.operations.SyncProjection"
                enablesFor="1"
                id="net.refractions.udig.project.ui.syncProjection"
-               name="Set Map Projection From Layer"
+               name="%Layer.SetMapProjection"
                targetClass="net.refractions.udig.project.ILayer">
          </operation>      
  	</extension>
@@ -916,7 +916,7 @@
                class="net.refractions.udig.project.ui.operations.MakeHole"
                enablesFor="1"
                id="net.refractions.udig.project.ui.operations.MakeHole"
-               name="Make Hole"
+               name="%Selection.MakeHole"
                targetClass="net.refractions.udig.project.ILayer">
          </operation>         
          <!--operation
@@ -979,7 +979,7 @@
         <action
         	  id="reshape.addtomap"
               class="net.refractions.udig.project.ui.internal.AddReshapedToMap"
-              name="Add to Map">
+              name="%AddToMap">
         </action>
      </extension>
      <extension

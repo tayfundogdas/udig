@@ -302,6 +302,9 @@ public class Messages extends NLS {
     public static String MapSelectorPage_pageName;
     public static String MapSelectorPage_selectmapsExport;
     public static String MapSelectorPage_selectMapsLabel;
+    public static String MapSelectorPage_Add;
+    public static String MapSelectorPage_Remove;
+    
     public static String MapSelectorPageWithScaleColumn_defaultScale;
     public static String MapSelectorPageWithScaleColumn_invalidScaleError;
     public static String MapSelectorPageWithScaleColumn_scale;

@@ -28,6 +28,7 @@ public class Messages extends NLS {
 	public static String FilteredEditorDialog_very_informative_error;
 	public static String FilteredTree_clear;
 	public static String FilteredTree_type_filter_text_here;
+	public static String FontEditor_SetFont;
 	public static String ImportSLD_title;
 	public static String ImportFrom_finished;
 	public static String ImportFrom_reading;
