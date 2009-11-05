@@ -1,4 +1,6 @@
 #!/bin/sh
+UDIGEXEC=udig_internal
+
 PRG="$0"
 while [ -h "$PRG" ]; do
 	ls=`ls -ld "$PRG"`
@@ -24,7 +26,8 @@ do
 done
 
 if $DATA_ARG; then 
-	$PRGDIR/bin $@
+	$PRGDIR/$UDIGEXEC $@
 else
-	$PRGDIR/bin -data ~/uDigWorkspace $@
+	$PRGDIR/$UDIGEXEC -data ~/uDigWorkspace $@
 fi
+
