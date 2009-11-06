@@ -138,11 +138,11 @@
             id="net.refractions.udig.mapgraphic.NorthArrowMapGraphic"
             name="%mapgraphic.northarrow.name">
       </mapGraphic>
-      <mapGraphic
+    <!--  <mapGraphic
             class="net.refractions.udig.mapgraphic.scalebar.ScaleDenomMapGraphic"
             id="net.refractions.udig.mapgraphic.scalebar.ScaleDenomMapGraphic"
             name="%mapgraphic.scale.name">
-      </mapGraphic>
+      </mapGraphic> -->
    </extension>
    <!--
    <extension
