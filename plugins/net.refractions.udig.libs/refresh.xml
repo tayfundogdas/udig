@@ -72,6 +72,9 @@
 			<!-- geotools unsupported modules that we only need for some community modules? -->
 			<dependency groupId="org.geotools" artifactId="gt-wps" version="${geotools.version}" />
 			
+			<!-- geotools unsupported modules (ie legacy) -->
+			<dependency groupId="org.geotools" artifactId="gt-postgis" version="${geotools.version}" />
+						
 			<!-- imageio-ext plug-ins 
 			<dependency groupId="it.geosolutions.imageio-ext" artifactId="imageio-ext-arcgrid" version="1.0.2" />
 			<dependency groupId="it.geosolutions.imageio-ext" artifactId="imageio-ext-customstreams" version="1.0.2" />
