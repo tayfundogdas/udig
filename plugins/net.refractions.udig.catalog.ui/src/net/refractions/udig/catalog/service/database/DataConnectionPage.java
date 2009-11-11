@@ -62,12 +62,13 @@ public class DataConnectionPage extends AbstractUDIGImportPage implements Listen
     private int currentPort;
     
     public DataConnectionPage() {
-        super("Databse connection page"); //$NON-NLS-1$
+        super("Database connection page"); //$NON-NLS-1$
     }
 
     @Override
     public boolean isPageComplete() {
-        return getParams()!=null;
+        Map<String, Serializable> params = getParams();
+		return params!=null;
     }
     
     /**
@@ -87,7 +88,7 @@ public class DataConnectionPage extends AbstractUDIGImportPage implements Listen
         if( dialect.schemaParam != null && dialect.schemaParam.key != null ){
         	params.put(dialect().schemaParam.key, (Serializable) dialect.schemaParam.sample);
         }
-        params.put(dialect().typeParam.key, (Serializable) dialect().typeParam.sample);
+        params.put(dialect().typeParam.key, (Serializable) dialect().dbType );
         
         Either<String, Map<String, Serializable>> result = getActiveTab().getParams(params);
         if( result.isLeft() ){

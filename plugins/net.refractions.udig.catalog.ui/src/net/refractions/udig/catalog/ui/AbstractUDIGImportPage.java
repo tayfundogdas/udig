@@ -122,7 +122,6 @@ public abstract class AbstractUDIGImportPage extends WorkflowWizardPage implemen
      * Default implementation creates a collection of services from the parameters returned
      * {@link UDIGConnectionPage#getParams()}
      */
-    @SuppressWarnings("deprecation")
     public Collection<IService> getServices() {
         final Map<String, Serializable> params = getParams();
         final Collection<IService> services = new HashSet<IService>();
@@ -150,23 +149,6 @@ public abstract class AbstractUDIGImportPage extends WorkflowWizardPage implemen
      */
     public Map<String, Serializable> getParams() {
         return null;
-    }
-
-    /**
-     * Just a simple little container class
-     * 
-     * @author jesse
-     * @since 1.1.0
-     */
-    private class Entry {
-        final String message;
-        final int type;
-        public Entry( String message, int type ) {
-            super();
-            this.message = message;
-            this.type = type;
-        }
-
     }
 
     @Override

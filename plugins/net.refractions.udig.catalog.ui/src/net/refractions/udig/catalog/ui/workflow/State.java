@@ -130,4 +130,12 @@ public abstract class State {
     public State next() {
         return null;
     }
+    
+    @Override
+    public String toString() {
+    	StringBuffer text = new StringBuffer();
+    	text.append("State:");
+    	text.append( getName() );
+    	return text.toString();
+    }
 }

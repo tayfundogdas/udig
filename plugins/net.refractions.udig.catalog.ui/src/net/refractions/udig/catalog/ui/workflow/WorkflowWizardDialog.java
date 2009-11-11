@@ -62,11 +62,12 @@ public class WorkflowWizardDialog extends WizardDialog implements Listener {
         final Workflow pipe = getWizard().getWorkflow();
 
         try {
+        	// don't fork, can cancel during transition
             run(false, true, new IRunnableWithProgress(){
 
                 public void run( IProgressMonitor monitor ) throws InvocationTargetException,
                         InterruptedException {
-                    pipe.next(monitor);
+                    pipe.next(monitor); // progress through the workflow
                 }
 
             });

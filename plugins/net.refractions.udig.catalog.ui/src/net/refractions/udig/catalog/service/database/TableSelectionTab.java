@@ -143,7 +143,9 @@ public class TableSelectionTab implements Tab {
         }
         return Either.createRight(params);
     }
-
+    /**
+     * @return true as we are always ready to advanced to the next page
+     */
     public boolean leavingPage() {
         return true;
     }

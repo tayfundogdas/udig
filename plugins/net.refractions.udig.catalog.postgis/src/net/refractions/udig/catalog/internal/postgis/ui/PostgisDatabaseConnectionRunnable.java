@@ -71,7 +71,7 @@ public class PostgisDatabaseConnectionRunnable implements DatabaseConnectionRunn
         try {
             
             Map<String,Serializable> params = new HashMap<String,Serializable>();
-            params.put( DBTYPE.key, (Serializable) DBTYPE.sample );
+            params.put( DBTYPE.key, (Serializable) new PostgisServiceDialect().dbType );
             params.put( HOST.key, host );            
             params.put( PORT.key, port );
             params.put( USER.key, username );

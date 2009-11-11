@@ -17,6 +17,7 @@ import net.refractions.udig.ui.OffThreadProgressMonitor;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.swt.widgets.Display;
 
@@ -322,6 +323,10 @@ public class Workflow {
                 ok = current.run(subProgressMonitor) && !monitor.isCanceled();
             } catch (Throwable t) {
                 CatalogUIPlugin.log(t.getLocalizedMessage(), t);
+                if( Platform.inDevelopmentMode() ){
+                	System.out.println( "Could not "+current.getName()+":"+t.getLocalizedMessage() );
+                	t.printStackTrace();
+                }
             } finally {
                 subProgressMonitor.done();
             }
@@ -560,6 +565,40 @@ public class Workflow {
         for( final Listener l : listeners ) {
             l.finished(last);
         }
+    }
+    
+    @Override
+    public String toString() {
+    	StringBuffer text = new StringBuffer();
+    	text.append("Workflow: Start ");
+    	if( started ){
+    		text.append(" -> ");
+    	}
+    	else {
+    		text.append( " -- " );    		
+    	}
+    	for( State state : states ){
+    		if( state == current){
+    			text.append("[");
+    		}
+    		text.append( state.getName() );
+    		if( state == current){
+    			text.append("]");
+    		}
+    		if( this.queue.contains( state )){
+    			text.append(" -- ");
+        	}
+        	else {
+        		text.append( " -> " );    		
+        	}
+    	}
+    	if( this.finished ){
+    		text.append( "[Finish]" );
+    	}
+    	else {
+    		text.append( "Finish" );
+    	}
+    	return text.toString();
     }
     /**
      * Listens to the workflow as it runs; will run each stage in turn.

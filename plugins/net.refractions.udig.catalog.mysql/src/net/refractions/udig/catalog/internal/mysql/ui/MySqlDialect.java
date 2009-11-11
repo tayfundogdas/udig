@@ -34,7 +34,7 @@ public class MySqlDialect extends DatabaseServiceDialect {
 
     public MySqlDialect(  ) {
         // TODO customize localization if it needs it
-        super( null, DATABASE, HOST, PORT, USER, PASSWD, MySQLServiceExtension.getPram( DBTYPE.key ),
+        super( null, DATABASE, HOST, PORT, USER, PASSWD, MySQLServiceExtension.getPram( DBTYPE.key ), null,
                 "jdbc.mysql", new DatabaseWizardLocalization()); //$NON-NLS-1$
     }
 

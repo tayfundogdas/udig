@@ -27,7 +27,7 @@ public class PostgisServiceDialect extends DatabaseServiceDialect {
 
     public PostgisServiceDialect() {
         super(SCHEMA, DATABASE, HOST, PORT, USER, PASSWD, PostgisServiceExtension2
-                .getPram(DBTYPE.key), "jdbc.postgis", new DatabaseWizardLocalization()); //$NON-NLS-1$
+                .getPram(DBTYPE.key), "postgisng", "jdbc.postgis", new DatabaseWizardLocalization()); //$NON-NLS-1$
 
     }
     @Override
@@ -50,7 +50,7 @@ public class PostgisServiceDialect extends DatabaseServiceDialect {
     public Map<Control, Tab> createOptionConnectionPageTabs( TabFolder tabFolder,
             DataConnectionPage containingPage ) {
         Map<Control, Tab> tabs = super.createOptionConnectionPageTabs(tabFolder, containingPage);
-        addSQLTab(tabFolder, containingPage, tabs);
+        //addSQLTab(tabFolder, containingPage, tabs);
         return tabs;
     }
 

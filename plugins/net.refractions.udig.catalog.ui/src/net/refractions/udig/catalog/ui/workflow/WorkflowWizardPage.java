@@ -109,5 +109,12 @@ public abstract class WorkflowWizardPage extends WizardPage {
 		
 		return complete && more;
 	}
-    
+    public String toString() {
+    	StringBuffer text = new StringBuffer();
+    	text.append( getName() );
+    	text.append( "(" );
+    	text.append( state != null ? state.getName() : "null" );
+    	text.append( "_" );
+        return text.toString();
+    }
 }
