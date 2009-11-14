@@ -92,7 +92,7 @@ public abstract class AbstractPrinterPageTemplate extends AbstractTemplate {
         page.setPaperSize(paperSize);
         // then apply the ratio of the papersize also to the page size.
         setPageSizeFromPaperSize(page, paperSize);
-        
+
         float scaleFactor = (float) page.getSize().width / (float) page.getPaperSize().height;
 
         int height = page.getSize().height;
@@ -103,7 +103,8 @@ public abstract class AbstractPrinterPageTemplate extends AbstractTemplate {
         int w = getPercentagePieceOf(width, TITLE_WIDTH_PERCENT);
         int h = getPercentagePieceOf(height, TITLE_HEIGHT_PERCENT);
         // the base font size is good for the A4 size, scale every other proportional
-        float scaledSize = (float) BASEFONT_SIZE * (float) paperSize.height / PageSize.A4.getHeight();
+        float scaledSize = (float) BASEFONT_SIZE * (float) paperSize.height
+                / PageSize.A4.getHeight();
         // float scaledFontSize = scaleValue(page, paperSize, scaledSize);
         addLabelBox(formatName(map.getName()), xPos, yPos, w, h, (int) scaledSize, scaleFactor);
 
@@ -113,13 +114,13 @@ public abstract class AbstractPrinterPageTemplate extends AbstractTemplate {
         h = getPercentagePieceOf(height, MAP_HEIGHT_PERCENT);
         addMapBox(map, xPos, yPos, w, h);
 
-        xPos = getPercentagePieceOf(width, 100f - RIGHT_MARGIN_PERCENT - SPACING_PERCENT * 3f
-                - LEGEND_WIDTH_PERCENT);
-        yPos = getPercentagePieceOf(height, 100f - BOTTOM_MARGIN_PERCENT - SPACING_PERCENT * 3f
-                - LEGEND_HEIGHT_PERCENT);
-        w = getPercentagePieceOf(width, LEGEND_WIDTH_PERCENT);
-        h = getPercentagePieceOf(height, LEGEND_HEIGHT_PERCENT);
-        addLegendBox(xPos, yPos, w, h);
+        // xPos = getPercentagePieceOf(width, 100f - RIGHT_MARGIN_PERCENT - SPACING_PERCENT * 3f
+        // - LEGEND_WIDTH_PERCENT);
+        // yPos = getPercentagePieceOf(height, 100f - BOTTOM_MARGIN_PERCENT - SPACING_PERCENT * 3f
+        // - LEGEND_HEIGHT_PERCENT);
+        // w = getPercentagePieceOf(width, LEGEND_WIDTH_PERCENT);
+        // h = getPercentagePieceOf(height, LEGEND_HEIGHT_PERCENT);
+        // addLegendBox(xPos, yPos, w, h);
 
         xPos = getPercentagePieceOf(width, LEFT_MARGIN_PERCENT + SPACING_PERCENT * 2f);
         yPos = getPercentagePieceOf(height, 100f - BOTTOM_MARGIN_PERCENT - SPACING_PERCENT * 3f
@@ -128,7 +129,7 @@ public abstract class AbstractPrinterPageTemplate extends AbstractTemplate {
         h = getPercentagePieceOf(height, SCALE_HEIGHT_PERCENT);
         addScale(xPos, yPos, w, h);
     }
-    
+
     private int getPercentagePieceOf( int width, float percent ) {
         int res = (int) ((float) width * percent / 100f);
         return res;

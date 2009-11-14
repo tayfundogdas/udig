@@ -456,7 +456,7 @@ public class PageImpl extends ElementImpl implements Page {
                 MapBoxPrinter mapBP = (MapBoxPrinter) boxPrinter;
                 Map map = mapBP.getMap();
 
-                if (type.isAssignableFrom(map.getClass())) {
+                if (map != null && type.isAssignableFrom(map.getClass())) {
                     lists.add(map);
                 }
             }

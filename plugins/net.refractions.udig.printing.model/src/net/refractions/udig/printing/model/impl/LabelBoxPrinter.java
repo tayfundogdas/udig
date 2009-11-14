@@ -25,9 +25,12 @@ import net.refractions.udig.printing.model.AbstractBoxPrinter;
 import net.refractions.udig.printing.model.Page;
 import net.refractions.udig.project.IProjectElement;
 import net.refractions.udig.project.ui.UDIGEditorInput;
+import net.refractions.udig.ui.graphics.AWTSWTImageUtils;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.FontData;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IMemento;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
@@ -145,6 +148,16 @@ public class LabelBoxPrinter extends AbstractBoxPrinter {
         } else {
             drawFont = originalFont;
         }
+
+        if (drawFont == null) {
+            setDefaultFont();
+            if (inPreviewMode) {
+                drawFont = scaledFont;
+            } else {
+                drawFont = originalFont;
+            }
+        }
+
         // draw text
         if (drawFont != null && text != null) {
             graphics.setFont(drawFont);
@@ -197,6 +210,23 @@ public class LabelBoxPrinter extends AbstractBoxPrinter {
 
             }// for
         } // if
+    }
+
+    private void setDefaultFont() {
+
+        Display.getDefault().syncExec(new Runnable(){
+
+            @Override
+            public void run() {
+                // create a default
+                FontData data = Display.getDefault().getSystemFont().getFontData()[0];
+                data.setHeight(24);
+                data.setStyle(SWT.BOLD);
+                Font font = AWTSWTImageUtils.swtFontToAwt(data);
+                setFont(font);
+            }
+        });
+
     }
 
     /**
