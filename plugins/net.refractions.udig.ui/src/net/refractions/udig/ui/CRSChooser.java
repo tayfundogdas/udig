@@ -581,7 +581,7 @@ public class CRSChooser {
         }
         if (selectedCRS == null) {
             String crsCode = (String) ((IStructuredSelection) codesList.getSelection()).getFirstElement();
-            if(crsCode.equals(sourceCRS.getName().toString())){
+            if(sourceCRS != null && crsCode.equals(sourceCRS.getName().toString())){
                 System.out.println("source crs: " + sourceCRS.getName().toString());
                 return sourceCRS;
             }
