@@ -35,6 +35,7 @@ import net.refractions.udig.mapgraphic.internal.MapGraphicService;
 import net.refractions.udig.mapgraphic.style.LocationStyleContent;
 import net.refractions.udig.printing.model.AbstractBoxPrinter;
 import net.refractions.udig.printing.model.Box;
+import net.refractions.udig.printing.model.BoxPrinter;
 import net.refractions.udig.printing.model.Page;
 import net.refractions.udig.project.ILayer;
 import net.refractions.udig.project.ILayerListener;
@@ -90,6 +91,7 @@ public class MapGraphicBoxPrinter extends AbstractBoxPrinter {
     private boolean inPreviewMode;
 
     public MapGraphicBoxPrinter() {
+        System.out.println();
     }
 
     public MapGraphicBoxPrinter( Page page ) {
@@ -100,6 +102,17 @@ public class MapGraphicBoxPrinter extends AbstractBoxPrinter {
 
     public void draw( Graphics2D graphics, IProgressMonitor monitor ) {
         super.draw(graphics, monitor);
+        if (Float.isNaN(scaleFactor)) {
+            List<Box> boxes = getBox().getPage().getBoxes();
+            for( Box box : boxes ) {
+                Object adapter = box.getBoxPrinter().getAdapter(Map.class);
+                if (adapter != null) {
+                    scaleFactor = (float) box.getSize().width / (float) box.getPaperSize().height;
+                    break;
+                }
+            }
+        }
+
         if (warning != null) {
             drawWarning(graphics, warning);
             return;

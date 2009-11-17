@@ -112,7 +112,7 @@ public abstract class AbstractPrinterPageTemplate extends AbstractTemplate {
         yPos = getPercentagePieceOf(height, UPPER_MARGIN_PERCENT + TITLE_HEIGHT_PERCENT);
         w = getPercentagePieceOf(width, MAP_WIDTH_PERCENT);
         h = getPercentagePieceOf(height, MAP_HEIGHT_PERCENT);
-        addMapBox(map, xPos, yPos, w, h);
+        addMapBox(map, xPos, yPos, w, h, paperSize);
 
         // xPos = getPercentagePieceOf(width, 100f - RIGHT_MARGIN_PERCENT - SPACING_PERCENT * 3f
         // - LEGEND_WIDTH_PERCENT);
@@ -195,15 +195,17 @@ public abstract class AbstractPrinterPageTemplate extends AbstractTemplate {
         return builder.toString();
     }
 
-    protected Rectangle addMapBox( Map map, int xPos, int yPos, int mapWidth, int mapHeight ) {
+    protected Rectangle addMapBox( Map map, int xPos, int yPos, int mapWidth, int mapHeight, Dimension paperSize ) {
         Box mapBox = ModelFactory.eINSTANCE.createBox();
         MapBoxPrinter mapBoxPrinter = new MapBoxPrinter();
         mapBox.setID("Standard Map Box"); //$NON-NLS-1$
         mapBox.setBoxPrinter(mapBoxPrinter);
         mapBoxPrinter.setMap(map);
+        
 
         Rectangle mapBounds = new Rectangle(xPos, yPos, mapWidth, mapHeight);
         mapBox.setSize(new Dimension(mapBounds.width, mapBounds.height));
+        mapBox.setPaperSize(paperSize);
 
         mapBox.setLocation(new Point(mapBounds.x, mapBounds.y));
         boxes.add(mapBox);
