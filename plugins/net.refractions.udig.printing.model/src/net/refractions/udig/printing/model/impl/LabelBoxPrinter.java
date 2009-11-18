@@ -216,7 +216,6 @@ public class LabelBoxPrinter extends AbstractBoxPrinter {
 
         Display.getDefault().syncExec(new Runnable(){
 
-            @Override
             public void run() {
                 // create a default
                 FontData data = Display.getDefault().getSystemFont().getFontData()[0];
