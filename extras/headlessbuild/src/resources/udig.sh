@@ -14,10 +14,10 @@ done
 
 # Add imageio-ext variables
 PWD=`pwd`
-export GDAL_DATA="$PWD/gdal_data"
+PRGDIR=`dirname "$PRG"`
+export GDAL_DATA="$PRGDIR/gdal_data"
 
 # Get standard environment variables
-PRGDIR=`dirname "$PRG"`
 DATA_ARG=false
 
 for ARG in $@ 
