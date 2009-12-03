@@ -13,7 +13,6 @@ while [ -h "$PRG" ]; do
 done
 
 # Add imageio-ext variables
-PWD=`pwd`
 PRGDIR=`dirname "$PRG"`
 export GDAL_DATA="$PRGDIR/gdal_data"
 
