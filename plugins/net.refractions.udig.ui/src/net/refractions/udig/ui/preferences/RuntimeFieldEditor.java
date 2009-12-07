@@ -17,7 +17,6 @@ package net.refractions.udig.ui.preferences;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
@@ -25,35 +24,43 @@ import java.util.Properties;
 import java.util.Set;
 
 import net.refractions.udig.internal.ui.UiPlugin;
+import net.refractions.udig.ui.ExceptionDetailsDialog;
 import net.refractions.udig.ui.internal.Messages;
 
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.FieldEditor;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.PlatformUI;
 
-public final class RunntimeFieldEditor extends FieldEditor {
+public final class RuntimeFieldEditor extends FieldEditor {
     private final String WORKSPACE_PATH = "WORKSPACE_PATH"; //$NON-NLS-1$
     private final String LANGUAGE = "LANGUAGE"; //$NON-NLS-1$
     private final String MEMORY = "MEMORY"; //$NON-NLS-1$
 
     private Text wkspaceText;
-    private Text langText;
+    private Combo langCombo;
     private Text memoryText;
     private String workspacePath;
 
-    public RunntimeFieldEditor( String name, String labelText, Composite parent ) {
+    private static String[] langArray = new String[]{"de", "en", "es", "fr", "it", "ko"};
+    private IPreferenceStore preferenceStore;
+
+    public RuntimeFieldEditor( String name, String labelText, Composite parent ) {
         super(name, labelText, parent);
 
+        preferenceStore = UiPlugin.getDefault().getPreferenceStore();
     }
 
     public int getNumberOfControls() {
@@ -68,25 +75,32 @@ public final class RunntimeFieldEditor extends FieldEditor {
 
     @Override
     protected void doLoadDefault() {
-        wkspaceText.setText(workspacePath);
+        wkspaceText.setText(getWorkspacePath());
+        memoryText.setText(String.valueOf(getCurrentHeap()));
     }
     @Override
     protected void doLoad() {
-        wkspaceText.setText(getPreferenceStore().getString(WORKSPACE_PATH));
-        langText.setText(getPreferenceStore().getString(LANGUAGE));
-        memoryText.setText(getPreferenceStore().getString(MEMORY));
+        wkspaceText.setText(preferenceStore.getString(WORKSPACE_PATH));
+        memoryText.setText(String.valueOf(getCurrentHeap()));
+        String lang = preferenceStore.getString(LANGUAGE);
+        for( int i = 0; i < langArray.length; i++ ) {
+            if (lang.equals(langArray[i])) {
+                langCombo.select(i);
+            }
+        }
+
     }
 
     @Override
     protected void doFillIntoGrid( final Composite parent, int numColumns ) {
-        setPreferenceStore(UiPlugin.getDefault().getPreferenceStore());
-        URL instanceUrl = Platform.getInstanceLocation().getURL();
-        workspacePath = new File(instanceUrl.getFile()).toString();
+        setPreferenceStore(preferenceStore);
+
+        workspacePath = getWorkspacePath();
 
         // workspace
         Label wkspaceLabel = new Label(parent, SWT.NONE);
         wkspaceLabel.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
-        wkspaceLabel.setText(Messages.RunntimeFieldEditor_workspace_path);
+        wkspaceLabel.setText(Messages.RuntimeFieldEditor_workspace_path);
 
         wkspaceText = new Text(parent, SWT.SINGLE | SWT.LEAD | SWT.BORDER);
         wkspaceText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
@@ -110,29 +124,30 @@ public final class RunntimeFieldEditor extends FieldEditor {
         // language
         Label langLabel = new Label(parent, SWT.NONE);
         langLabel.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
-        langLabel.setText(Messages.RunntimeFieldEditor_locale);
+        langLabel.setText(Messages.RuntimeFieldEditor_locale);
 
-        langText = new Text(parent, SWT.SINGLE | SWT.LEAD | SWT.BORDER);
+        langCombo = new Combo(parent, SWT.DROP_DOWN | SWT.READ_ONLY);
         GridData gD = new GridData(SWT.FILL, SWT.CENTER, true, false);
         gD.horizontalSpan = 2;
-        langText.setLayoutData(gD);
-        langText.setText(""); //$NON-NLS-1$
+        langCombo.setLayoutData(gD);
+        langCombo.setItems(langArray);
 
         // memory
         Label memoryLabel = new Label(parent, SWT.NONE);
         memoryLabel.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
-        memoryLabel.setText(Messages.RunntimeFieldEditor_maxheap);
+        memoryLabel.setText(Messages.RuntimeFieldEditor_maxheap);
 
         memoryText = new Text(parent, SWT.SINGLE | SWT.LEAD | SWT.BORDER);
         GridData gD2 = new GridData(SWT.FILL, SWT.CENTER, true, false);
         gD2.horizontalSpan = 2;
         memoryText.setLayoutData(gD2);
-        memoryText.setText(""); //$NON-NLS-1$
+        long maxHeapMemory = getCurrentHeap();
+        memoryText.setText(String.valueOf(maxHeapMemory));
 
         // restart
         Button restartButton = new Button(parent, SWT.PUSH);
         restartButton.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
-        restartButton.setText(Messages.RunntimeFieldEditor_restart);
+        restartButton.setText(Messages.RuntimeFieldEditor_restart);
         restartButton.addSelectionListener(new SelectionAdapter(){
             public void widgetSelected( SelectionEvent e ) {
                 saveValues();
@@ -141,18 +156,27 @@ public final class RunntimeFieldEditor extends FieldEditor {
         });
 
         // put some defaults in
-        getPreferenceStore().setValue(WORKSPACE_PATH, wkspaceText.getText());
-        getPreferenceStore().setValue(LANGUAGE, langText.getText());
-        getPreferenceStore().setValue(MEMORY, memoryText.getText());
+        // preferenceStore.setValue(WORKSPACE_PATH, wkspaceText.getText());
+        // preferenceStore.setValue(LANGUAGE, langCombo.getText());
+        // preferenceStore.setValue(MEMORY, memoryText.getText());
 
+    }
+
+    private String getWorkspacePath() {
+        URL instanceUrl = Platform.getInstanceLocation().getURL();
+        return new File(instanceUrl.getFile()).toString();
+    }
+
+    private long getCurrentHeap() {
+        return Runtime.getRuntime().maxMemory() / 1024l / 1024l;
     }
 
     private boolean checkValues() {
         String wksPath = wkspaceText.getText();
         File f = new File(wksPath);
         if (!f.exists()) {
-            MessageDialog.openError(wkspaceText.getShell(), Messages.RunntimeFieldEditor_error,
-                    Messages.RunntimeFieldEditor_path_not_existing);
+            MessageDialog.openError(wkspaceText.getShell(), Messages.RuntimeFieldEditor_error,
+                    Messages.RuntimeFieldEditor_path_not_existing);
             return false;
         }
 
@@ -161,10 +185,11 @@ public final class RunntimeFieldEditor extends FieldEditor {
         try {
             mem = Integer.parseInt(memory);
         } catch (Exception e) {
+            // checked in the next statement
         }
         if (mem < 64) {
-            MessageDialog.openError(wkspaceText.getShell(), Messages.RunntimeFieldEditor_error,
-                    Messages.RunntimeFieldEditor_memory_positive);
+            MessageDialog.openError(wkspaceText.getShell(), Messages.RuntimeFieldEditor_error,
+                    Messages.RuntimeFieldEditor_memory_positive);
             return false;
         }
         return true;
@@ -172,9 +197,9 @@ public final class RunntimeFieldEditor extends FieldEditor {
 
     private void saveValues() {
         if (checkValues()) {
-            getPreferenceStore().setValue(WORKSPACE_PATH, wkspaceText.getText());
-            getPreferenceStore().setValue(LANGUAGE, langText.getText());
-            getPreferenceStore().setValue(MEMORY, memoryText.getText());
+            preferenceStore.setValue(WORKSPACE_PATH, wkspaceText.getText());
+            preferenceStore.setValue(LANGUAGE, langCombo.getText());
+            preferenceStore.setValue(MEMORY, memoryText.getText());
         }
     }
 
@@ -184,10 +209,9 @@ public final class RunntimeFieldEditor extends FieldEditor {
             UiPlugin.setMaxHeapSize(maxHeadSize);
 
             URL configUrlURL = Platform.getConfigurationLocation().getURL();
-            
+
             String configFilePath = configUrlURL.getFile() + File.separator + "config.ini"; //$NON-NLS-1$
             File configFile = new File(configFilePath);
-            
 
             // language and path go in the config.ini file
             Properties properties = new Properties();
@@ -197,7 +221,7 @@ public final class RunntimeFieldEditor extends FieldEditor {
             path = new File(path).toURI().toURL().toExternalForm();
             path = path.replaceAll("%20", " "); //$NON-NLS-1$ //$NON-NLS-2$
             properties.setProperty("osgi.instance.area.default", path); //$NON-NLS-1$
-            properties.setProperty("osgi.nl", langText.getText()); //$NON-NLS-1$
+            properties.setProperty("osgi.nl", langCombo.getText()); //$NON-NLS-1$
 
             Set<Object> keySet = properties.keySet();
             BufferedWriter bW = new BufferedWriter(new FileWriter(configFile));
@@ -213,10 +237,10 @@ public final class RunntimeFieldEditor extends FieldEditor {
             }
             bW.write("eof=eof"); //$NON-NLS-1$
             bW.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
+            String message = "An error occurred while setting preferences.";
+            ExceptionDetailsDialog.openError(null, message, IStatus.ERROR, UiPlugin.ID, e);
         }
 
         PlatformUI.getWorkbench().restart();

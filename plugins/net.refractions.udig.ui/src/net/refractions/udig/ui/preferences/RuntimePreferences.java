@@ -7,14 +7,14 @@ import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 
-public class RunntimePreferences extends FieldEditorPreferencePage
+public class RuntimePreferences extends FieldEditorPreferencePage
         implements
             IWorkbenchPreferencePage {
 
-    public RunntimePreferences() {
+    public RuntimePreferences() {
         super(GRID);
         setPreferenceStore(UiPlugin.getDefault().getPreferenceStore());
-        setDescription(Messages.RunntimePreferences_desc);
+        setDescription(Messages.RuntimePreferences_desc);
     }
 
     /**
@@ -23,7 +23,7 @@ public class RunntimePreferences extends FieldEditorPreferencePage
      * itself.
      */
     public void createFieldEditors() {
-        addField(new RunntimeFieldEditor("RUNNTIMEPREFERENCES", "Runntime preferences",
+        addField(new RuntimeFieldEditor("RUNTIMEPREFERENCES", "Runtime preferences",
                 getFieldEditorParent()));
 
     }

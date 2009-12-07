@@ -46,7 +46,7 @@
       </page>
       <page
             category="net.refractions.udig.ui.page.general"
-            class="net.refractions.udig.ui.preferences.RunntimePreferences"
+            class="net.refractions.udig.ui.preferences.RuntimePreferences"
             id="net.refractions.udig.ui.runntimepreferences"
             name="%runntimePreferences">
          <keywordReference

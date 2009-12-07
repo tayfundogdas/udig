@@ -411,7 +411,7 @@ public class UiPlugin extends AbstractUIPlugin  {
 
             public String apply( String line ) {
                 if (line.matches(".*Xmx([0-9]+)([mMgGkKbB]).*")) { //$NON-NLS-1$
-                    line = line.replaceFirst("Xmx([0-9]+)([mMgGkKbB])", "Xmx" + maxHeadSize); //$NON-NLS-1$ //$NON-NLS-2$
+                    line = line.replaceFirst("Xmx([0-9]+)([mMgGkKbB])", "Xmx" + maxHeadSize + "M"); //$NON-NLS-1$ //$NON-NLS-2$
                 }
                 return line;
             }
