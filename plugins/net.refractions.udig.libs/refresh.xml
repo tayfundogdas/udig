@@ -61,7 +61,7 @@
 			<dependency groupId="org.geotools" artifactId="gt-imagemosaic" version="${geotools.version}" />
 			<dependency groupId="org.geotools" artifactId="gt-imageio-ext-gdal" version="${geotools.version}" />
 			<dependency groupId="org.geotools.jdbc" artifactId="gt-jdbc-db2" version="${geotools.version}" />
-			<dependency groupId="org.geotools" artifactId="gt-jdbc-mysql" version="${geotools.version}" />
+			<dependency groupId="org.geotools.jdbc" artifactId="gt-jdbc-mysql" version="${geotools.version}" />
 			<dependency groupId="org.geotools.jdbc" artifactId="gt-jdbc-oracle" version="${geotools.version}" />
 			<dependency groupId="org.geotools.jdbc" artifactId="gt-jdbc-postgis" version="${geotools.version}" />
 			<dependency groupId="org.geotools" artifactId="gt-shapefile" version="${geotools.version}" />
