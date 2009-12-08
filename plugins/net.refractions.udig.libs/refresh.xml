@@ -71,6 +71,7 @@
 			
 			<!-- geotools unsupported modules that we only need for some community modules? -->
 			<dependency groupId="org.geotools" artifactId="gt-wps" version="${geotools.version}" />
+			<dependency groupId="org.geotools.xsd" artifactId="gt-xsd-kml" version="${geotools.version}" />
 			
 			<!-- geotools unsupported modules (ie legacy) -->
 			<!--dependency groupId="org.geotools" artifactId="gt-postgis" version="${geotools.version}" /-->
