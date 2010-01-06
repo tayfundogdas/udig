@@ -77,7 +77,7 @@ public class MapView extends ViewPart implements MapPart {
         fillLayout.type = SWT.VERTICAL;
         parent.setLayout(fillLayout);
         // mapviewer = new MapViewer(parent, SWT.NO_BACKGROUND | SWT.DOUBLE_BUFFERED | SWT.MULTI);
-        mapviewer = new MapViewer(parent);
+        mapviewer = new MapViewer(parent, SWT.SINGLE | SWT.DOUBLE_BUFFERED );
 
         // create a new empty map
         // if you are going to add layers do so now
