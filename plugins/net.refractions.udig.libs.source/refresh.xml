@@ -24,7 +24,7 @@
 				<mapper type="glob" from="*-sources.jar" to="*src.zip" />
 			</chainedmapper>
 		</copy>
-		<antcall target="fix" />
+		<!--antcall target="fix" /-->
 	</target>
 
 	<!-- ================================= 
