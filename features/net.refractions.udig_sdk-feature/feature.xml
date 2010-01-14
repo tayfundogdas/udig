@@ -6,11 +6,11 @@
       provider-name="Udig.Refractions.net">
 
    <description url="http://www.example.com/description">
-      [Enter Feature Description here.]
+      Feature gathering up tutorials and example code, in addition to required udig plugins; to form a complete SDK for use as a target platform for development.
    </description>
 
    <copyright url="http://www.example.com/copyright">
-      [Enter Copyright Description here.]
+      2010 Refractions Research
    </copyright>
 
    <license url="http://www.example.com/license">

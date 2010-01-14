@@ -6,7 +6,7 @@
       <extraClasspathEntry
             eclipseRuntime="false"
             headless="true"
-            library="lib/maven-ant-tasks-2.0.10.jar">
+            library="lib/maven-ant-tasks-2.1.0.jar">
       </extraClasspathEntry>
    </extension>
 
