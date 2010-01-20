@@ -11,6 +11,7 @@
 	<artifact:remoteRepository id="udig.snapshot.repository" url="${updateSnapshotURL}" />
 	<artifact:remoteRepository id="udig.stable.repository" url="${updateStableURL}" />
 	<artifact:remoteRepository id="remote.repository" url="${mirror1}" />
+	<artifact:remoteRepository id="jaitoolsmaven.repository" url="${jaitoolsmaven}" />
 
 	<target name="clean">
 		<delete dir="${lib}" />
@@ -28,6 +29,7 @@
 			<remoteRepository refid="udig.stable.repository" />
 			<remoteRepository refid="udig.snapshot.repository"  />
 			<remoteRepository refid="remote.repository" />
+			<remoteRepository refid="jaitoolsmaven.repository" />
 
 			<!-- uDig Specific Extras -->
 			<!--dependency groupId="xmlrpc" artifactId="xmlrpc" version="2.0" /-->
@@ -94,6 +96,18 @@
 			<dependency groupId="it.geosolutions.imageio-ext" artifactId="imageio-ext-imagereadmt" version="1.0.2" />
 			<dependency groupId="it.geosolutions.imageio-ext" artifactId="imageio-ext-utilities" version="1.0.2" />
 			-->
+			
+			
+			<!-- stuff for netcdf -->
+			<dependency groupId="org.geotools" artifactId="gt-temporal" version="${geotools.version}" />
+			<dependency groupId="it.geosolutions.imageio-ext" artifactId="imageio-ext-netcdf-core" version="1.1-SNAPSHOT" />
+			<dependency groupId="it.geosolutions.imageio-ext" artifactId="imageio-ext-netcdf" version="1.1-SNAPSHOT" />
+			<dependency groupId="it.geosolutions.imageio-ext" artifactId="imageio-ext-utilities" version="1.1-SNAPSHOT" />
+
+			<!-- jai tools -->
+			<dependency groupId="com.googlecode.jaitools" artifactId="zonalstats" version="1.0-SNAPSHOT" />
+			<dependency groupId="com.googlecode.jaitools" artifactId="utils" version="1.0-SNAPSHOT" />
+			<dependency groupId="com.googlecode.jaitools" artifactId="jiffle" version="1.0-SNAPSHOT" />
 			
 			<!-- batik jars - used by geotools renderer -->
 		    <dependency groupId="org.apache.xmlgraphics" artifactId="batik-dom" version="1.7" />
