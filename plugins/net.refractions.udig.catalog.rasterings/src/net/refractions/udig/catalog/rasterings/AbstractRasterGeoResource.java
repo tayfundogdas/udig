@@ -18,6 +18,7 @@ package net.refractions.udig.catalog.rasterings;
 
 import java.awt.Rectangle;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.ref.SoftReference;
 import java.net.URL;
@@ -41,14 +42,23 @@ import org.geotools.coverage.grid.GridEnvelope2D;
 import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
+import org.geotools.data.FeatureSource;
+import org.geotools.factory.CommonFactoryFinder;
+import org.geotools.factory.GeoTools;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.parameter.DefaultParameterDescriptor;
 import org.geotools.parameter.DefaultParameterDescriptorGroup;
 import org.geotools.parameter.ParameterGroup;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.geotools.styling.SLD;
+import org.geotools.styling.SLDParser;
+import org.geotools.styling.Style;
+import org.geotools.styling.StyleFactory;
 import org.opengis.coverage.grid.GridCoverage;
 import org.opengis.coverage.grid.GridCoverageReader;
 import org.opengis.coverage.grid.GridGeometry;
+import org.opengis.feature.simple.SimpleFeature;
+import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.parameter.GeneralParameterDescriptor;
 import org.opengis.parameter.GeneralParameterValue;
 import org.opengis.parameter.ParameterDescriptor;
@@ -224,10 +234,50 @@ public abstract class AbstractRasterGeoResource extends IGeoResource {
                     monitor.done();
                 return adaptee.cast(getReadParameters());
             }
+            if(adaptee.isAssignableFrom(Style.class)){
+                Style style = style(monitor);
+                if( style != null ){
+                    return adaptee.cast( style(monitor));
+                }
+            }
             return super.resolve(adaptee, monitor);
         } finally {
             monitor.done();
         }
+    }
+	
+	public Style style( IProgressMonitor monitor ) {
+        URL url = service.getIdentifier();
+        File file = URLUtils.urlToFile(url);
+        String mapFile = file.getAbsolutePath();
+
+        StyleFactory styleFactory = CommonFactoryFinder.getStyleFactory(GeoTools.getDefaultHints());
+
+        // strip off the extension and check for sld
+        int lastdot = mapFile.lastIndexOf('.');
+        String sld = mapFile.substring(0, lastdot) + ".sld"; //$NON-NLS-1$
+        File f = new File(sld);
+        if (!f.exists()) {
+            // try upper case
+            sld = mapFile.substring(0, lastdot) + ".SLD"; //$NON-NLS-1$
+            f = new File(sld);
+        }
+
+        if (f.exists()) {
+            // parse it up
+            SLDParser parser = new SLDParser(styleFactory);
+            try {
+                parser.setInput(f);
+            } catch (FileNotFoundException e) {
+                return null; // well that is unexpected since f.exists()
+            }
+            Style[] styles = parser.readXML();
+
+            if (styles.length > 0 && styles[0] != null) {
+                return styles[0];
+            }
+        }
+        return null; // well nothing worked out; make your own style
     }
 
 	public <T> boolean canResolve(Class<T> adaptee) {
@@ -238,6 +288,7 @@ public abstract class AbstractRasterGeoResource extends IGeoResource {
 				|| adaptee.isAssignableFrom(GridCoverage.class)
                 || adaptee.isAssignableFrom(AbstractGridCoverage2DReader.class)
                 || adaptee.isAssignableFrom(GridCoverageLoader.class)
+                || adaptee.isAssignableFrom(Style.class)
 				|| super.canResolve(adaptee);
 	}
 
