@@ -108,6 +108,9 @@
 			<dependency groupId="com.googlecode.jaitools" artifactId="zonalstats" version="1.0-SNAPSHOT" />
 			<dependency groupId="com.googlecode.jaitools" artifactId="utils" version="1.0-SNAPSHOT" />
 			<dependency groupId="com.googlecode.jaitools" artifactId="jiffle" version="1.0-SNAPSHOT" />
+
+			<!-- jfreechart -->
+			<dependency groupId="jfree" artifactId="jfreechart" version="1.0.13" />
 			
 			<!-- batik jars - used by geotools renderer -->
 		    <dependency groupId="org.apache.xmlgraphics" artifactId="batik-dom" version="1.7" />
