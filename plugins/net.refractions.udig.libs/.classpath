@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
+	<classpathentry exported="true" kind="lib" path="lib/jiffle-1.0-20100122.015920-4.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/stringtemplate-3.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/utils-1.0-20100122.015920-4.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/zonalstats-1.0-20100122.015920-4.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="src"/>
@@ -123,11 +127,8 @@
 	<classpathentry exported="true" kind="lib" path="lib/imageio-ext-netcdf-1.1-SNAPSHOT.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/imageio-ext-netcdf-core-1.1-SNAPSHOT.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/imageio-ext-utilities-1.1-SNAPSHOT.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jiffle-1.0-20091221.120011-3.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/netcdf-java-4.0.41.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/opendap-2.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/utils-1.0-SNAPSHOT.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/zonalstats-1.0-SNAPSHOT.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/imageio-ext-geocore-1.1-SNAPSHOT.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/slf4j-api-1.5.6.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/slf4j-log4j12-1.5.6.jar"/>
