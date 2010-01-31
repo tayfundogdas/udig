@@ -104,11 +104,6 @@
 			<dependency groupId="it.geosolutions.imageio-ext" artifactId="imageio-ext-netcdf" version="1.1-SNAPSHOT" />
 			<dependency groupId="it.geosolutions.imageio-ext" artifactId="imageio-ext-utilities" version="1.1-SNAPSHOT" />
 
-			<!-- jai tools -->
-			<dependency groupId="com.googlecode.jaitools" artifactId="zonalstats" version="1.0-SNAPSHOT" />
-			<dependency groupId="com.googlecode.jaitools" artifactId="utils" version="1.0-SNAPSHOT" />
-			<dependency groupId="com.googlecode.jaitools" artifactId="jiffle" version="1.0-SNAPSHOT" />
-
 			<!-- jfreechart -->
 			<dependency groupId="jfree" artifactId="jfreechart" version="1.0.13" />
 			
