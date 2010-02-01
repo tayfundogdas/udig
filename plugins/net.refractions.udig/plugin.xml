@@ -42,4 +42,58 @@
          </property>
       </product>
    </extension>
+      <extension
+         point="org.eclipse.ui.intro">
+      <intro
+            class="org.eclipse.ui.intro.config.CustomizableIntroPart"
+            id="net.refractions.udig.ui.intro">
+      </intro>
+      <introProductBinding
+            introId="net.refractions.udig.ui.intro"
+            productId="net.refractions.udig.product">
+      </introProductBinding>
+   </extension>
+   <extension
+         id="intro"
+         point="org.eclipse.ui.intro.config">
+      <config
+            content="introContent.xml"
+            id="net.refractions.udig.ui.introConfig"
+            introId="net.refractions.udig.ui.intro">
+         <presentation
+               home-page-id="root"
+               standby-page-id="standby">
+            <implementation
+                  kind="html"
+                  style="css/shared.css">
+            </implementation>
+         </presentation>
+      </config>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectiveExtensions">
+      <perspectiveExtension
+            targetID="net.refractions.udig.ui.mapPerspective">
+         <actionSet
+               id="net.refractions.udig.project.ui.layer.menu">
+         </actionSet>
+         <actionSet
+               id="net.refractions.udig.project.ui.LayerActions">
+         </actionSet>
+         <actionSet
+               id="net.refractions.udig.project.ui.map.menu">
+         </actionSet>
+         <actionSet
+               id="net.refractions.udig.catalog.ui.data.menu">
+         </actionSet>
+      </perspectiveExtension>
+   </extension>
+   <extension
+         point="net.refractions.udig.browser.externalCatalogWizard">
+      <externalCatalogue
+            id="net.refractions.udig.browser.externalCatalogue1"
+            name="net.refractions.udig.browser.externalCatalogue1">
+         <externalCatalogueURL url="http://udig.refractions.net"/>
+      </externalCatalogue>
+   </extension>
 </plugin>
