@@ -99,7 +99,9 @@ public class ResolveLabelProviderSimple extends LabelProvider implements IResolv
         			if( name == null ){
         		        name = id.toString();
         			}
-        		    name = name.substring(0,name.lastIndexOf(".")); //$NON-NLS-1$                        
+        			if (name.lastIndexOf('.') != -1) {
+        			    name = name.substring(0,name.lastIndexOf(".")); //$NON-NLS-1$                        
+                    }
         		    title = name.replace('_',' ');
 				}
         		if( id.getTypeQualifier() != null ){
