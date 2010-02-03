@@ -12,6 +12,7 @@
 	<artifact:remoteRepository id="udig.stable.repository" url="${updateStableURL}" />
 	<artifact:remoteRepository id="remote.repository" url="${mirror1}" />
 	<artifact:remoteRepository id="jaitoolsmaven.repository" url="${jaitoolsmaven}" />
+	<artifact:remoteRepository id="geosolutionsmaven.repository" url="${geosolutionsmaven}" />
 
 	<target name="clean">
 		<delete dir="${lib}" />
@@ -30,6 +31,7 @@
 			<remoteRepository refid="udig.snapshot.repository"  />
 			<remoteRepository refid="remote.repository" />
 			<remoteRepository refid="jaitoolsmaven.repository" />
+			<remoteRepository refid="geosolutionsmaven.repository" />
 
 			<!-- uDig Specific Extras -->
 			<!--dependency groupId="xmlrpc" artifactId="xmlrpc" version="2.0" /-->
@@ -103,6 +105,7 @@
 			<dependency groupId="it.geosolutions.imageio-ext" artifactId="imageio-ext-netcdf-core" version="1.1-SNAPSHOT" />
 			<dependency groupId="it.geosolutions.imageio-ext" artifactId="imageio-ext-netcdf" version="1.1-SNAPSHOT" />
 			<dependency groupId="it.geosolutions.imageio-ext" artifactId="imageio-ext-utilities" version="1.1-SNAPSHOT" />
+			<dependency groupId="opendap" artifactId="opendap" version="2.1" />
 
 			<!-- jfreechart -->
 			<dependency groupId="jfree" artifactId="jfreechart" version="1.0.13" />
