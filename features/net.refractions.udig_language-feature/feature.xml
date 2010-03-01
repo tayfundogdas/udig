@@ -6,7 +6,7 @@
       provider-name="Refractions Research">
 
    <description url="http://www.example.com/description">
-      [Enter Feature Description here.]
+      Language features needed from the Babel project.
    </description>
 
    <copyright url="http://www.example.com/copyright">
@@ -20,6 +20,66 @@
    <url>
       <update label="User-friendly Desktop Internet GIS Updates" url="http://udig.refractions.net/update/"/>
    </url>
+
+   <includes
+         id="org.eclipse.babel.nls_eclipse_de"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.babel.nls_eclipse_es"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.babel.nls_eclipse_fr"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.babel.nls_eclipse_it"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.babel.nls_eclipse_ko"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.babel.nls_modeling.emf_de"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.babel.nls_modeling.emf_es"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.babel.nls_modeling.emf_fr"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.babel.nls_modeling.emf_it"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.babel.nls_modeling.emf_ko"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.babel.nls_tools.gef_de"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.babel.nls_tools.gef_es"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.babel.nls_tools.gef_fr"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.babel.nls_tools.gef_it"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.babel.nls_tools.gef_ko"
+         version="0.0.0"/>
 
    <requires>
       <import feature="net.refractions.udig_platform" version="1.0.0"/>
