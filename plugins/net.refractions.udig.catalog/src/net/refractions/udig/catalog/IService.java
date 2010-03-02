@@ -318,7 +318,7 @@ public abstract class IService implements IResolve {
      * Please do call super.getInfo( monitor ) as the base IService implementation provides a cache
      * so createInfo( monitor ) is only called once.
      * </p>
-     * @see NullServiceInfo#UNAVAILABLE
+     * @see IService#INFO_UNAVAILABLE
      * @return IServiceInfo resolve(IServiceInfo.class,IProgressMonitor monitor);
      * @see IService#resolve(Class, IProgressMonitor)
      */
@@ -330,26 +330,26 @@ public abstract class IService implements IResolve {
                 if (info == null) {
                     info = createInfo(monitor);
                     
-//                    if( info == null ){
-//                        info = INFO_UNAVAILABLE;
-//                    }
-//                    else {
-//                        // broadcast the change - code taken from ArcServiceImpl
-//                        
-//                        // this delta describes what has changed
-//                        IResolveDelta delta = new ResolveDelta(this, IResolveDelta.Kind.CHANGED);
-//                        
-//                        // fire the change
-//                        CatalogImpl localCatalog = (CatalogImpl) CatalogPlugin.getDefault().getLocalCatalog();
-//                        localCatalog.fire(new ResolveChangeEvent(this, IResolveChangeEvent.Type.POST_CHANGE, delta));
-//                    }
+                    if( info == null ){
+                        info = INFO_UNAVAILABLE;
+                    }
+                    else {
+                        // broadcast the change - code taken from ArcServiceImpl
+                        
+                        // this delta describes what has changed
+                        IResolveDelta delta = new ResolveDelta(this, IResolveDelta.Kind.CHANGED);
+                        
+                        // fire the change
+                        CatalogImpl localCatalog = (CatalogImpl) CatalogPlugin.getDefault().getLocalCatalog();
+                        localCatalog.fire(new ResolveChangeEvent(this, IResolveChangeEvent.Type.POST_CHANGE, delta));
+                    }
 
                 }
             }
         }
-        // if( info == INFO_UNAVAILABLE){
-        // return null; // info was not available
-        // }
+        if (info == INFO_UNAVAILABLE) {
+            return null; // info was not available
+        }
        return info;        
     }
 
