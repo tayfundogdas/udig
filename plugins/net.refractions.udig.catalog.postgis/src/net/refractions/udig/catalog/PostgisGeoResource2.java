@@ -45,6 +45,7 @@ public class PostgisGeoResource2 extends IGeoResource {
     private volatile Throwable message;
     private final URL identifier;
     private final PostgisSchemaFolder parent;
+    
     public PostgisGeoResource2( PostgisService2 service, PostgisSchemaFolder postgisSchemaFolder, String typename ) {        
             this.service = service;
             this.parent=postgisSchemaFolder;
@@ -134,8 +135,12 @@ public class PostgisGeoResource2 extends IGeoResource {
                 || super.canResolve(adaptee);
     }
 
-    protected IGeoResourceInfo createInfo( IProgressMonitor monitor ) throws IOException {
-        return info;
+    @Override
+    public PostgisResourceInfo getInfo( IProgressMonitor monitor ) throws IOException {
+        return (PostgisResourceInfo) super.getInfo(monitor);
+    }
+    protected PostgisResourceInfo createInfo( IProgressMonitor monitor ) throws IOException {
+        return (PostgisResourceInfo) info; // created during the constructor
     }
 
     /**

@@ -22,6 +22,10 @@ import java.net.URL;
 import java.util.Collections;
 import java.util.List;
 
+import net.refractions.udig.catalog.internal.CatalogImpl;
+import net.refractions.udig.catalog.internal.ResolveChangeEvent;
+import net.refractions.udig.catalog.internal.ResolveDelta;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.SubProgressMonitor;
@@ -50,10 +54,7 @@ import org.eclipse.core.runtime.SubProgressMonitor;
  */
 public abstract class IGeoResource implements IResolve {
 
-    /**
-     * Temporary string based on getIdentifier() allowing quick implementaiton of equals.
-     */
-    private volatile String stringURL;
+    protected static IGeoResourceInfo INFO_UNAVAILABLE = new IGeoResourceInfo();
 
     /** Service providing this resource */
     protected IService service = null;
@@ -188,6 +189,23 @@ public abstract class IGeoResource implements IResolve {
      * Access to resource metadata describing the information. This method is used by
      * LabelDecorators to acquire title, and icon.
      * </p>
+     * Example implementation:
+     * <pre>
+     * <code>    @Override
+     *     public CSVGeoResourceInfo getInfo( IProgressMonitor monitor ) throws IOException {
+     *         return (CSVGeoResourceInfo) super.getInfo(monitor);
+     *     }
+     *     protected CSVGeoResourceInfo createInfo( IProgressMonitor monitor ) throws IOException {
+     *         return new CSVGeoResourceInfo( this, monitor );
+     *     }
+     * </code>
+     * </pre>
+     * <p>
+     * Implementors are encouraged to override this method if providing a specific IGeoResourceInfo
+     * implementation with "extra" information beyond the dublin core. However please call
+     * *super.getInfo* as it is providing caching for you and will insure that createInfo is only
+     * called once.
+     * </p>
      * 
      * @return IGeoResourceInfo resolve(IGeoResourceInfo.class,IProgressMonitor monitor);
      * @see IGeoResource#resolve(Class, IProgressMonitor)
@@ -199,8 +217,24 @@ public abstract class IGeoResource implements IResolve {
             synchronized (this) { // support concurrent access
                 if (info == null) {
                     info = createInfo(monitor);
+                    if (info == null) {
+                        // could not connect or INFO_UNAVAILABLE
+                        info = INFO_UNAVAILABLE;
+                    } else {
+                        // could issue a catalog event indicating new information is available
+                        // this delta describes what has changed
+                        IResolveDelta delta = new ResolveDelta(this, IResolveDelta.Kind.CHANGED);
+                        
+                        // fire the change
+                        CatalogImpl localCatalog = (CatalogImpl) CatalogPlugin.getDefault().getLocalCatalog();
+                        localCatalog.fire(new ResolveChangeEvent(this, IResolveChangeEvent.Type.POST_CHANGE, delta));
+
+                    }
                 }
             }
+        }
+        if (info == INFO_UNAVAILABLE) {
+            return null;
         }
         return info;
     }
@@ -252,30 +286,15 @@ public abstract class IGeoResource implements IResolve {
      * @param arg0
      * @return
      */
-    public boolean equals( Object arg0 ) {
-        if (arg0 != null && arg0 instanceof IGeoResource) {
-            IGeoResource resource = (IGeoResource) arg0;
+    public boolean equals( Object other ) {
+        if (other != null && other instanceof IGeoResource) {
+            IGeoResource resource = (IGeoResource) other;
             if (getID() != null)
                 return getID().equals(resource.getID());
         }
         return false;
     }
-    /**
-     * This method uses URLUtils.urlToString method to populate our internal stringURL field (so we
-     * can quickly compare in our implementation of equals).
-     * 
-     * @return the identifier as a String
-     */
-    private String getStringURL() {
-        if (stringURL == null) {
-            synchronized (this) {
-                if (stringURL == null) {
-                    stringURL = URLUtils.urlToString(getIdentifier(), false);
-                }
-            }
-        }
-        return stringURL;
-    }
+
     /**
      * This should represent the identified
      * 

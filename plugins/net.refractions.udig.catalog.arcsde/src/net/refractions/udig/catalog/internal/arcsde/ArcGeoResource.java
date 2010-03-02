@@ -31,6 +31,9 @@ import net.refractions.udig.catalog.internal.ResolveChangeEvent;
 import net.refractions.udig.catalog.internal.ResolveDelta;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.SubProgressMonitor;
+import org.geotools.data.DataStore;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.FeatureStore;
 import org.opengis.feature.simple.SimpleFeature;
@@ -54,7 +57,7 @@ public class ArcGeoResource extends IGeoResource {
      * @param parent
      * @param typename
      */
-    public ArcGeoResource(ArcServiceImpl service, String typename) {
+    public ArcGeoResource( ArcServiceImpl service, String typename ) {
         this.service = service;
         this.typename = typename;
     }
@@ -83,11 +86,10 @@ public class ArcGeoResource extends IGeoResource {
 
     /*
      * Required adaptions: <ul> <li>IGeoResourceInfo.class <li>IService.class </ul>
-     * 
      * @see net.refractions.udig.catalog.IResolve#resolve(java.lang.Class,
      * org.eclipse.core.runtime.IProgressMonitor)
      */
-    public <T> T resolve(Class<T> adaptee, IProgressMonitor monitor) throws IOException {
+    public <T> T resolve( Class<T> adaptee, IProgressMonitor monitor ) throws IOException {
         if (adaptee == null)
             return null;
         if (adaptee.isAssignableFrom(IService.class))
@@ -110,7 +112,7 @@ public class ArcGeoResource extends IGeoResource {
     /*
      * @see net.refractions.udig.catalog.IResolve#canResolve(java.lang.Class)
      */
-    public <T> boolean canResolve(Class<T> adaptee) {
+    public <T> boolean canResolve( Class<T> adaptee ) {
         if (adaptee == null)
             return false;
         return (adaptee.isAssignableFrom(IGeoResourceInfo.class)
@@ -119,21 +121,25 @@ public class ArcGeoResource extends IGeoResource {
                 .isAssignableFrom(IService.class));
     }
 
-    protected IGeoResourceInfo createInfo(IProgressMonitor monitor) throws IOException {
-        if (info == null && getStatus() != Status.BROKEN) {
-            synchronized (service(monitor).getDS(monitor)) {
-                if (info == null) {
-                    info = new ArcGeoResourceInfo(this);
-                }
-            }
-            IResolveDelta delta = new ResolveDelta(this, IResolveDelta.Kind.CHANGED);
-            ((CatalogImpl) CatalogPlugin.getDefault().getLocalCatalog())
-                    .fire(new ResolveChangeEvent(this, IResolveChangeEvent.Type.POST_CHANGE, delta));
+    @Override
+    public ArcGeoResourceInfo getInfo( IProgressMonitor monitor ) throws IOException {
+        return (ArcGeoResourceInfo) super.getInfo(monitor);
+    }
+    protected ArcGeoResourceInfo createInfo( IProgressMonitor monitor ) throws IOException {
+        if (getStatus() == Status.BROKEN) {
+            return null; // could not connect
         }
-        return info;
+        if( monitor == null ) monitor = new NullProgressMonitor();
+        
+        ArcServiceImpl arcService = service( new SubProgressMonitor( monitor, 50 ));
+        DataStore dataStore = arcService.getDS( new SubProgressMonitor( monitor, 50 ));
+        
+        synchronized ( dataStore ) {
+            return new ArcGeoResourceInfo(this, dataStore );
+        }
     }
 
-    public ArcServiceImpl service(IProgressMonitor monitor) throws IOException {
+    public ArcServiceImpl service( IProgressMonitor monitor ) throws IOException {
         return (ArcServiceImpl) super.service(monitor);
     }
 }

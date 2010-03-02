@@ -53,24 +53,26 @@ public class WFSGeoResourceImpl extends IGeoResource {
     WFSServiceImpl parent;
     String typename = null;
     private URL identifier;
-    
-    private WFSGeoResourceImpl(){/*not for use*/}
+
+    private WFSGeoResourceImpl() {/* not for use */
+    }
     /**
      * Construct <code>WFSGeoResourceImpl</code>.
-     *
+     * 
      * @param parent
      * @param typename
      */
-    public WFSGeoResourceImpl(WFSServiceImpl parent, String typename){
+    public WFSGeoResourceImpl( WFSServiceImpl parent, String typename ) {
         this.service = parent;
-        this.parent = parent; this.typename = typename;
+        this.parent = parent;
+        this.typename = typename;
         try {
-            identifier= new URL(parent.getIdentifier().toString()+"#"+typename); //$NON-NLS-1$
+            identifier = new URL(parent.getIdentifier().toString() + "#" + typename); //$NON-NLS-1$
         } catch (MalformedURLException e) {
-            identifier= parent.getIdentifier();
+            identifier = parent.getIdentifier();
         }
     }
-    
+
     public URL getIdentifier() {
         return identifier;
     }
@@ -88,32 +90,30 @@ public class WFSGeoResourceImpl extends IGeoResource {
     public Throwable getMessage() {
         return parent.getMessage();
     }
-    
+
     /*
-     * Required adaptions:
-     * <ul>
-     * <li>IGeoResourceInfo.class
-     * <li>IService.class
-     * </ul>
-     * @see net.refractions.udig.catalog.IResolve#resolve(java.lang.Class, org.eclipse.core.runtime.IProgressMonitor)
+     * Required adaptions: <ul> <li>IGeoResourceInfo.class <li>IService.class </ul>
+     * @see net.refractions.udig.catalog.IResolve#resolve(java.lang.Class,
+     * org.eclipse.core.runtime.IProgressMonitor)
      */
     public <T> T resolve( Class<T> adaptee, IProgressMonitor monitor ) throws IOException {
-        if(adaptee == null)
+        if (adaptee == null)
             return null;
-//        if(adaptee.isAssignableFrom(IService.class))
-//            return adaptee.cast( parent );        
-        if(adaptee.isAssignableFrom(WFSDataStore.class))
-            return parent.resolve( adaptee, monitor );
+        // if(adaptee.isAssignableFrom(IService.class))
+        // return adaptee.cast( parent );
+        if (adaptee.isAssignableFrom(WFSDataStore.class))
+            return parent.resolve(adaptee, monitor);
         if (adaptee.isAssignableFrom(IGeoResource.class))
-            return adaptee.cast( this );
-        if(adaptee.isAssignableFrom(IGeoResourceInfo.class))
-            return adaptee.cast( createInfo(monitor));
-        if(adaptee.isAssignableFrom(FeatureStore.class)){
-            FeatureSource<SimpleFeatureType, SimpleFeature> fs = parent.getDS(monitor).getFeatureSource(typename);
-            if(fs instanceof FeatureStore)
-                return adaptee.cast( fs);
-        if(adaptee.isAssignableFrom(FeatureSource.class))
-            return adaptee.cast( parent.getDS(monitor).getFeatureSource(typename));
+            return adaptee.cast(this);
+        if (adaptee.isAssignableFrom(IGeoResourceInfo.class))
+            return adaptee.cast(createInfo(monitor));
+        if (adaptee.isAssignableFrom(FeatureStore.class)) {
+            FeatureSource<SimpleFeatureType, SimpleFeature> fs = parent.getDS(monitor)
+                    .getFeatureSource(typename);
+            if (fs instanceof FeatureStore)
+                return adaptee.cast(fs);
+            if (adaptee.isAssignableFrom(FeatureSource.class))
+                return adaptee.cast(parent.getDS(monitor).getFeatureSource(typename));
         }
         return super.resolve(adaptee, monitor);
     }
@@ -121,44 +121,47 @@ public class WFSGeoResourceImpl extends IGeoResource {
      * @see net.refractions.udig.catalog.IResolve#canResolve(java.lang.Class)
      */
     public <T> boolean canResolve( Class<T> adaptee ) {
-        if(adaptee == null)
+        if (adaptee == null)
             return false;
-        return (adaptee.isAssignableFrom(IGeoResourceInfo.class) || 
-                adaptee.isAssignableFrom(FeatureStore.class) || 
-                adaptee.isAssignableFrom(FeatureSource.class) || 
-                adaptee.isAssignableFrom(WFSDataStore.class) ||
-                adaptee.isAssignableFrom(IService.class))||
-                super.canResolve(adaptee);
+        return (adaptee.isAssignableFrom(IGeoResourceInfo.class)
+                || adaptee.isAssignableFrom(FeatureStore.class)
+                || adaptee.isAssignableFrom(FeatureSource.class)
+                || adaptee.isAssignableFrom(WFSDataStore.class) || adaptee
+                .isAssignableFrom(IService.class))
+                || super.canResolve(adaptee);
     }
-    protected IGeoResourceInfo createInfo(IProgressMonitor monitor) throws IOException{
-        if(info == null && getStatus()!=Status.BROKEN){
-            parent.rLock.lock();
-            try{
-                if(info == null){
-                    info = new IGeoResourceWFSInfo();
-                }
-            }finally{
-                parent.rLock.unlock();
-            }
+    @Override
+    public IGeoResourceWFSInfo getInfo( IProgressMonitor monitor ) throws IOException {
+        return (IGeoResourceWFSInfo) super.getInfo(monitor);
+    }
+    protected IGeoResourceWFSInfo createInfo( IProgressMonitor monitor ) throws IOException {
+        if (getStatus() == Status.BROKEN) {
+            return null; // could not connect
         }
-        return info;
+        parent.rLock.lock();
+        try {
+            return new IGeoResourceWFSInfo();
+
+        } finally {
+            parent.rLock.unlock();
+        }
     }
 
     class IGeoResourceWFSInfo extends IGeoResourceInfo {
 
         CoordinateReferenceSystem crs = null;
-        IGeoResourceWFSInfo() throws IOException{
+        IGeoResourceWFSInfo() throws IOException {
             WFSDataStore ds = parent.getDS(null);
-            FeatureSource<SimpleFeatureType, SimpleFeature> featureSource = ds.getFeatureSource(typename);
+            FeatureSource<SimpleFeatureType, SimpleFeature> featureSource = ds
+                    .getFeatureSource(typename);
             ResourceInfo resourceInfo = featureSource.getInfo();
             SimpleFeatureType ft = null;
             try {
                 ft = ds.getSchema(typename);
-            }
-            catch( Exception crippled ){
+            } catch (Exception crippled) {
                 // unable to handle the describe feature type response for this
                 // typeName
-                if( WfsPlugin.getDefault().isDebugging() ){
+                if (WfsPlugin.getDefault().isDebugging()) {
                     crippled.printStackTrace();
                 }
             }
@@ -167,41 +170,39 @@ public class WFSGeoResourceImpl extends IGeoResource {
             title = resourceInfo.getTitle();
 
             crs = resourceInfo.getCRS();
-            if( crs == null && ft != null ){
+            if (crs == null && ft != null) {
                 crs = ft.getCoordinateReferenceSystem();
             }
             name = typename;
             schema = resourceInfo.getSchema();
-            if( schema == null ){
+            if (schema == null) {
                 try {
-                    if( ft != null ){
-                        schema = new URI( ft.getName().getNamespaceURI());
-                    }
-                    else {
+                    if (ft != null) {
+                        schema = new URI(ft.getName().getNamespaceURI());
+                    } else {
                         schema = parent.getID().toURI();
                     }
-    			} catch (URISyntaxException e) {
-    				schema = null;
-    			} 
+                } catch (URISyntaxException e) {
+                    schema = null;
+                }
             }
-			Set<String> tags  = new TreeSet<String>();
-			try {
-			    tags.addAll( resourceInfo.getKeywords() );
-			}
-			catch( Throwable t ){
-			    WfsPlugin.trace("Could not retrieve keywords", t ); //$NON-NLS-1$
-			    // no keywords for you
-			}
-			tags.addAll( Arrays.asList( new String[]{ "wfs", typename } ) ); //$NON-NLS-1$
+            Set<String> tags = new TreeSet<String>();
+            try {
+                tags.addAll(resourceInfo.getKeywords());
+            } catch (Throwable t) {
+                WfsPlugin.trace("Could not retrieve keywords", t); //$NON-NLS-1$
+                // no keywords for you
+            }
+            tags.addAll(Arrays.asList(new String[]{"wfs", typename})); //$NON-NLS-1$
             keywords = tags.toArray(new String[0]);
-            icon=Glyph.icon(ft);
+            icon = Glyph.icon(ft);
         }
-        
+
         /*
          * @see net.refractions.udig.catalog.IGeoResourceInfo#getCRS()
          */
         public CoordinateReferenceSystem getCRS() {
-            if(crs != null)
+            if (crs != null)
                 return crs;
             return super.getCRS();
         }

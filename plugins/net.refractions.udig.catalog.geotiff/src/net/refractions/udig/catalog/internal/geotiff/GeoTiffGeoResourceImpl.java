@@ -26,6 +26,7 @@ import net.refractions.udig.catalog.rasterings.AbstractRasterGeoResourceInfo;
 import net.refractions.udig.catalog.rasterings.AbstractRasterService;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.NullProgressMonitor;
 
 
 /**
@@ -43,19 +44,17 @@ public class GeoTiffGeoResourceImpl extends AbstractRasterGeoResource {
         super(service, name);
     }
     
-    protected synchronized IGeoResourceInfo createInfo(IProgressMonitor monitor) {
-        if(monitor != null)  {
-            monitor.beginTask(Messages.GeoTiffGeoResource_connect, 2); 
-            monitor.worked(1);
-        }
-        if(this.info == null) {
-            this.info = new AbstractRasterGeoResourceInfo(this, "GeoTiff", ".tif", ".tiff");   //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
-            if(monitor != null) 
-                monitor.worked(1);
-        }
-        if(monitor != null) 
+    protected AbstractRasterGeoResourceInfo createInfo(IProgressMonitor monitor) throws IOException {
+        if( monitor == null ) monitor = new NullProgressMonitor();
+        
+        monitor.beginTask(Messages.GeoTiffGeoResource_connect, 2); 
+        try {
+            monitor.worked(1);  
+            return new AbstractRasterGeoResourceInfo(this, "GeoTiff", ".tif", ".tiff");   //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
+                    }
+        finally {
             monitor.done();
-        return this.info;
+        }
     }
     
     @Override

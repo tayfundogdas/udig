@@ -292,7 +292,11 @@ public abstract class AbstractRasterGeoResource extends IGeoResource {
 				|| super.canResolve(adaptee);
 	}
 
-	protected abstract IGeoResourceInfo createInfo(IProgressMonitor monitor)
+	@Override
+	public AbstractRasterGeoResourceInfo getInfo( IProgressMonitor monitor ) throws IOException {
+	    return (AbstractRasterGeoResourceInfo) super.getInfo(monitor);
+	}
+	protected abstract AbstractRasterGeoResourceInfo createInfo(IProgressMonitor monitor)
 			throws IOException;
 
 	/**

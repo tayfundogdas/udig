@@ -148,7 +148,7 @@ public abstract class IService implements IResolve {
      * Placeholder used to mark info field as unavailable; often the case
      * where we were unable to connect to a service using createInfo.
      */
-    public static IServiceInfo INFO_UNAVAILABLE = new IServiceInfo();
+    protected static IServiceInfo INFO_UNAVAILABLE = new IServiceInfo();
     
     /**
      * Used to save persisted properties; please see ServiceParameterPersister for details.

@@ -25,6 +25,7 @@ import net.refractions.udig.ui.graphics.Glyph;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.geotools.data.DataStore;
 import org.geotools.data.FeatureSource;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -41,13 +42,12 @@ class ArcGeoResourceInfo extends IGeoResourceInfo {
 
     private SimpleFeatureType ft = null;
 
-    ArcGeoResourceInfo(ArcGeoResource arcGeoResource) throws IOException {
+    ArcGeoResourceInfo(ArcGeoResource arcGeoResource, DataStore dataStore) throws IOException {
         resource = arcGeoResource;
         ft = resource.service(new NullProgressMonitor()).getDS(null).getSchema(resource.typename);
 
         try {
-            FeatureSource<SimpleFeatureType, SimpleFeature> source = resource.service(
-                    new NullProgressMonitor()).getDS(null).getFeatureSource(resource.typename);
+            FeatureSource<SimpleFeatureType, SimpleFeature> source = dataStore.getFeatureSource(resource.typename);
             bounds = new ReferencedEnvelope(source.getBounds(), getCRS());
             if (bounds == null) {
                 bounds = new ReferencedEnvelope(new Envelope(), source.getSchema()

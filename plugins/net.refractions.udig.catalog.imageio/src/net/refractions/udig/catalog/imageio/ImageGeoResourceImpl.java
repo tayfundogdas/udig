@@ -53,21 +53,21 @@ public class ImageGeoResourceImpl extends AbstractRasterGeoResource {
 	 */
 	public ImageGeoResourceImpl(ImageServiceImpl service, String name) {
 		super(service, name);
-		//System.out.println(service.getDescription());
+		// System.out.println(service.getDescription());
 	}
-
+	
 	/**
 	 * Get metadata about a geoResource, represented by instance of
 	 * {@link ImageGeoResourceInfo}.
 	 */
-	protected IGeoResourceInfo createInfo(IProgressMonitor monitor)
+	protected AbstractRasterGeoResourceInfo createInfo(IProgressMonitor monitor)
 			throws IOException {
 		this.lock.lock();
 		try {
-			if (this.info == null && getStatus() != Status.BROKEN) {
-				this.info = new AbstractRasterGeoResourceInfo(this, "ECW", "SID"); //$NON-NLS-1$ //$NON-NLS-2$
-			}
-			return this.info;
+		    if( getStatus() == Status.BROKEN) {
+		        return null; // not available
+		    }
+			return new AbstractRasterGeoResourceInfo(this, "ECW", "SID"); //$NON-NLS-1$ //$NON-NLS-2$
 		} finally {
 			lock.unlock();
 		}

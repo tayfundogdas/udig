@@ -216,7 +216,11 @@ public class ShpGeoResourceImpl extends IGeoResource {
                 adaptee.isAssignableFrom(Style.class)) ||
                 super.canResolve(adaptee);
     }
-    protected IGeoResourceInfo createInfo(IProgressMonitor monitor) throws IOException{
+    @Override
+    public ShpGeoResourceInfo getInfo( IProgressMonitor monitor ) throws IOException {
+        return (ShpGeoResourceInfo) super.getInfo(monitor);
+    }
+    protected ShpGeoResourceInfo createInfo(IProgressMonitor monitor) throws IOException{
         return new ShpGeoResourceInfo(this);
     }
 }
