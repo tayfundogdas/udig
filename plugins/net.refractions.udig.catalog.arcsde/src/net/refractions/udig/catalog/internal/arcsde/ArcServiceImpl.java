@@ -127,22 +127,22 @@ public class ArcServiceImpl extends IService {
         return members;
     }
 
+    @Override
+    public IServiceArcSDEInfo getInfo( IProgressMonitor monitor ) throws IOException {
+        return (IServiceArcSDEInfo) super.getInfo(monitor);
+    }
     /*
      * @see net.refractions.udig.catalog.IService#getInfo(org.eclipse.core.runtime.IProgressMonitor)
      */
-    protected IServiceInfo createInfo(IProgressMonitor monitor) throws IOException {
+    protected IServiceArcSDEInfo createInfo(IProgressMonitor monitor) throws IOException {
         getDS(monitor); // load ds
-        if (info == null && ds != null) {
-            synchronized (ds) {
-                if (info == null) {
-                    info = new IServiceArcSDEInfo(ds);
-                }
-            }
-            IResolveDelta delta = new ResolveDelta(this, IResolveDelta.Kind.CHANGED);
-            ((CatalogImpl) CatalogPlugin.getDefault().getLocalCatalog())
-                    .fire(new ResolveChangeEvent(this, IResolveChangeEvent.Type.POST_CHANGE, delta));
+        if (ds == null) {
+            return null; // no information if we cannot connect
         }
-        return info;
+        synchronized (ds) {
+            return new IServiceArcSDEInfo(ds);
+            
+        }
     }
 
     /*

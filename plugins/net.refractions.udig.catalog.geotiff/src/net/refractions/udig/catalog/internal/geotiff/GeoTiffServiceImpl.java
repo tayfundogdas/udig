@@ -32,6 +32,7 @@ import net.refractions.udig.catalog.rasterings.AbstractRasterService;
 import net.refractions.udig.catalog.rasterings.AbstractRasterServiceInfo;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
 import org.geotools.coverage.grid.io.GridFormatFactorySpi;
 import org.geotools.gce.geotiff.GeoTiffFormat;
@@ -95,17 +96,16 @@ public class GeoTiffServiceImpl extends AbstractRasterService {
         }
         return this.reader;
     }
-    
-    protected synchronized IServiceInfo createInfo(IProgressMonitor monitor) {
-         if(monitor != null)
-            monitor.beginTask(Messages.GeoTiffServiceImpl_loading_task_title, 2); 
-        if(this.info == null) {
-            if(monitor != null)
-                monitor.worked(1);
-            this.info = new AbstractRasterServiceInfo(this, "geotiff", "tiff", "tif");   //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
-        }
-        if(monitor != null)
-            monitor.done();
-        return this.info;
+
+    protected synchronized AbstractRasterServiceInfo createInfo(IProgressMonitor monitor) {
+         if(monitor == null) monitor = new NullProgressMonitor();
+         try {
+             monitor.beginTask(Messages.GeoTiffServiceImpl_loading_task_title, 2); 
+             monitor.worked(1);
+             return new AbstractRasterServiceInfo(this, "geotiff", "tiff", "tif");   //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
+         }
+         finally {
+             monitor.done();
+         }
     }
 }

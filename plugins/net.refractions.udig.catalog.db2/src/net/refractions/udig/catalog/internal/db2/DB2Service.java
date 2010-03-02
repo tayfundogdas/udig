@@ -51,7 +51,7 @@ import org.geotools.jdbc.JDBCDataStore;
 public class DB2Service extends IService {
 
     /** underlying datastore */
-	private volatile JDBCDataStore ds;
+    private volatile JDBCDataStore ds;
 
     /** members (tables) */
     private volatile List<DB2GeoResource> members;
@@ -75,9 +75,8 @@ public class DB2Service extends IService {
     }
 
     public <T> boolean canResolve( Class<T> adaptee ) {
-        return adaptee != null && (
-                adaptee.isAssignableFrom(DataStore.class)
-                || super.canResolve(adaptee));
+        return adaptee != null
+                && (adaptee.isAssignableFrom(DataStore.class) || super.canResolve(adaptee));
     }
 
     @Override
@@ -85,9 +84,9 @@ public class DB2Service extends IService {
         if (monitor == null)
             monitor = new NullProgressMonitor();
         if (adaptee == null) {
-            throw new NullPointerException("No adaptor specified" ); //$NON-NLS-1$
+            throw new NullPointerException("No adaptor specified"); //$NON-NLS-1$
         }
-        if (adaptee.isAssignableFrom(DataStore.class)){
+        if (adaptee.isAssignableFrom(DataStore.class)) {
             return adaptee.cast(getDataStore(monitor)); // use the monitor!
         }
         return super.resolve(adaptee, monitor);
@@ -113,7 +112,7 @@ public class DB2Service extends IService {
     public List<DB2GeoResource> resources( IProgressMonitor monitor ) throws IOException {
 
         if (members == null) {
-        	JDBCDataStore ds = getDataStore( monitor );
+            JDBCDataStore ds = getDataStore(monitor);
             if (ds == null)
                 return null;
 
@@ -133,8 +132,7 @@ public class DB2Service extends IService {
             } finally {
                 rLock.unlock();
             }
-        }
-        else {
+        } else {
             monitor.done();
         }
         return members;
@@ -158,38 +156,35 @@ public class DB2Service extends IService {
     }
 
     @Override
-	protected IServiceInfo createInfo( IProgressMonitor monitor ) throws IOException {
-        if (this.info == null) {
-        	JDBCDataStore ds = getDataStore( monitor);
-            if (ds == null)
-                return null;
-
-            rLock.lock();
-            try {
-                if (info == null) {
-                    info = new DB2ServiceInfo( null );
-                }
-            } finally {
-                rLock.unlock();
-            }
-        }
-        else {
-            monitor.done();
-        }
-        return info;
+    public DB2ServiceInfo getInfo( IProgressMonitor monitor ) throws IOException {
+        return (DB2ServiceInfo) super.getInfo(monitor);
     }
-    JDBCDataStore getDataStore(IProgressMonitor monitor) throws IOException {
-        if( monitor == null ) monitor = new NullProgressMonitor();
-        
+    @Override
+    protected DB2ServiceInfo createInfo( IProgressMonitor monitor ) throws IOException {
+        JDBCDataStore ds = getDataStore(monitor);
+        if (ds == null) {
+            return null; // could not connect
+        }
+        rLock.lock();
+        try {
+            return new DB2ServiceInfo(null);
+        } finally {
+            rLock.unlock();
+        }
+    }
+    JDBCDataStore getDataStore( IProgressMonitor monitor ) throws IOException {
+        if (monitor == null)
+            monitor = new NullProgressMonitor();
+
         if (this.ds == null) {
             dsInstantiationLock.lock();
             try {
                 if (ds == null) {
-                	// We are using DB2NGDataStoreFactory as we do not need to look up in
-                	// a JNDI context for a shared connection pool - we will end up using a
-                	// an internal connection pool supplied by GeoTools DBCPDataSource.
-                	//
-                	DB2NGDataStoreFactory dsf = new DB2NGDataStoreFactory();
+                    // We are using DB2NGDataStoreFactory as we do not need to look up in
+                    // a JNDI context for a shared connection pool - we will end up using a
+                    // an internal connection pool supplied by GeoTools DBCPDataSource.
+                    //
+                    DB2NGDataStoreFactory dsf = new DB2NGDataStoreFactory();
                     try {
                         // We expect the port value (key '3') to be a String but some of the
                         // extensions (ArcServiceExtension)
@@ -201,8 +196,8 @@ public class DB2Service extends IService {
                         // Integer or
                         // String as valid for port.
                         Map<String, Serializable> paramsLocal = new HashMap<String, Serializable>();
-                        for( String key : this.params.keySet() ){
-                        	String value = this.params.get(key).toString();
+                        for( String key : this.params.keySet() ) {
+                            String value = this.params.get(key).toString();
                             paramsLocal.put(key, value);
                         }
                         if (dsf.canProcess(paramsLocal)) {
@@ -222,14 +217,14 @@ public class DB2Service extends IService {
     }
 
     class DB2ServiceInfo extends IServiceInfo {
-        
-        public DB2ServiceInfo(IProgressMonitor monitor) {
+
+        public DB2ServiceInfo( IProgressMonitor monitor ) {
             super();
 
             // make the type names part of the keyword set
             String[] tns = null;
             try {
-                tns = getDataStore( monitor ).getTypeNames();
+                tns = getDataStore(monitor).getTypeNames();
             } catch (IOException e) {
                 CatalogPlugin.log(e.getLocalizedMessage(), e);
                 tns = new String[0];
@@ -246,9 +241,9 @@ public class DB2Service extends IService {
             } catch (URISyntaxException e) {
                 CatalogPlugin.log(e.getLocalizedMessage(), e);
             }
-            
+
             icon = AbstractUIPlugin.imageDescriptorFromPlugin(DB2Plugin.ID,
-                "icons/obj16/db2_16.gif"); //$NON-NLS-1$
+                    "icons/obj16/db2_16.gif"); //$NON-NLS-1$
         }
 
         public String getDescription() {
@@ -259,8 +254,8 @@ public class DB2Service extends IService {
             try {
                 return getIdentifier().toURI();
             } catch (URISyntaxException e) {
-                // This would be bad 
-                throw (RuntimeException) new RuntimeException( ).initCause( e );
+                // This would be bad
+                throw (RuntimeException) new RuntimeException().initCause(e);
             }
         }
 

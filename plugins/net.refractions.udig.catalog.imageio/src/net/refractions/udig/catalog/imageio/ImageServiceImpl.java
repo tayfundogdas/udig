@@ -30,8 +30,8 @@ import net.refractions.udig.catalog.rasterings.AbstractRasterService;
 import net.refractions.udig.catalog.rasterings.AbstractRasterServiceInfo;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.geotools.coverage.grid.io.GridFormatFactorySpi;
-
 
 /**
  * Provides a handle to an imageio-ext based image service allowing the service to be lazily loaded.
@@ -65,7 +65,6 @@ public class ImageServiceImpl extends AbstractRasterService {
         return resource;
     }
 
-
     public List<IResolve> members( IProgressMonitor monitor ) throws IOException {
         List<IResolve> list = new ArrayList<IResolve>();
         list.add(getGeoResource(monitor));
@@ -76,14 +75,20 @@ public class ImageServiceImpl extends AbstractRasterService {
         list.add(getGeoResource(monitor));
         return list;
     }
+
     /**
      * Get metadata about an Image Service, represented by instance of {@link ImageServiceInfo}.
      */
-    protected IServiceInfo createInfo( IProgressMonitor monitor ) throws IOException {
-        if (this.info == null) {
-            this.info = new AbstractRasterServiceInfo(this, "MrSID", "ECW"); //$NON-NLS-1$ //$NON-NLS-2$
+    protected AbstractRasterServiceInfo createInfo( IProgressMonitor monitor ) throws IOException {
+        if (monitor == null)
+            monitor = new NullProgressMonitor();
+        try {
+            monitor.beginTask("MrSID/ECW", 2);
+            monitor.worked(1);
+            return new AbstractRasterServiceInfo(this, "MrSID", "ECW"); //$NON-NLS-1$ //$NON-NLS-2$
+        } finally {
+            monitor.done();
         }
-        return this.info;
     }
 
     public Map<String, Serializable> getConnectionParams() {

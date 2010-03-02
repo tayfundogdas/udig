@@ -69,9 +69,8 @@ public class MySQLServiceImpl extends IService {
 
     /*
      * Required adaptations: <ul> <li>IServiceInfo.class <li>List.class <IGeoResource> </ul>
-     * 
      * @see net.refractions.udig.catalog.IService#resolve(java.lang.Class,
-     *      org.eclipse.core.runtime.IProgressMonitor)
+     * org.eclipse.core.runtime.IProgressMonitor)
      */
     public <T> T resolve( Class<T> adaptee, IProgressMonitor monitor ) throws IOException {
         if (monitor == null)
@@ -82,15 +81,12 @@ public class MySQLServiceImpl extends IService {
         }
         if (adaptee.isAssignableFrom(JDBCDataStore.class))
             return adaptee.cast(getDS());
-        /* if (adaptee.isAssignab6leFrom(Connection.class)){
-                 Connection connection;
-        		try {
-        			connection = getDS().getConnectionPool().getConnection();
-        		} catch (SQLException e) {
-        			throw (IOException) new IOException(e.getLocalizedMessage()).initCause(e);
-        		}
-        		return adaptee.cast(connection);
-         }*/
+        /*
+         * if (adaptee.isAssignab6leFrom(Connection.class)){ Connection connection; try { connection
+         * = getDS().getConnectionPool().getConnection(); } catch (SQLException e) { throw
+         * (IOException) new IOException(e.getLocalizedMessage()).initCause(e); } return
+         * adaptee.cast(connection); }
+         */
         return super.resolve(adaptee, monitor);
     }
     /*
@@ -143,25 +139,24 @@ public class MySQLServiceImpl extends IService {
     }
     private volatile List<MySQLGeoResource> members = null;
 
+    @Override
+    public IServiceMySQLInfo getInfo( IProgressMonitor monitor ) throws IOException {
+        return (IServiceMySQLInfo) super.getInfo(monitor);
+    }
     /*
      * @see net.refractions.udig.catalog.IService#getInfo(org.eclipse.core.runtime.IProgressMonitor)
      */
-    protected IServiceInfo createInfo( IProgressMonitor monitor ) throws IOException {
-        getDS(); // load DataStore
-        if (info == null && ds != null) {
-            rLock.lock();
-            try {
-                if (info == null) {
-                    info = new IServiceMySQLInfo(ds);
-                }
-            } finally {
-                rLock.unlock();
-            }
-            IResolveDelta delta = new ResolveDelta(this, IResolveDelta.Kind.CHANGED);
-            ((CatalogImpl) CatalogPlugin.getDefault().getLocalCatalog())
-                    .fire(new ResolveChangeEvent(this, IResolveChangeEvent.Type.POST_CHANGE, delta));
+    protected IServiceMySQLInfo createInfo( IProgressMonitor monitor ) throws IOException {
+        JDBCDataStore dataStore = getDS(); // load DataStore
+        if (dataStore == null) {
+            return null; // could not connect to provide info
         }
-        return info;
+        rLock.lock();
+        try {
+            return new IServiceMySQLInfo(dataStore);
+        } finally {
+            rLock.unlock();
+        }
     }
     /*
      * @see net.refractions.udig.catalog.IService#getConnectionParams()
@@ -172,7 +167,7 @@ public class MySQLServiceImpl extends IService {
     private Throwable msg = null;
     private volatile JDBCDataStore ds = null;
     private Lock dsInstantiationLock = new UDIGDisplaySafeLock();
-    
+
     JDBCDataStore getDS() throws IOException {
         boolean changed = false;
         dsInstantiationLock.lock();
@@ -252,13 +247,13 @@ public class MySQLServiceImpl extends IService {
             try {
                 return getIdentifier().toURI();
             } catch (URISyntaxException e) {
-                // This would be bad 
+                // This would be bad
                 throw (RuntimeException) new RuntimeException().initCause(e);
             }
         }
 
         public String getTitle() {
-        	return "MySQL " + getIdentifier(); //$NON-NLS-1$
+            return "MySQL " + getIdentifier(); //$NON-NLS-1$
             //return "MySQL " + getIdentifier().getHost() + URLUtils.urlToFile(getIdentifier()).getAbsolutePath(); //$NON-NLS-1$
         }
 

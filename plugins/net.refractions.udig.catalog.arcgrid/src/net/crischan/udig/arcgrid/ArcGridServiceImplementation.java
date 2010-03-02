@@ -14,6 +14,7 @@ import net.refractions.udig.catalog.rasterings.AbstractRasterService;
 import net.refractions.udig.catalog.rasterings.AbstractRasterServiceInfo;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.NullProgressMonitor;
 
 public class ArcGridServiceImplementation extends AbstractRasterService {	
 	public ArcGridServiceImplementation(URL id, org.geotools.coverage.grid.io.GridFormatFactorySpi factory) {
@@ -21,20 +22,17 @@ public class ArcGridServiceImplementation extends AbstractRasterService {
 	}
 
 	@Override
-	protected IServiceInfo createInfo(IProgressMonitor monitor) throws IOException {
-		if (monitor != null)
-			monitor.beginTask("ArcGrid loading", 2);
+	protected AbstractRasterServiceInfo createInfo(IProgressMonitor monitor) throws IOException {
+	    if( monitor == null) monitor = new NullProgressMonitor();
 
-		if (this.info == null) {
-			if (monitor != null)
-				monitor.worked(1);
-			this.info = new AbstractRasterServiceInfo(this, ".asc", ".grd");  //$NON-NLS-1$//$NON-NLS-2$
-		}
-		
-		if (monitor != null)
+	    monitor.beginTask("ArcGrid loading", 2);
+	    try {
+	        monitor.worked(1);
+	        return  new AbstractRasterServiceInfo(this, ".asc", ".grd");  //$NON-NLS-1$//$NON-NLS-2$
+	    }
+	    finally {
 			monitor.done();
-		
-		return this.info;
+	    }
 	}
 
     @Override

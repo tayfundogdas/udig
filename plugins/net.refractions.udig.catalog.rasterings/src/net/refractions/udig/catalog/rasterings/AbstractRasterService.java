@@ -180,5 +180,8 @@ public abstract class AbstractRasterService extends IService {
             throws IOException;
 
 
-    protected abstract IServiceInfo createInfo( IProgressMonitor monitor ) throws IOException;
+    @Override
+    public AbstractRasterServiceInfo getInfo( IProgressMonitor monitor ) throws IOException {
+        return (AbstractRasterServiceInfo) super.getInfo(monitor);
+    }
 }

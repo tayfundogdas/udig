@@ -146,19 +146,22 @@ public class WMSServiceImpl extends IService {
         return wms;
     }
 
-    protected IServiceInfo createInfo( IProgressMonitor monitor ) throws IOException {
-        if (info == null) {
-            getWMS(monitor);
-            rLock.lock();
-            try {
-                if (info == null) {
-                    info = new WMSServiceInfo(monitor);
-                }
-            } finally {
-                rLock.unlock();
-            }
+    @Override
+    public WMSServiceInfo getInfo( IProgressMonitor monitor ) throws IOException {
+        return (WMSServiceInfo) super.getInfo(monitor);
+    }
+    protected WMSServiceInfo createInfo( IProgressMonitor monitor ) throws IOException {
+        WebMapServer webMapServer = getWMS(monitor);
+        if (webMapServer == null) {
+            return null; // could not connect
         }
-        return info;
+        rLock.lock();
+        try {
+            return new WMSServiceInfo(monitor);
+
+        } finally {
+            rLock.unlock();
+        }
     }
 
     /*
