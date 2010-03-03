@@ -1311,16 +1311,24 @@ public class TableView extends ViewPart implements ISelectionProvider, IUDIGView
                     //updateLayerFilter( filter );
                     
                     FeatureSource<SimpleFeatureType, SimpleFeature> source = layer.getResource(FeatureSource.class, ProgressManager.instance().get());
-                    SimpleFeatureType schema=source.getSchema();                    
+                    SimpleFeatureType schema=source.getSchema();               
                     FilterFactory fac=CommonFactoryFinder.getFilterFactory(GeoTools.getDefaultHints());
                     final List<String> queryAtts = obtainQueryAttributesForFeatureTable(schema);
                     final DefaultQuery query=new DefaultQuery(schema.getName().getLocalPart(), filter, Query.NO_NAMES );
                     
-                    FeatureCollection<SimpleFeatureType, SimpleFeature> features = source.getFeatures( query );
+                    FeatureCollection<SimpleFeatureType, SimpleFeature> features;
+                    // features = source.getFeatures( query ); // we just want the FeatureID no attributes needed
+                    
+                    features = source.getFeatures( filter );
+                    
                     final Set<FeatureId> selection = new HashSet<FeatureId>();
                     features.accepts( new FeatureVisitor(){
                         public void visit( Feature feature) {
-                            selection.add( feature.getIdentifier() );
+                            // we are using FeatureId to allow for a "temporary" FID when inserting content
+                            // (a real FID is not assigned until commit)
+                            //
+                            FeatureId identifier = feature.getIdentifier();
+                            selection.add( identifier );
                         }                        
                     }, null );
                     table.select( selection );
