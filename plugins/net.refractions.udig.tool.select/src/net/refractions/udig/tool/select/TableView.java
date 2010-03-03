@@ -128,6 +128,7 @@ import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.factory.GeoTools;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.Schema;
+import org.geotools.filter.FilterAttributeExtractor;
 import org.geotools.filter.IllegalFilterException;
 import org.geotools.referencing.CRS;
 import org.opengis.feature.Feature;
@@ -1293,7 +1294,8 @@ public class TableView extends ViewPart implements ISelectionProvider, IUDIGView
 			return null;
 		}
 
-		private void doSearch() {
+		@SuppressWarnings("unchecked")
+        private void doSearch() {
 			if (searchWidget.getText().trim().length()==0 ){
 		        searchWidget.setText(INITIAL_TEXT);
 		        searchWidget.setForeground(systemColor);
@@ -1312,14 +1314,17 @@ public class TableView extends ViewPart implements ISelectionProvider, IUDIGView
                     
                     FeatureSource<SimpleFeatureType, SimpleFeature> source = layer.getResource(FeatureSource.class, ProgressManager.instance().get());
                     SimpleFeatureType schema=source.getSchema();               
-                    FilterFactory fac=CommonFactoryFinder.getFilterFactory(GeoTools.getDefaultHints());
-                    final List<String> queryAtts = obtainQueryAttributesForFeatureTable(schema);
-                    final DefaultQuery query=new DefaultQuery(schema.getName().getLocalPart(), filter, Query.NO_NAMES );
+                    //FilterFactory fac=CommonFactoryFinder.getFilterFactory(GeoTools.getDefaultHints());
+                    //final List<String> queryAtts = obtainQueryAttributesForFeatureTable(schema);
+                    
+                    Set<String> required = (Set<String>) filter.accept( new FilterAttributeExtractor(), null );
+                    String[] names = required.toArray( new String[ required.size()]);
+                    final DefaultQuery query=new DefaultQuery(schema.getName().getLocalPart(), filter, names );
                     
                     FeatureCollection<SimpleFeatureType, SimpleFeature> features;
-                    // features = source.getFeatures( query ); // we just want the FeatureID no attributes needed
+                    features = source.getFeatures( query ); // we just want the FeatureID no attributes needed
                     
-                    features = source.getFeatures( filter );
+                    //features = source.getFeatures( filter );
                     
                     final Set<FeatureId> selection = new HashSet<FeatureId>();
                     features.accepts( new FeatureVisitor(){
