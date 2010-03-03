@@ -7,19 +7,7 @@
          point="org.eclipse.core.runtime.products">
       <product
             application="net.refractions.udig.ui.application"
-            name="%product.name">
-         <property
-               name="windowImages"
-               value="icons/icon16.gif,icons/icon32.gif,icons/icon48.gif,icons/icon64.gif,icons/icon128.gif">
-         </property>
-         <property
-               name="aboutText"
-               value="%verboseAboutText">
-         </property>
-         <property
-               name="aboutImage"
-               value="icons/about.gif">
-         </property>
+            name="uDig SDK">
          <property
                name="startupForegroundColor"
                value="FFFFFF">
@@ -34,7 +22,7 @@
          </property>
          <property
                name="appName"
-               value="%product.name">
+               value="uDig SDK">
          </property>
          <property
                name="preferenceCustomization"

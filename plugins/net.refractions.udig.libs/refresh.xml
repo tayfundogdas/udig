@@ -214,6 +214,7 @@
 		</copy>
 
 		<!-- (flat) copy downloaded source JARs (sources) to plugin directory ${libs_src_dir} -->
+		<!--
 		<copy todir="${libs_src_dir}" flatten="true" verbose="true">
 			<fileset refid="sources.dependency.fileset" />
 			<chainedmapper>
@@ -221,7 +222,7 @@
 				<globmapper from="*-sources.jar" to="*-sources.zip" />
 			</chainedmapper>
 		</copy>
-		
+		-->
 		<!-- not needed right now -->
 		<!--<antcall target="fix" /> -->
 		
