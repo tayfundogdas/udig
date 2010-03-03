@@ -45,7 +45,7 @@
 			<!--dependency groupId="xmlrpc" artifactId="xmlrpc" version="2.0" /-->
 			<dependency groupId="org.apache.xmlrpc" artifactId="xmlrpc-client" version="3.0" />
 			<dependency groupId="org.apache.xmlrpc" artifactId="xmlrpc-common" version="3.0" />
-			<dependency groupId="commons-codec" artifactId="commons-codec" version="1.2" />
+			<!--dependency groupId="commons-codec" artifactId="commons-codec" version="1.2" /-->
 			<dependency groupId="com.google" artifactId="google-collect-snapshot" version="20080321" />
 			<dependency groupId="jaxb" artifactId="jaxb-impl" version="1.3" />
 			<dependency groupId="net.sourceforge.findbugs" artifactId="jsr305" version="1.3.2" />
@@ -116,19 +116,7 @@
 
 			<!-- jfreechart -->
 			<dependency groupId="jfree" artifactId="jfreechart" version="1.0.13" />
-
-			<!-- batik jars - used by geotools renderer -->
-		    <dependency groupId="org.apache.xmlgraphics" artifactId="batik-dom" version="1.7" />
-			<dependency groupId="org.apache.xmlgraphics" artifactId="batik-svg-dom" version="1.7" />
-			<dependency groupId="org.apache.xmlgraphics" artifactId="batik-css" version="1.7" />
-			<dependency groupId="org.apache.xmlgraphics" artifactId="batik-bridge" version="1.7" />
-			<dependency groupId="org.apache.xmlgraphics" artifactId="batik-gvt" version="1.7" />
-			<dependency groupId="org.apache.xmlgraphics" artifactId="batik-ext" version="1.7" />
-			<dependency groupId="org.apache.xmlgraphics" artifactId="batik-xml" version="1.7" />
-			<!--dependency groupId="org.apache.xmlgraphics" artifactId="batik-script" version="1.7" /-->
-			<dependency groupId="org.apache.xmlgraphics" artifactId="batik-awt-util" version="1.7" />
-			<dependency groupId="org.apache.xmlgraphics" artifactId="batik-parser" version="1.7" />
-
+			
 			<!-- these may already be accounted for by the above plug-ins -->
 			<!--
 			<dependency groupId="org.geotools.xsd" artifactId="gt-gml2" version="${geotools.version}" />
@@ -152,22 +140,37 @@
 			<dependency groupId="org.geotools" artifactId="gt-sample-data" version="${geotools.version}" scope="provided" />
 			<dependency groupId="ant" artifactId="ant-optional" version="1.5.1" scope="provided" />
 
-			<!-- We get this the base RCP as such they are already provided by -->
+			<!-- We get this from the base RCP as such they are already provided by -->
 			<!-- our net.refractions.udig.libs dependencies in the MANIFEST.MF -->
 			<!-- and we don't need to ask for them to be downloaded now.       -->
 			<dependency groupId="org.apache" artifactId="xerces" version="2.7.1" scope="provided" />
 			<dependency groupId="xerces" artifactId="xercesImpl" version="2.7.1" scope="provided" />
 
+			<!-- the followin is provided by the eclipse modeling target platform -->
+			<dependency groupId="com.ibm.icu" artifactid="icu4j" version="3.4.4" scope="provided" />
+			<!-- batik jars - used by geotools renderer -->
+			<dependency groupId="org.apache.xmlgraphics" artifactId="batik-transcoder" version="1.7" scope="provided"/>  
+			<!-- using batik from eclipse 
+		    <dependency groupId="org.apache.xmlgraphics" artifactId="batik-dom" version="1.7" />
+			<dependency groupId="org.apache.xmlgraphics" artifactId="batik-svg-dom" version="1.7" />
+			<dependency groupId="org.apache.xmlgraphics" artifactId="batik-css" version="1.7" />
+			<dependency groupId="org.apache.xmlgraphics" artifactId="batik-bridge" version="1.7" />
+			<dependency groupId="org.apache.xmlgraphics" artifactId="batik-gvt" version="1.7" />
+			<dependency groupId="org.apache.xmlgraphics" artifactId="batik-ext" version="1.7" />
+			<dependency groupId="org.apache.xmlgraphics" artifactId="batik-xml" version="1.7" />
+			<dependency groupId="org.apache.xmlgraphics" artifactId="batik-script" version="1.7" />
+			<dependency groupId="org.apache.xmlgraphics" artifactId="batik-awt-util" version="1.7" />
+			<dependency groupId="org.apache.xmlgraphics" artifactId="batik-parser" version="1.7" />-->
 			<!-- These dependencies are for optional batik components and are not used -->
-			<dependency groupId="xml-apis" artifactId="xml-apis-xerces" version="2.7.1" scope="provided" />
-			<dependency groupId="xml-apis" artifactId="xml-apis" version="1.0.b2" scope="provided" />
+			<!--dependency groupId="xml-apis" artifactId="xml-apis-xerces" version="2.7.1" scope="provided" />
+			<dependency groupId="xml-apis" artifactId="xml-apis" version="1.0.b2" scope="provided" /-->
 			
 			<!--dependency groupId="commons-io" artifactId="commons-io" version="1.0.b2" scope="provided" /-->
 			<dependency groupId="commons-codec" artifactid="commons-codec" version="1.2" scope="provided" />
 			<dependency groupId="commons-httpclient" artifactid="commons-httpclient" version="3.1" scope="provided" />
 			<dependency groupId="commons-lang" artifactid="commons-lang" version="2.1" scope="provided" />
 			<dependency groupId="commons-logging" artifactid="commons-logging" version="1.0.3" scope="provided" />
-						
+
 			<dependency groupId="log4j" artifactId="log4j" version="1.2" scope="provided" />
 			<dependency groupId="org.eclipse.xsd" artifactId="xsd" version="2.2.2" scope="provided" />
 			<dependency groupId="org.eclipse.emf" artifactId="ecore" version="2.2.2" scope="provided" />
@@ -175,6 +178,7 @@
 			<dependency groupId="junit" artifactId="junit" version="3.8.1" scope="provided" />
 			<dependency groupId="velocity" artifactId="velocity" version="1.4" scope="provided" />
 			<dependency groupId="joda-time" artifactId="joda-time" version="1.6" />
+			
 		</artifact:dependencies>
 	</target>
 
