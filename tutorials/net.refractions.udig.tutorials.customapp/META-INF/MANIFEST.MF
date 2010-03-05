@@ -4,8 +4,7 @@ Bundle-Name: Custom Branding Plug-in
 Bundle-SymbolicName: net.refractions.udig.tutorials.customapp;singleton:=true
 Bundle-Version: 1.2.0
 Bundle-Activator: net.refractions.udig.tutorials.customapp.Activator
-Bundle-Vendor: Humble uDig Student
+Bundle-Vendor: Student
 Require-Bundle: org.eclipse.core.runtime,
- net.refractions.udig.ui,
- org.eclipse.ui
+ net.refractions.udig.ui
 Bundle-ActivationPolicy: lazy
