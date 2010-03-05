@@ -157,6 +157,7 @@ public class UDIGApplication implements IApplication {
      * Long term we will want to create a startup list
      * (much like we have shutdown hooks).
      */
+    @SuppressWarnings("restriction")
     protected boolean init() {
         ProgressMonitorDialog progress = new ProgressMonitorDialog( Display.getCurrent().getActiveShell());
         final Bundle bundle = Platform.getBundle(Activator.ID);
@@ -180,12 +181,12 @@ public class UDIGApplication implements IApplication {
                 });
             } catch (InvocationTargetException e) {
                 Platform.getLog(bundle).log(
-                        new Status(IStatus.ERROR, Activator.ID, e.getCause().getLocalizedMessage(), e
+                        new Status(IStatus.ERROR, UiPlugin.ID, e.getCause().getLocalizedMessage(), e
                                 .getCause()));
                 return false;
             } catch (InterruptedException e) {
                 Platform.getLog(bundle).log(
-                        new Status(IStatus.ERROR, Activator.ID, e.getCause().getLocalizedMessage(), e
+                        new Status(IStatus.ERROR, UiPlugin.ID, e.getCause().getLocalizedMessage(), e
                                 .getCause()));
                 return false;
             }

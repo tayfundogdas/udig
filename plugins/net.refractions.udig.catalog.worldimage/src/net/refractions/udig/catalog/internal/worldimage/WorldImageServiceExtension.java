@@ -123,7 +123,9 @@ public class WorldImageServiceExtension implements ServiceExtension2 {
             return Messages.WorldImageServiceExtension_noID;
         }
         File file = URLUtils.urlToFile(id);
-        if(file == null) return null;
+        if(file == null) {
+            return "Not a file";
+        }
         String path = file.getAbsolutePath();
         String fileExt = path.substring(path.lastIndexOf('.') + 1).toLowerCase();
         if(fileExt.compareToIgnoreCase("PNG") != 0 &&  //$NON-NLS-1$
