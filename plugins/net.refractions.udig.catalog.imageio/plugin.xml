@@ -37,9 +37,9 @@
       <wizard
             class="net.refractions.udig.catalog.imageio.mosaicwizard.MosaicImportWizard"
             id="eu.hydrologis.jgrass.dxfdwg.wizard.DxfImportWizard"
-            name="Import imagery folder as mosaic">
+            name="%Import.ImagesAsMosaic">
          <description>
-            Import a dxf file converting it to shapefile into the workspace.
+            %Import.ImagesAsMosaic.tooltip
          </description>
       </wizard>
    </extension>
