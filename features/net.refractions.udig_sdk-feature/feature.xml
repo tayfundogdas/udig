@@ -65,6 +65,10 @@
          id="net.refractions.udig_tutorials.source"
          version="0.0.0"/>
 
+   <includes
+         id="net.refractions.udig_language"
+         version="0.0.0"/>
+
    <plugin
          id="org.junit"
          download-size="0"

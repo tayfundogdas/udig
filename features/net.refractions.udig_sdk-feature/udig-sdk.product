@@ -14,12 +14,8 @@
 
    <windowImages/>
 
-   <splash
-      location="net.refractions.udig"
-      startupProgressRect="0,196,500,8"
-      startupMessageRect="7,180,445,16"
-      startupForegroundColor="FFFFFF" />
-   <launcher name="udigsdk">
+
+   <launcher>
       <linux icon="/net.refractions.udig/icons/udig.xpm"/>
       <macosx icon="/net.refractions.udig/icons/icon128.icns"/>
       <solaris/>
@@ -29,11 +25,13 @@
       </win>
    </launcher>
 
-   <intro introId="net.refractions.udig.ui.intro"/>
 
    <vm>
    </vm>
 
+   <license>
+        <url>http://www.gnu.org/licenses/lgpl.html</url>
+   </license>
 
    <plugins>
    </plugins>
