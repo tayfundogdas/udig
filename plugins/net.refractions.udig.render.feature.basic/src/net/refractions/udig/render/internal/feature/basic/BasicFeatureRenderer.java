@@ -36,6 +36,7 @@ import net.refractions.udig.ui.ProgressManager;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.geotools.data.DefaultQuery;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.FeatureStore;
 import org.geotools.data.Query;
@@ -146,10 +147,18 @@ public class BasicFeatureRenderer extends RendererImpl {
 		Style style = getStyle(styleBlackboard, featureSource);
         
 		layers = new MapLayer[1];
-		if (!layer.getCRS().equals(featureSource.getSchema().getCoordinateReferenceSystem())){
-			//need to reproject the feature source
-			FeatureCollection<SimpleFeatureType, SimpleFeature> reprojectingFc = new ForceCoordinateSystemFeatureResults(featureSource.getFeatures(), layer.getCRS()); 
-			layers[0] = new DefaultMapLayer(reprojectingFc, style, "Test"); //$NON-NLS-1$
+		CoordinateReferenceSystem layerCRS = layer.getCRS();
+		CoordinateReferenceSystem dataCRS = featureSource.getSchema().getCoordinateReferenceSystem();
+		
+		if (!layerCRS.equals(dataCRS)){
+			// need to force the coordinate reference system to match the layer definition
+		    // FeatureCollection<SimpleFeatureType, SimpleFeature> reprojectingFc = new ForceCoordinateSystemFeatureResults(featureSource.getFeatures(), layer.getCRS()); 
+			// layers[0] = new DefaultMapLayer(reprojectingFc, style, "Test"); //$NON-NLS-1$
+	         layers[0] = new DefaultMapLayer(featureSource, style, "Test"); //$NON-NLS-1$
+	         DefaultQuery query = new DefaultQuery();
+	         query.setTypeName( featureSource.getSchema().getTypeName() );
+	         query.setCoordinateSystem( layerCRS );
+	         layers[0].setQuery( query );
 		}else{
 			layers[0] = new DefaultMapLayer(featureSource, style, "Test"); //$NON-NLS-1$
 		}
@@ -247,13 +256,13 @@ public class BasicFeatureRenderer extends RendererImpl {
             try{
                 validBounds.transform(getContext().getLayer().getCRS(), true);
             }catch( TransformException te){
-                RendererPlugin.log("", te); //$NON-NLS-1$
+                RendererPlugin.log("viewable area is available in the layer CRS", te); //$NON-NLS-1$
                 endMessage=Messages.BasicFeatureRenderer_warning1;
                 endStatus=ILayer.WARNING;
                 return;
             }catch( AssertionError te){
                 // this clause is enable this fix to work even during developement 
-                RendererPlugin.log("", te); //$NON-NLS-1$
+                RendererPlugin.log("Viewable area available in the layer CRS", te); //$NON-NLS-1$
                 endMessage=Messages.BasicFeatureRenderer_warning1;
                 endStatus=ILayer.WARNING;
                 return;
