@@ -168,7 +168,7 @@
 			<!--dependency groupId="commons-io" artifactId="commons-io" version="1.0.b2" scope="provided" /-->
 			<dependency groupId="commons-codec" artifactid="commons-codec" version="1.2" scope="provided" />
 			<dependency groupId="commons-httpclient" artifactid="commons-httpclient" version="3.1" scope="provided" />
-			<dependency groupId="commons-lang" artifactid="commons-lang" version="2.1" scope="provided" />
+			<!--dependency groupId="commons-lang" artifactid="commons-lang" version="2.1" scope="provided" /-->
 			<dependency groupId="commons-logging" artifactid="commons-logging" version="1.0.3" scope="provided" />
 
 			<dependency groupId="log4j" artifactId="log4j" version="1.2" scope="provided" />
