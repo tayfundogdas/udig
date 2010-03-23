@@ -223,12 +223,13 @@ public abstract class IGeoResource implements IResolve {
                     } else {
                         // could issue a catalog event indicating new information is available
                         // this delta describes what has changed
+                        /*
                         IResolveDelta delta = new ResolveDelta(this, IResolveDelta.Kind.CHANGED);
                         
                         // fire the change
                         CatalogImpl localCatalog = (CatalogImpl) CatalogPlugin.getDefault().getLocalCatalog();
                         localCatalog.fire(new ResolveChangeEvent(this, IResolveChangeEvent.Type.POST_CHANGE, delta));
-
+                        */
                     }
                 }
             }

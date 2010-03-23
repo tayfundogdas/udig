@@ -685,7 +685,8 @@ public class CatalogImpl extends ICatalog {
             try {
                 listener.changed(event);
             } catch (Throwable die) {
-                CatalogPlugin.log(null, new Exception(die));
+                CatalogPlugin.log("Catalog event could not be delivered to "+listener.getClass().getSimpleName()+":"+listener.toString(), die);                
+                die.printStackTrace();
             }
         }
     }
