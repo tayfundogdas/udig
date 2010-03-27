@@ -15,10 +15,18 @@
 package net.refractions.udig.tool.info.internal;
 
 import java.io.IOException;
+import java.util.LinkedList;
 import java.util.List;
 
+import net.refractions.udig.core.internal.FeatureUtils;
 import net.refractions.udig.project.AdaptableFeature;
 import net.refractions.udig.project.ILayer;
+import net.refractions.udig.project.ILayerListener;
+import net.refractions.udig.project.IMap;
+import net.refractions.udig.project.IMapCompositionListener;
+import net.refractions.udig.project.LayerEvent;
+import net.refractions.udig.project.MapCompositionEvent;
+import net.refractions.udig.project.LayerEvent.EventType;
 import net.refractions.udig.project.internal.impl.LayerImpl;
 import net.refractions.udig.project.ui.ApplicationGIS;
 import net.refractions.udig.project.ui.internal.properties.FeaturePropertySource;
@@ -46,14 +54,26 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.Tree;
+import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.part.PageBook;
 import org.eclipse.ui.views.properties.PropertySheetPage;
+import org.geotools.data.FeatureEvent;
 import org.geotools.data.FeatureSource;
+import org.geotools.data.FeatureEvent.Type;
 import org.geotools.data.ows.Layer;
+import org.geotools.factory.CommonFactoryFinder;
+import org.geotools.factory.GeoTools;
+import org.geotools.feature.FeatureCollection;
+import org.geotools.feature.FeatureIterator;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.opengis.feature.simple.SimpleFeature;
+import org.opengis.feature.simple.SimpleFeatureType;
+import org.opengis.filter.Filter;
+import org.opengis.filter.FilterFactory;
 
 /**
  * Info recast as a search part.
@@ -69,6 +89,10 @@ public class InfoView2 extends SearchPart {
     private BrowserInfoDisplay browserDisplay;
     //private FeatureDisplay featureDisplay;
     private PropertySheetPage featureDisplay;
+	private IMapCompositionListener mapListener;
+	private ILayerListener layerListener;
+	private List<ILayer>  layerList;
+	private Thread	fatherThread= null;
     
     private static final class InfoViewLabelProvider extends LabelProvider implements IColorProvider {
         public String getText(Object element) {
@@ -124,8 +148,29 @@ public class InfoView2 extends SearchPart {
         super( InfoPlugin.getDefault().getDialogSettings() );
     }
     
+	private void initiListeners() {
+
+		this.mapListener = new IMapCompositionListener() {
+
+			public void changed(MapCompositionEvent event) {
+
+				updatedMapLayersActions(event);
+			}
+		};
+		
+		this.layerListener = new ILayerListener() {
+			
+			public void refresh(LayerEvent event) {
+				
+				updateLayerActions(event);
+			}
+		};
+	}
+    
     @Override
     protected Composite createDetails( SashForm splitter ) {
+    	initiListeners();
+    	this.fatherThread = Thread.currentThread();
         PageBook book = new PageBook( splitter, SWT.NONE );        
         splitter.setWeights(new int[]{10, 90});
 
@@ -153,7 +198,9 @@ public class InfoView2 extends SearchPart {
         }              
         return book;
     }
-    @Override    
+
+
+	@Override    
     protected void fillActionBars() {
         IActionBars actionBars = getViewSite().getActionBars();
         IToolBarManager toolBar = actionBars.getToolBarManager();
@@ -234,19 +281,25 @@ public class InfoView2 extends SearchPart {
     @Override
     protected void searchImplementation( Object filter, IProgressMonitor monitor, ResultSet set ) {
         InfoRequest request = (InfoRequest) filter;
-            
+
         if( monitor != null ) {
             monitor.beginTask( Messages.InfoView2_information_request, request.layers.size() );
         }
+        //add listener to the current map
+        addMapListener();
+        layerList = new LinkedList<ILayer>();
         int work = 0;
         for( int i = request.layers.size()-1; i > -1; i-- ) {
             ILayer layer = request.layers.get(i); //navigate the list backwards
             monitor.subTask( layer.getName() );
             monitor.worked( ++work );
-            
+        	List<ILayer> currentLayerList = ApplicationGIS.getActiveMap().getMapLayers();
+        	if (!currentLayerList.contains(layer)) continue;
             if( !layer.isVisible() ) continue;
             //if( !layer.isApplicable( "information" )) continue;
-            
+            //add listener to the current layer and add that layer to be processed.
+            addLayerListener(layer);
+            layerList.add(layer);
             if( layer.hasResource( FeatureSource.class ) ) {
                 try {
                     List<SimpleFeature> more = DataStoreDescribeLayer.info2( layer, request.bbox, monitor );
@@ -331,5 +384,143 @@ public class InfoView2 extends SearchPart {
                 return false;
             }            
         };
+    }
+    
+    /**
+     * If the layer is removed then removed all the items from the tree because they won't be
+     * accessible anymore.
+     * 
+     * @param event
+     */
+    private void updatedMapLayersActions( MapCompositionEvent event ) {
+
+        MapCompositionEvent.EventType eventType = event.getType();
+
+        switch( eventType ) {
+        case REMOVED:
+        case MANY_REMOVED:
+
+            // if the layer was removed, then it isn't in the list anymore, so the feature/s showed
+            // on the tree could be removed.
+            List<ILayer> currentLayerList = ApplicationGIS.getActiveMap().getMapLayers();
+            for( ILayer layer : layerList ) {
+                if (!currentLayerList.contains(layer)) {
+                    removeItemsFromTree();
+                    break;
+                }
+            }
+            break;
+        default:
+            break;
+        }
+    }
+
+    /**
+     * If the feature is deleted and also it's contained on the tree, remove it.
+     * 
+     * @param event
+     */
+    private void updateLayerActions( LayerEvent event ) {
+
+        EventType eventType = event.getType();
+
+        switch( eventType ) {
+        case EDIT_EVENT:
+            FeatureEvent featureEvent = (FeatureEvent) event.getNewValue();
+
+            if (featureEvent.getType() == Type.REMOVED) {
+                removeFeatureFromTree();
+            }
+            break;
+        default:
+            break;
+        }
+    }
+
+    /**
+     * With each entry from the tree, creates a FidFilter, retrieves from the store that query. If
+     * a feature is returned, then this feature still exist, if not, then remove the associated treeItem.
+     */
+    private void removeFeatureFromTree() {
+
+        Display.findDisplay(fatherThread).asyncExec(new Runnable(){
+
+            public void run() {
+                
+                Tree tree = ((TreeViewer) viewer).getTree();
+                TreeItem[] treeItems = tree.getItems();
+                TreeItem removedItem = null;
+                for( int i = 0; i < treeItems.length; i++ ) {
+                    TreeItem item = treeItems[i];
+
+                    if (item.getData() instanceof SimpleFeature) {
+                        SimpleFeature feature = (SimpleFeature) item.getData();
+                        Filter id = createFidFiler(feature.getID());
+                        if (!isFeatureOnStore(id)) {
+                            // this feature was removed, so remove from tree.
+                            removedItem = treeItems[i];
+                            break;
+                        }
+                    }
+                }
+                if (removedItem != null) {
+                    // if a feature is deleted, show the initial style
+                    getDetails().showPage(information);
+                    tree.deselectAll();
+                    tree.getItem(tree.indexOf(removedItem)).dispose();
+                }
+            }
+            /**
+             * Check if the feature is on the store.
+             * @param id
+             * @return True if the feature is in the store.
+             */
+            private boolean isFeatureOnStore( Filter id ) {
+
+                FeatureCollection<SimpleFeatureType, SimpleFeature> collection = null;
+                FeatureIterator<SimpleFeature> iter = null;
+                try {
+                    collection = layerList.get(0).getResource(FeatureSource.class, null)
+                            .getFeatures(id);
+                    iter = collection.features();
+                    if (iter.hasNext()) {
+                        return true;
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } finally {
+                    collection.close(iter);
+                }
+                return false;
+            }
+        });
+    }
+
+    private Filter createFidFiler( String id ) {
+        FilterFactory filterFactory = CommonFactoryFinder.getFilterFactory(GeoTools
+                .getDefaultHints());
+        Filter filterId = filterFactory.id(FeatureUtils.stringToId(filterFactory, id));
+        return filterId;
+    }
+
+    private void removeItemsFromTree() {
+
+        Display.findDisplay(fatherThread).asyncExec(new Runnable(){
+
+            public void run() {
+                getDetails().showPage(information);
+                Tree tree = ((TreeViewer) viewer).getTree();
+                tree.removeAll();
+            }
+        });
+    }
+
+    private void addMapListener() {
+        IMap map = ApplicationGIS.getActiveMap();
+        map.addMapCompositionListener(mapListener);
+    }
+
+    private void addLayerListener( ILayer layer ) {
+        layer.addListener(layerListener);
     }
 }
