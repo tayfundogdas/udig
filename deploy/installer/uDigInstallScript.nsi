@@ -126,7 +126,7 @@
   ;you like the uDig start menu
   ;Start Menu Folder Page Configuration
   !define MUI_STARTMENUPAGE_REGISTRY_ROOT "HKCU" 
-  !define MUI_STARTMENUPAGE_REGISTRY_KEY "Software\uDig1.2-M6" 
+  !define MUI_STARTMENUPAGE_REGISTRY_KEY "Software\uDig1.2" 
   !define MUI_STARTMENUPAGE_REGISTRY_VALUENAME "Start Menu Folder"
   
   !insertmacro MUI_PAGE_STARTMENU Application $STARTMENU_FOLDER
