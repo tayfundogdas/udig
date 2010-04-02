@@ -96,4 +96,12 @@
          <externalCatalogueURL url="http://udig.refractions.net"/>
       </externalCatalogue>
    </extension>
+   <extension
+         id="sdk"
+         point="org.eclipse.core.runtime.products">
+      <product
+            application="net.refractions.udig.ui.application"
+            name="uDig SDK">
+      </product>
+   </extension>
 </plugin>
