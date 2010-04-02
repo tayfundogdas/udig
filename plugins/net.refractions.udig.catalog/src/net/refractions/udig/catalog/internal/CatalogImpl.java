@@ -73,6 +73,7 @@ import org.eclipse.core.runtime.preferences.IExportedPreferences;
 import org.eclipse.core.runtime.preferences.IPreferencesService;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jface.operation.IRunnableWithProgress;
+import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.osgi.service.prefs.BackingStoreException;
 import org.osgi.service.prefs.Preferences;
 
@@ -653,7 +654,8 @@ public class CatalogImpl extends ICatalog {
         if (bbox == null || bbox.isNull())
             return true; // no checking here
         try {
-            return bbox.intersects(resource.getInfo(null).getBounds());
+            ReferencedEnvelope bounds = resource.getInfo(null).getBounds();
+            return bbox.intersects(bounds);
         } catch (Throwable e) {
             CatalogPlugin.log(null, e);
             return false;
