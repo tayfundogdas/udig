@@ -221,7 +221,8 @@ public class EndConnectionState extends State {
             for( URL url : urls ) {
                 Collection<IService> searchResult = searchLocalCatalog(url, monitor);
                 if (searchResult.isEmpty()) {
-                    services.addAll(sFactory.createService(url));
+                    List<IService> created = sFactory.createService(url);
+                    services.addAll(created);
                 } else {
                     services.addAll(searchResult);
                 }

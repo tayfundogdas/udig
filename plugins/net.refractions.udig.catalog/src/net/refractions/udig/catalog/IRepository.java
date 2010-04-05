@@ -18,6 +18,7 @@ package net.refractions.udig.catalog;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
@@ -90,6 +91,16 @@ public abstract class IRepository extends ISearch {
      * @throws IOException 
      */
     public abstract IService acquire( Map<String, Serializable> connectionParameters, IProgressMonitor monitor ) throws IOException;
+    
+    /**
+     * Acquire a service from this repository, using the default ServiceFactory if needed and registering the result.
+     * 
+     * @param url URL which should be recognized by a ServiceExtension
+     * @param monitor Used to track the process of connecting
+     * @return IService
+     * @throws IOException 
+     */
+    public abstract IService acquire( URL url, IProgressMonitor monitor ) throws IOException;
     
     /**
      * Replaces the specified entry in this catalog.
