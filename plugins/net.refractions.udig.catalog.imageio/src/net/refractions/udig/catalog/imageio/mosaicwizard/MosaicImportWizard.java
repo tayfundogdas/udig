@@ -18,9 +18,10 @@
 package net.refractions.udig.catalog.imageio.mosaicwizard;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
-import java.util.List;
+import java.net.URL;
 
 import net.refractions.udig.catalog.CatalogPlugin;
 import net.refractions.udig.catalog.ICatalog;
@@ -88,22 +89,24 @@ public class MosaicImportWizard extends Wizard implements INewWizard {
 
                     IServiceFactory sFactory = CatalogPlugin.getDefault().getServiceFactory();
                     ICatalog catalog = CatalogPlugin.getDefault().getLocalCatalog();
-                    List<IService> services = sFactory.createService(shapeFile.toURI().toURL());
-                    for( IService service : services ) {
-                        catalog.add(service);
-                    }
+                    URL url = shapeFile.toURI().toURL();
+                    IService registered = catalog.acquire( url, null );                    
+//                    List<IService> services = sFactory.createService(shapeFile.toURI().toURL());
+//                    for( IService service : services ) {
+//                        catalog.add(service);
+//                    }
                 } catch (MalformedURLException e) {
                     e.printStackTrace();
+                    String message = "An error occurred while importing the imagery to mosaic.";
+                    ExceptionDetailsDialog.openError(null, message, IStatus.ERROR, Activator.ID, e);
+                } catch (IOException e) {
                     String message = "An error occurred while importing the imagery to mosaic.";
                     ExceptionDetailsDialog.openError(null, message, IStatus.ERROR, Activator.ID, e);
                 }
 
             }
-
         };
-
         PlatformGIS.runInProgressDialog("Importing imagery to mosaic", true, operation, true);
-
         return true;
     }
 }
