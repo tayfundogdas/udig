@@ -265,11 +265,12 @@ public class URLUtils {
                 // won't work so lets continue on and try to resolve the file.
             }
         }
-
+        
         String substring = urlSpec.substring(5);
         if (substring.startsWith("//")) { //$NON-NLS-1$
             // skip leading / indicating a root folder?
-            substring = substring.substring(2);
+            //substring = substring.substring(2);
+            return url;
         }
         try {
             // check if it is a relative path

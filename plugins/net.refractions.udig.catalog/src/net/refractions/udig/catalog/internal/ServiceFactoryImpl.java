@@ -34,6 +34,9 @@ import net.refractions.udig.core.internal.ExtensionPointUtil;
 
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtension;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.SubProgressMonitor;
 
 /**
  * Default implementation of IServiceFactory used by the local catalog.
@@ -162,5 +165,21 @@ public class ServiceFactoryImpl implements IServiceFactory {
             lock.unlock();
         }
         return services;
+    }
+    
+    public void dispose( List<IService> list, IProgressMonitor monitor) {
+        if( list == null ) return;
+        
+        if( monitor == null ) monitor = new NullProgressMonitor();
+        monitor.beginTask("dispose", list.size()*10 );
+        for( IService service : list ){
+            try {
+                service.dispose( new SubProgressMonitor(monitor, 10) );
+            }
+            catch( Throwable t ){
+                CatalogPlugin.trace("Dispose "+service, t);
+            }
+        }
+        monitor.done();
     }
 }

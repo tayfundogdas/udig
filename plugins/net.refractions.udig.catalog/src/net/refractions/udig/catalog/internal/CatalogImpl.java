@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -33,8 +34,11 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
+
+import javax.swing.ProgressMonitor;
 
 import net.refractions.udig.catalog.CatalogPlugin;
 import net.refractions.udig.catalog.ICatalog;
@@ -80,9 +84,10 @@ import org.osgi.service.prefs.Preferences;
 import com.vividsolutions.jts.geom.Envelope;
 
 /**
- * Implementation of an in memory catalog.
+ * Local Catalog implementation (tracking known services in mememory)
  * 
- * @author David Zwiers, Refractions Research
+ * @author David Zwiers (Refractions Research)
+ * @author Jody Garnett
  * @since 0.6
  */
 public class CatalogImpl extends ICatalog {
@@ -137,22 +142,31 @@ public class CatalogImpl extends ICatalog {
     public void removeListener( IResolveChangeListener listener ) {
         catalogListeners.remove(listener);
     }    
-    /**
-     * @see net.refractions.udig.catalog.ICatalog#add(net.refractions.udig.catalog.IService)
-     * @param entry
-     * @throws UnsupportedOperationException
-     */
-    public void add( IService entry ) throws UnsupportedOperationException {
-        if (entry == null || entry.getIdentifier() == null)
+    
+    public IService add( IService service ) throws UnsupportedOperationException {
+        if (service == null || service.getIdentifier() == null)
             throw new NullPointerException("Cannot have a null id"); //$NON-NLS-1$
-        if( getById(IService.class, entry.getID(), new NullProgressMonitor())!=null )
-            return;
+        ID id = service.getID();
         
-        services.add(entry);
-        IResolveDelta deltaAdded = new ResolveDelta(entry, IResolveDelta.Kind.ADDED);
+        IService found = getById(IService.class, id, new NullProgressMonitor());
+        
+        if( found != null ){
+            // clean up the service that was passed in
+            try {
+                service.dispose( new NullProgressMonitor() );
+            }
+            catch( Throwable t ){
+                CatalogPlugin.trace("dispose "+id, t);
+            }
+            return found; 
+        }
+        
+        services.add(service);
+        IResolveDelta deltaAdded = new ResolveDelta(service, IResolveDelta.Kind.ADDED);
         IResolveDelta deltaChanged = new ResolveDelta(this, Collections.singletonList(deltaAdded));
         fire(new ResolveChangeEvent(CatalogImpl.this, IResolveChangeEvent.Type.POST_CHANGE,
                 deltaChanged));
+        return service;
     }
 
     /**
@@ -228,35 +242,92 @@ public class CatalogImpl extends ICatalog {
         }
         fire(event);
     }
-
-    public List<IResolve> find( ID id, IProgressMonitor monitor ) {
-        return find( id.toURL(), monitor );        
-    }
-    
+    //
+    // Registration: creation
+    //
     /**
-     * Quick search by url match.
-     * @param query
-     * 
-     * @see net.refractions.udig.catalog.ICatalog#search(org.opengis.filter.Filter)
-     * @return List<IResolve>
-     * @throws IOException
+     * Implementation uses default service factory to produce a service
+     * for the provided connection parameters. 
      */
-    public List<IResolve> find( URL query, IProgressMonitor monitor ) {        
+    public IService acquire( Map<String, Serializable> connectionParameters, IProgressMonitor monitor ) throws IOException {    
+        if( monitor == null ) monitor = new NullProgressMonitor();
+        
+        IServiceFactory factory = CatalogPlugin.getDefault().getServiceFactory();
+        
+        monitor.beginTask("acquire", 100 );
+        monitor.subTask("acquire services");
+        List<IService> possible = factory.createService( connectionParameters );
+        monitor.worked(10);
+        try {
+            if( possible.isEmpty() ){
+                throw new IOException("Unable to connect to any service supporting "+connectionParameters );
+            }
+            IProgressMonitor monitor2 = new SubProgressMonitor(monitor,20);
+            monitor2.beginTask("search", possible.size() );
+            for( IService created : possible ){
+                if( created == null ) continue;
+                ID id = created.getID();
+                monitor2.subTask("search "+id);
+                IService found = getById(IService.class, id, null );
+                if( found != null ){
+                    return found; // already connected!
+                }
+                monitor2.worked(1);
+            }
+            monitor2.done();
+            
+            IProgressMonitor monitor3 = new SubProgressMonitor(monitor,60);
+            monitor3.beginTask("connect", possible.size()*10 );
+            
+            for( Iterator<IService> iterator = possible.iterator(); iterator.hasNext(); ){
+                IService service = iterator.next();
+                if( service == null ) continue;
+                monitor3.subTask("connect "+service.getID() );
+                try {
+                    // try connecting 
+                    IServiceInfo info = service.getInfo( new SubProgressMonitor(monitor3,10) );
+                    if (info == null){
+                        CatalogPlugin.trace("unable to connect to "+service.getID(), null );
+                        continue; // skip unable to connect
+                    }
+                    // connected!
+                    iterator.remove(); // don't clean this one up!
+                    return service;
+                }
+                catch (Throwable t ){
+                    // usually indicates an IOException as the service is unable to connect
+                    CatalogPlugin.trace("trouble connecting to "+service.getID(), t );
+                }
+            }
+            monitor3.done();
+        }
+        finally {
+            factory.dispose( possible, new SubProgressMonitor(monitor,10) ); // clean up any unused services
+            monitor.done();
+        }
+        return null; // unable to connect
+    }    
+    
+    //
+    // Search Implementations
+    //
+    public List<IResolve> find( ID id, IProgressMonitor monitor ) {
+        URL query = id.toURL();
         Set<IResolve> found = new LinkedHashSet<IResolve>();
-
-        ID id = new ID(query);
+        
+        ID id1 = new ID(query);
         
         // first pass 1.1- use urlEquals on CONNECTED service for subset check
         for( IService service : services ) {
             if( service.getStatus() != CONNECTED ) continue; // skip non connected service
-            URL identifier = service.getIdentifier();            
+            URL identifier = service.getIdentifier();
             if ( URLUtils.urlEquals(query, identifier, true)) {
                 if( matchedService(query, identifier)){
             		found.add(service);
             		found.addAll( friends( service ));
             	}
             	else {                    
-                    IResolve res = getChildById(service, id, true, monitor);
+                    IResolve res = getChildById(service, id1, true, monitor);
                     if( res!=null ){
                         found.add(res);
                 		found.addAll( friends( res));
@@ -275,7 +346,7 @@ public class CatalogImpl extends ICatalog {
                     found.addAll( friends( service ));
                 }
                 else {
-                    IResolve res = getChildById(service, id, true, monitor);
+                    IResolve res = getChildById(service, id1, true, monitor);
                     if( res!=null ){
                         found.add(res);
                         found.addAll( friends( res));
@@ -297,7 +368,7 @@ public class CatalogImpl extends ICatalog {
                     found.addAll( friends( service ));
                 }
                 else {
-                    IResolve res = getChildById(service, id, true, monitor);
+                    IResolve res = getChildById(service, id1, true, monitor);
                     if( res!=null ){
                         found.add(res);
                         found.addAll( friends( res));
@@ -347,7 +418,19 @@ public class CatalogImpl extends ICatalog {
             }
         }
         */
-        return new ArrayList<IResolve>( found );
+        return new ArrayList<IResolve>( found );        
+    }
+    
+    /**
+     * Quick search by url match.
+     * @param query
+     * 
+     * @see net.refractions.udig.catalog.ICatalog#search(org.opengis.filter.Filter)
+     * @return List<IResolve>
+     * @throws IOException
+     */
+    public List<IResolve> find( URL query, IProgressMonitor monitor ) {
+        return find( new ID( query ), monitor );
     }
     
     /**
