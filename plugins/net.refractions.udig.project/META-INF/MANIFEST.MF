@@ -22,6 +22,7 @@ Bundle-ActivationPolicy: lazy
 Export-Package: net.refractions.udig.project,
  net.refractions.udig.project.command,
  net.refractions.udig.project.command.factory,
+ net.refractions.udig.project.command.map,
  net.refractions.udig.project.command.provider,
  net.refractions.udig.project.element,
  net.refractions.udig.project.element.impl,
